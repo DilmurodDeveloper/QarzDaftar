@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QarzDaftar.Server.Api", "Qa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QarzDaftar.Server.Api.Tests.Unit", "QarzDaftar.Server.Api.Tests.Unit\QarzDaftar.Server.Api.Tests.Unit.csproj", "{E8A517FD-2992-48FA-B73A-341198CFA99D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QarzDaftar.Server.Api.Infrastructure.Build", "QarzDaftar.Server.Api.Infrastructure.Build\QarzDaftar.Server.Api.Infrastructure.Build.csproj", "{D84B5584-7A22-4685-AC32-D10597C412F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{E8A517FD-2992-48FA-B73A-341198CFA99D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8A517FD-2992-48FA-B73A-341198CFA99D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8A517FD-2992-48FA-B73A-341198CFA99D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D84B5584-7A22-4685-AC32-D10597C412F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D84B5584-7A22-4685-AC32-D10597C412F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D84B5584-7A22-4685-AC32-D10597C412F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D84B5584-7A22-4685-AC32-D10597C412F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
