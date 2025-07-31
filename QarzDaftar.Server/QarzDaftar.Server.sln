@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36301.6 d17.14
+VisualStudioVersion = 17.14.36301.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QarzDaftar.Server.Api", "QarzDaftar.Server.Api\QarzDaftar.Server.Api.csproj", "{5202E90A-680E-4C36-AFBB-DBB519E4401F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QarzDaftar.Server.Api.Tests.Unit", "QarzDaftar.Server.Api.Tests.Unit\QarzDaftar.Server.Api.Tests.Unit.csproj", "{E8A517FD-2992-48FA-B73A-341198CFA99D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{5202E90A-680E-4C36-AFBB-DBB519E4401F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5202E90A-680E-4C36-AFBB-DBB519E4401F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5202E90A-680E-4C36-AFBB-DBB519E4401F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8A517FD-2992-48FA-B73A-341198CFA99D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8A517FD-2992-48FA-B73A-341198CFA99D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8A517FD-2992-48FA-B73A-341198CFA99D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8A517FD-2992-48FA-B73A-341198CFA99D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
