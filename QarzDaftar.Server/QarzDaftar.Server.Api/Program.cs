@@ -1,6 +1,8 @@
+using QarzDaftar.Server.Api.Brokers.Storages;
+
 var builder = WebApplication.CreateBuilder(args);
 
-
+builder.Services.AddDbContext<StorageBroker>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
