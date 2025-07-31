@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="C:\Users\Dilmurod Developer\.nuget\packages\adotnet\4.1.0\contentFiles\any\netstandard2.1\License.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ADotNet" Version="4.1.0" />
   </ItemGroup>
 

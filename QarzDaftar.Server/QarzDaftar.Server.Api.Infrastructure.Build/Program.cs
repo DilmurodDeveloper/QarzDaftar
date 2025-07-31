@@ -45,19 +45,20 @@ var githubPipeline = new GithubPipeline
                         }
                     },
 
-                    new RestoreTask
+                    new RunTask
                     {
-                        Name = "Restoring Nuget Packages"
+                        Name = "Restore Packages",
+                        Run = "dotnet restore QarzDaftar.Server.sln"
                     },
-
-                    new DotNetBuildTask
+                    new RunTask
                     {
-                        Name = "Building Project"
+                        Name = "Build Project",
+                        Run = "dotnet build QarzDaftar.Server.sln --no-restore"
                     },
-
-                    new TestTask
+                    new RunTask
                     {
-                        Name = "Running Tests"
+                        Name = "Run Tests",
+                        Run = "dotnet test QarzDaftar.Server.sln --no-build --verbosity normal"
                     }
                 }
             }
