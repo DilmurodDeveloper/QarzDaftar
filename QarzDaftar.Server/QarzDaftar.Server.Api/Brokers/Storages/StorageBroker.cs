@@ -1,0 +1,66 @@
+﻿using EFxceptions;
+using Microsoft.EntityFrameworkCore;
+using QarzDaftar.Server.Api.Models.Foundations.Customers;
+using QarzDaftar.Server.Api.Models.Foundations.Debts;
+using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories;
+using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
+using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs;
+
+namespace QarzDaftar.Server.Api.Brokers.Storages
+{
+    public partial class StorageBroker : EFxceptionsContext, IStorageBroker
+    {
+        private readonly IConfiguration configuration;
+
+        public StorageBroker(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+            this.Database.Migrate();
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            string connectionString =
+                this.configuration.GetConnectionString(name: "DefaultConnection");
+
+            optionsBuilder.UseSqlServer(connectionString);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Debt>()
+                .HasOne(d => d.User)
+                .WithMany(u => u.Debts)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Customer>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.Customers)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserNote>()
+                .HasOne(n => n.User)
+                .WithMany(u => u.UserNotes)
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserPaymentLog>()
+                .HasOne(p => p.User)
+                .WithMany(u => u.PaymentLogs)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SubscriptionHistory>()
+                .HasOne(s => s.User)
+                .WithMany(u => u.SubscriptionHistories)
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
+
+        public override void Dispose() { }
+    }
+}
