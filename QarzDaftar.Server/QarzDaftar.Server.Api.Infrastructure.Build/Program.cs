@@ -48,17 +48,17 @@ var githubPipeline = new GithubPipeline
                     new RunTask
                     {
                         Name = "Restore Packages",
-                        Run = "dotnet restore QarzDaftar.Server.sln"
+                        Run = "dotnet restore QarzDaftar.Server/QarzDaftar.Server.sln"
                     },
                     new RunTask
                     {
                         Name = "Build Project",
-                        Run = "dotnet build QarzDaftar.Server.sln --no-restore"
+                        Run = "dotnet build QarzDaftar.Server/QarzDaftar.Server.sln --no-restore"
                     },
                     new RunTask
                     {
                         Name = "Run Tests",
-                        Run = "dotnet test QarzDaftar.Server.sln --no-build --verbosity normal"
+                        Run = "dotnet test QarzDaftar.Server/QarzDaftar.Server.sln --no-build --verbosity normal"
                     }
                 }
             }
