@@ -416,3 +416,4 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+/QarzDaftar.Server/QarzDaftar.Server.Api/appsettings.Development.json
