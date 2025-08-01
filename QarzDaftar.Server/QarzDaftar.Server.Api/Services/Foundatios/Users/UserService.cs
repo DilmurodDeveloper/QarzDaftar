@@ -2,10 +2,11 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Users;
+using QarzDaftar.Server.Api.Models.Foundations.Users.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundatios.Users
 {
-    public class UserService : IUserService
+    public partial class UserService : IUserService
     {
         private readonly IStorageBroker storageBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -21,7 +22,23 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask<User> AddUserAsync(User user) =>
-            await this.storageBroker.InsertUserAsync(user);
+        public async ValueTask<User> AddUserAsync(User user)
+        {
+            try
+            {
+                ValidateUserNotNull(user);
+
+                return await this.storageBroker.InsertUserAsync(user);
+            }
+            catch (NullUserException nullUserException)
+            {
+                var userValidationException =
+                    new UserValidationException(nullUserException);
+
+                this.loggingBroker.LogError(userValidationException);
+
+                throw userValidationException;
+            }
+        }
     }
 }
