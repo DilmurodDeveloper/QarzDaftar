@@ -15,6 +15,7 @@ namespace QarzDaftar.Server.Api.Models.Foundations.Users
         public string PhoneNumber { get; set; }
         public string PasswordHash { get; set; }
         public string ShopName { get; set; }
+        public string Address { get; set; }
         public DateTimeOffset RegisteredAt { get; set; }
         public DateTimeOffset SubscriptionExpiresAt { get; set; }
         public bool IsActivatedByAdmin { get; set; }
