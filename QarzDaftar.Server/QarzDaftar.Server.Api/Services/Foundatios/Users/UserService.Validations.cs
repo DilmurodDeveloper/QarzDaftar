@@ -17,6 +17,7 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
                 (Rule: IsInvalid(user.PhoneNumber), Parameter: nameof(User.PhoneNumber)),
                 (Rule: IsInvalid(user.PasswordHash), Parameter: nameof(User.PasswordHash)),
                 (Rule: IsInvalid(user.ShopName), Parameter: nameof(User.ShopName)),
+                (Rule: IsInvalid(user.Address), Parameter: nameof(User.Address)),
                 (Rule: IsInvalid(user.RegisteredAt), Parameter: nameof(User.RegisteredAt)),
                 (Rule: IsInvalid(user.SubscriptionExpiresAt), Parameter: nameof(User.SubscriptionExpiresAt)),
                 (Rule: IsInvalid(user.CreatedDate), Parameter: nameof(User.CreatedDate)),

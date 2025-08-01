@@ -82,6 +82,10 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
                 values: "Text is required");
 
             invalidUserException.AddData(
+                key: nameof(User.Address),
+                values: "Text is required");
+
+            invalidUserException.AddData(
                 key: nameof(User.RegisteredAt),
                 values: "Date is required");
 
