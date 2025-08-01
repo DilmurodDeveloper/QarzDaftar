@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using EFxceptions.Models.Exceptions;
+using Microsoft.Data.SqlClient;
 using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
@@ -60,6 +61,18 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
                 this.loggingBroker.LogCritical(userDependencyException);
 
                 throw userDependencyException;
+            }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsUserException =
+                    new AlreadyExistsUserException(duplicateKeyException);
+
+                var userDependencyValidationException =
+                    new UserDependencyValidationException(alreadyExistsUserException);
+
+                this.loggingBroker.LogError(userDependencyValidationException);
+
+                throw userDependencyValidationException;
             }
         }
     }
