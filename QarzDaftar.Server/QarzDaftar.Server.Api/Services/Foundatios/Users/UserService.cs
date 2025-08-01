@@ -26,7 +26,7 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
         {
             try
             {
-                ValidateUserNotNull(user);
+                ValidateUserOnAdd(user);
 
                 return await this.storageBroker.InsertUserAsync(user);
             }
@@ -34,6 +34,15 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
             {
                 var userValidationException =
                     new UserValidationException(nullUserException);
+
+                this.loggingBroker.LogError(userValidationException);
+
+                throw userValidationException;
+            }
+            catch (InvalidUserException invalidUserException)
+            {
+                var userValidationException =
+                    new UserValidationException(invalidUserException);
 
                 this.loggingBroker.LogError(userValidationException);
 
