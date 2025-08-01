@@ -1,10 +1,7 @@
-﻿using EFxceptions.Models.Exceptions;
-using Microsoft.Data.SqlClient;
-using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Users;
-using QarzDaftar.Server.Api.Models.Foundations.Users.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundatios.Users
 {
@@ -24,68 +21,12 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask<User> AddUserAsync(User user)
+        public ValueTask<User> AddUserAsync(User user) =>
+        TryCatch(async () =>
         {
-            try
-            {
-                ValidateUserOnAdd(user);
+            ValidateUserOnAdd(user);
 
-                return await this.storageBroker.InsertUserAsync(user);
-            }
-            catch (NullUserException nullUserException)
-            {
-                var userValidationException =
-                    new UserValidationException(nullUserException);
-
-                this.loggingBroker.LogError(userValidationException);
-
-                throw userValidationException;
-            }
-            catch (InvalidUserException invalidUserException)
-            {
-                var userValidationException =
-                    new UserValidationException(invalidUserException);
-
-                this.loggingBroker.LogError(userValidationException);
-
-                throw userValidationException;
-            }
-            catch (SqlException sqlException)
-            {
-                var failedUserStorageException =
-                    new FailedUserStorageException(sqlException);
-
-                var userDependencyException =
-                    new UserDependencyException(failedUserStorageException);
-
-                this.loggingBroker.LogCritical(userDependencyException);
-
-                throw userDependencyException;
-            }
-            catch (DuplicateKeyException duplicateKeyException)
-            {
-                var alreadyExistsUserException =
-                    new AlreadyExistsUserException(duplicateKeyException);
-
-                var userDependencyValidationException =
-                    new UserDependencyValidationException(alreadyExistsUserException);
-
-                this.loggingBroker.LogError(userDependencyValidationException);
-
-                throw userDependencyValidationException;
-            }
-            catch (Exception exception)
-            {
-                var failedUserServiceException =
-                    new FailedUserServiceException(exception);
-
-                var userServiceException =
-                    new UserServiceException(failedUserServiceException);
-
-                this.loggingBroker.LogError(userServiceException);
-
-                throw userServiceException;
-            }
-        }
+            return await this.storageBroker.InsertUserAsync(user);
+        });
     }
 }
