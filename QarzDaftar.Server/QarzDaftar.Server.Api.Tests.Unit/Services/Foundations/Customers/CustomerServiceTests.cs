@@ -1,10 +1,12 @@
-﻿using Moq;
+﻿using System.Linq.Expressions;
+using Moq;
 using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Customers;
 using QarzDaftar.Server.Api.Services.Foundatios.Customers;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
 {
@@ -31,6 +33,9 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: DateTime.UnixEpoch).GetValue();
+
+        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static Filler<Customer> CreateCustomerFiller(DateTimeOffset date)
         {
