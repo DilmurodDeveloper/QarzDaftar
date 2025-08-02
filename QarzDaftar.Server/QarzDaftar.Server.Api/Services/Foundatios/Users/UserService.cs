@@ -45,7 +45,12 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
             return maybeUser;
         });
 
-        public ValueTask<User> ModifyUserAsync(User user) =>
-            throw new NotImplementedException();
+        public async ValueTask<User> ModifyUserAsync(User user)
+        {
+            User maybeUser =
+                await this.storageBroker.SelectUserByIdAsync(user.Id);
+
+            return await this.storageBroker.UpdateUserAsync(user);
+        }
     }
 }
