@@ -1,4 +1,5 @@
-﻿using QarzDaftar.Server.Api.Models.Foundations.Debts;
+﻿using System.Text.Json.Serialization;
+using QarzDaftar.Server.Api.Models.Foundations.Debts;
 using QarzDaftar.Server.Api.Models.Foundations.Payments;
 using QarzDaftar.Server.Api.Models.Foundations.Users;
 
@@ -14,8 +15,14 @@ namespace QarzDaftar.Server.Api.Models.Foundations.Customers
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
         public Guid UserId { get; set; }
-        public User User { get; set; }
-        public ICollection<Debt> Debts { get; set; }
-        public ICollection<Payment> Payments { get; set; }
+
+        [JsonIgnore]
+        public User? User { get; set; }
+
+        [JsonIgnore]
+        public ICollection<Debt>? Debts { get; set; }
+
+        [JsonIgnore]
+        public ICollection<Payment>? Payments { get; set; }
     }
 }
