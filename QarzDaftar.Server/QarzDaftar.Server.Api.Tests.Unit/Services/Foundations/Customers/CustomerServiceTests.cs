@@ -4,7 +4,7 @@ using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Customers;
-using QarzDaftar.Server.Api.Services.Foundatios.Customers;
+using QarzDaftar.Server.Api.Services.Foundations.Customers;
 using Tynamix.ObjectFiller;
 using Xeptions;
 

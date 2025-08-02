@@ -2,10 +2,11 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Customers;
+using QarzDaftar.Server.Api.Models.Foundations.Customers.Exceptions;
 
-namespace QarzDaftar.Server.Api.Services.Foundatios.Customers
+namespace QarzDaftar.Server.Api.Services.Foundations.Customers
 {
-    public class CustomerService : ICustomerService
+    public partial class CustomerService : ICustomerService
     {
         private readonly IStorageBroker storageBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -21,7 +22,23 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Customers
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask<Customer> AddCustomerAsync(Customer customer) =>
-            await this.storageBroker.InsertCustomerAsync(customer);
+        public async ValueTask<Customer> AddCustomerAsync(Customer customer)
+        {
+            try
+            {
+                ValidateCustomerNotNull(customer);
+
+                return await this.storageBroker.InsertCustomerAsync(customer);
+            }
+            catch (NullCustomerException nullCustomerException)
+            {
+                var customerValidationException =
+                    new CustomerValidationException(nullCustomerException);
+
+                this.loggingBroker.LogError(customerValidationException);
+
+                throw customerValidationException;
+            }
+        }
     }
 }
