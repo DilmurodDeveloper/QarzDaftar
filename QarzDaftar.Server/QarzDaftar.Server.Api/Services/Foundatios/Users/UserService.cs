@@ -32,7 +32,7 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
         public IQueryable<User> RetrieveAllUsers() =>
             TryCatch(() => this.storageBroker.SelectAllUsers());
 
-        public ValueTask<User> RetrieveUserByIdAsync(Guid userId) =>
-            throw new NotImplementedException();
+        public async ValueTask<User> RetrieveUserByIdAsync(Guid userId) =>
+            await this.storageBroker.SelectUserByIdAsync(userId);
     }
 }
