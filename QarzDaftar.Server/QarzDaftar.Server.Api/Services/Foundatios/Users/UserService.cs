@@ -2,6 +2,7 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Users;
+using QarzDaftar.Server.Api.Models.Foundations.Users.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundatios.Users
 {
@@ -32,7 +33,23 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
         public IQueryable<User> RetrieveAllUsers() =>
             TryCatch(() => this.storageBroker.SelectAllUsers());
 
-        public async ValueTask<User> RetrieveUserByIdAsync(Guid userId) =>
-            await this.storageBroker.SelectUserByIdAsync(userId);
+        public async ValueTask<User> RetrieveUserByIdAsync(Guid userId)
+        {
+            try
+            {
+                ValidateUserId(userId);
+
+                return await this.storageBroker.SelectUserByIdAsync(userId);
+            }
+            catch (InvalidUserException invalidUserException)
+            {
+                var userValidationException =
+                    new UserValidationException(invalidUserException);
+
+                this.loggingBroker.LogError(userValidationException);
+
+                throw userValidationException;
+            }
+        }
     }
 }
