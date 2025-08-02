@@ -44,5 +44,8 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
 
             return maybeUser;
         });
+
+        public ValueTask<User> ModifyUserAsync(User user) =>
+            throw new NotImplementedException();
     }
 }
