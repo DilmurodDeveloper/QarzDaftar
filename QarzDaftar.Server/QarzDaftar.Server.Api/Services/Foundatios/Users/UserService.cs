@@ -63,7 +63,7 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
                     new UserValidationException(nullUserException);
 
                 this.loggingBroker.LogError(userValidationException);
-                
+
                 throw userValidationException;
             }
         }
