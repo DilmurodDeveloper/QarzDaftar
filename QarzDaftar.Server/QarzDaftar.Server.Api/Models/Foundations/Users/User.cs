@@ -25,18 +25,18 @@ namespace QarzDaftar.Server.Api.Models.Foundations.Users
         public DateTimeOffset UpdatedDate { get; set; }
 
         [JsonIgnore]
-        public ICollection<Customer> Customers { get; set; }
+        public ICollection<Customer>? Customers { get; set; }
 
         [JsonIgnore]
-        public ICollection<Debt> Debts { get; set; }
+        public ICollection<Debt>? Debts { get; set; }
 
         [JsonIgnore]
-        public ICollection<UserNote> UserNotes { get; set; }
+        public ICollection<UserNote>? UserNotes { get; set; }
 
         [JsonIgnore]
-        public ICollection<SubscriptionHistory> SubscriptionHistories { get; set; }
+        public ICollection<SubscriptionHistory>? SubscriptionHistories { get; set; }
 
         [JsonIgnore]
-        public ICollection<UserPaymentLog> PaymentLogs { get; set; }
+        public ICollection<UserPaymentLog>? PaymentLogs { get; set; }
     }
 }
