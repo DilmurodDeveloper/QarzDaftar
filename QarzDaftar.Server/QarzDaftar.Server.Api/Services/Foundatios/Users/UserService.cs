@@ -57,5 +57,8 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
 
             return await this.storageBroker.UpdateUserAsync(user);
         });
+
+        public ValueTask<User> RemoveUserByIdAsync(Guid userId) =>
+            throw new NotImplementedException();
     }
 }
