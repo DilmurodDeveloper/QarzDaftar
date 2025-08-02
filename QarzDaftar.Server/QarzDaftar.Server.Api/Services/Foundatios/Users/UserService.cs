@@ -30,6 +30,6 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
         });
 
         public IQueryable<User> RetrieveAllUsers() =>
-            throw new NotImplementedException();
+            this.storageBroker.SelectAllUsers();
     }
 }
