@@ -1,10 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Users;
-using QarzDaftar.Server.Api.Models.Foundations.Users.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundatios.Users
 {
@@ -61,73 +58,17 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
             return await this.storageBroker.UpdateUserAsync(user);
         });
 
-        public async ValueTask<User> RemoveUserByIdAsync(Guid userId)
+        public ValueTask<User> RemoveUserByIdAsync(Guid userId) =>
+        TryCatch(async () =>
         {
-            try
-            {
-                ValidateUserId(userId);
+            ValidateUserId(userId);
 
-                User maybeUser =
-                    await this.storageBroker.SelectUserByIdAsync(userId);
+            User maybeUser =
+                await this.storageBroker.SelectUserByIdAsync(userId);
 
-                ValidateStorageUser(maybeUser, userId);
+            ValidateStorageUser(maybeUser, userId);
 
-                return await this.storageBroker.DeleteUserAsync(maybeUser);
-            }
-            catch (InvalidUserException invalidUserException)
-            {
-                var userValidationException =
-                    new UserValidationException(invalidUserException);
-
-                this.loggingBroker.LogError(userValidationException);
-
-                throw userValidationException;
-            }
-            catch (NotFoundUserException notFoundUserException)
-            {
-                var userValidationException =
-                    new UserValidationException(notFoundUserException);
-
-                this.loggingBroker.LogError(userValidationException);
-
-                throw userValidationException;
-            }
-            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
-            {
-                var lockedUserException =
-                    new LockedUserException(dbUpdateConcurrencyException);
-
-                var userDependencyValidationException =
-                    new UserDependencyValidationException(lockedUserException);
-
-                this.loggingBroker.LogError(userDependencyValidationException);
-
-                throw userDependencyValidationException;
-            }
-            catch (SqlException sqlException)
-            {
-                var failedUserStorageException =
-                    new FailedUserStorageException(sqlException);
-
-                var userDependencyException =
-                    new UserDependencyException(failedUserStorageException);
-
-                this.loggingBroker.LogCritical(userDependencyException);
-
-                throw userDependencyException;
-            }
-            catch (Exception exception)
-            {
-                var failedUserServiceException =
-                    new FailedUserServiceException(exception);
-
-                var userServiceException =
-                    new UserServiceException(failedUserServiceException);
-
-                this.loggingBroker.LogError(userServiceException);
-
-                throw userServiceException;
-            }
-        }
+            return await this.storageBroker.DeleteUserAsync(maybeUser);
+        });
     }
 }
