@@ -50,7 +50,7 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
         {
             try
             {
-                ValidateUserNotNull(user);
+                ValidateUserOnModify(user);
 
                 User maybeUser =
                     await this.storageBroker.SelectUserByIdAsync(user.Id);
@@ -61,6 +61,15 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
             {
                 var userValidationException =
                     new UserValidationException(nullUserException);
+
+                this.loggingBroker.LogError(userValidationException);
+
+                throw userValidationException;
+            }
+            catch (InvalidUserException invalidUserException)
+            {
+                var userValidationException =
+                    new UserValidationException(invalidUserException);
 
                 this.loggingBroker.LogError(userValidationException);
 

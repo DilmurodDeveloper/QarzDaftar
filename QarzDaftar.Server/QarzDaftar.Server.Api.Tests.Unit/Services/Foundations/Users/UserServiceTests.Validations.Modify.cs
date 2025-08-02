@@ -70,7 +70,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
 
             invalidUserException.AddData(
                 key: nameof(User.Email),
-                values: "Date is required");
+                values: "Text is required");
 
             invalidUserException.AddData(
                 key: nameof(User.PhoneNumber),
