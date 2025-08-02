@@ -1,4 +1,5 @@
-﻿using QarzDaftar.Server.Api.Models.Foundations.Customers;
+﻿using System.Text.Json.Serialization;
+using QarzDaftar.Server.Api.Models.Foundations.Customers;
 using QarzDaftar.Server.Api.Models.Foundations.Debts;
 using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
@@ -22,10 +23,20 @@ namespace QarzDaftar.Server.Api.Models.Foundations.Users
         public bool IsBlocked { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
+
+        [JsonIgnore]
         public ICollection<Customer> Customers { get; set; }
+
+        [JsonIgnore]
         public ICollection<Debt> Debts { get; set; }
+
+        [JsonIgnore]
         public ICollection<UserNote> UserNotes { get; set; }
+
+        [JsonIgnore]
         public ICollection<SubscriptionHistory> SubscriptionHistories { get; set; }
+
+        [JsonIgnore]
         public ICollection<UserPaymentLog> PaymentLogs { get; set; }
     }
 }
