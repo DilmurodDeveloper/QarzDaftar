@@ -85,5 +85,46 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Customer someCustomer = CreateRandomCustomer();
+            var serviceException = new Exception();
+
+            var failedCustomerServiceException =
+                new FailedCustomerServiceException(serviceException);
+
+            var expectedCustomerServiceException =
+                new CustomerServiceException(failedCustomerServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.InsertCustomerAsync(someCustomer))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<Customer> addCustomerTask =
+                this.customerService.AddCustomerAsync(someCustomer);
+
+            CustomerServiceException actualCustomerService =
+                await Assert.ThrowsAsync<CustomerServiceException>(
+                    addCustomerTask.AsTask);
+
+            // then
+            actualCustomerService.Should()
+                .BeEquivalentTo(expectedCustomerServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertCustomerAsync(someCustomer), Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedCustomerServiceException))), Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
