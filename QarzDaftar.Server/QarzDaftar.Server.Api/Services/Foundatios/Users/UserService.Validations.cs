@@ -80,6 +80,25 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
                 (Rule: IsInvalid(user.UpdatedDate), Parameter: nameof(User.UpdatedDate)));
         }
 
+        private static void ValidateAgainstStorageUserOnModify(User user, User storageUser)
+        {
+            ValidateStorageUser(storageUser, user.Id);
+
+            Validate(
+                (Rule: IsInvalid(user.Id), Parameter: nameof(User.Id)),
+                (Rule: IsInvalid(user.FullName), Parameter: nameof(User.FullName)),
+                (Rule: IsInvalid(user.Username), Parameter: nameof(User.Username)),
+                (Rule: IsInvalid(user.Email), Parameter: nameof(User.Email)),
+                (Rule: IsInvalid(user.PhoneNumber), Parameter: nameof(User.PhoneNumber)),
+                (Rule: IsInvalid(user.PasswordHash), Parameter: nameof(User.PasswordHash)),
+                (Rule: IsInvalid(user.ShopName), Parameter: nameof(User.ShopName)),
+                (Rule: IsInvalid(user.Address), Parameter: nameof(User.Address)),
+                (Rule: IsInvalid(user.RegisteredAt), Parameter: nameof(User.RegisteredAt)),
+                (Rule: IsInvalid(user.SubscriptionExpiresAt), Parameter: nameof(User.SubscriptionExpiresAt)),
+                (Rule: IsInvalid(user.CreatedDate), Parameter: nameof(User.CreatedDate)),
+                (Rule: IsInvalid(user.UpdatedDate), Parameter: nameof(User.UpdatedDate)));
+        }
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidUserException = new InvalidUserException();

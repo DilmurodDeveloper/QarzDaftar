@@ -55,6 +55,8 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
                 User maybeUser =
                     await this.storageBroker.SelectUserByIdAsync(user.Id);
 
+                ValidateAgainstStorageUserOnModify(user, maybeUser);
+
                 return await this.storageBroker.UpdateUserAsync(user);
             }
             catch (NullUserException nullUserException)
@@ -70,6 +72,15 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
             {
                 var userValidationException =
                     new UserValidationException(invalidUserException);
+
+                this.loggingBroker.LogError(userValidationException);
+
+                throw userValidationException;
+            }
+            catch (NotFoundUserException notFoundUserException)
+            {
+                var userValidationException =
+                    new UserValidationException(notFoundUserException);
 
                 this.loggingBroker.LogError(userValidationException);
 
