@@ -2,6 +2,7 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Users;
+using QarzDaftar.Server.Api.Models.Foundations.Users.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundatios.Users
 {
@@ -60,10 +61,24 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
 
         public async ValueTask<User> RemoveUserByIdAsync(Guid userId)
         {
-            User maybeUser =
-                await this.storageBroker.SelectUserByIdAsync(userId);
+            try
+            {
+                ValidateUserId(userId);
 
-            return await this.storageBroker.DeleteUserAsync(maybeUser);
+                User maybeUser =
+                    await this.storageBroker.SelectUserByIdAsync(userId);
+
+                return await this.storageBroker.DeleteUserAsync(maybeUser);
+            }
+            catch (InvalidUserException invalidUserException)
+            {
+                var userValidationException =
+                    new UserValidationException(invalidUserException);
+
+                this.loggingBroker.LogError(userValidationException);
+
+                throw userValidationException;
+            }
         }
     }
 }
