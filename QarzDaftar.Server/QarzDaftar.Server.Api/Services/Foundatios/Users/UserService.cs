@@ -100,6 +100,18 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
 
                 throw userDependencyException;
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedUserException =
+                    new LockedUserException(dbUpdateConcurrencyException);
+
+                var userDependencyValidationException =
+                    new UserDependencyValidationException(lockedUserException);
+
+                this.loggingBroker.LogError(userDependencyValidationException);
+
+                throw userDependencyValidationException;
+            }
             catch (DbUpdateException dbUpdateException)
             {
                 var failedUserStorageException =
