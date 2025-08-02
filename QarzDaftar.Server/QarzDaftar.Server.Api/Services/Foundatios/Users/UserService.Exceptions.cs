@@ -21,6 +21,10 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
             {
                 throw CreateAndLogValidationException(nullUserException);
             }
+            catch (NotFoundUserException notFoundUserException)
+            {
+                throw CreateAndLogValidationException(notFoundUserException);
+            }
             catch (InvalidUserException invalidUserException)
             {
                 throw CreateAndLogValidationException(invalidUserException);
