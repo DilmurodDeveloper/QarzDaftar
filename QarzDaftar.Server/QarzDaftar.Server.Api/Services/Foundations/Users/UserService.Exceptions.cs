@@ -5,7 +5,7 @@ using QarzDaftar.Server.Api.Models.Foundations.Users;
 using QarzDaftar.Server.Api.Models.Foundations.Users.Exceptions;
 using Xeptions;
 
-namespace QarzDaftar.Server.Api.Services.Foundatios.Users
+namespace QarzDaftar.Server.Api.Services.Foundations.Users
 {
     public partial class UserService
     {
