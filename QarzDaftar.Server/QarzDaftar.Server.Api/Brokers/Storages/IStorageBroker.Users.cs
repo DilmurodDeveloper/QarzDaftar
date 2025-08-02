@@ -5,5 +5,7 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
     public partial interface IStorageBroker
     {
         ValueTask<User> InsertUserAsync(User user);
+        IQueryable<User> SelectAllUsers();
+        ValueTask<User> SelectUserByIdAsync(Guid userId);
     }
 }
