@@ -1,4 +1,5 @@
-﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using Microsoft.EntityFrameworkCore;
+using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Users;
@@ -89,6 +90,18 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
                 this.loggingBroker.LogError(userValidationException);
 
                 throw userValidationException;
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedUserException =
+                    new LockedUserException(dbUpdateConcurrencyException);
+
+                var userDependencyValidationException =
+                    new UserDependencyValidationException(lockedUserException);
+
+                this.loggingBroker.LogError(userDependencyValidationException);
+
+                throw userDependencyValidationException;
             }
         }
     }
