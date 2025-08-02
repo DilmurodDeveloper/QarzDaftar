@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
@@ -96,6 +97,18 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
                     new UserDependencyException(failedUserStorageException);
 
                 this.loggingBroker.LogCritical(userDependencyException);
+
+                throw userDependencyException;
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedUserStorageException =
+                    new FailedUserStorageException(dbUpdateException);
+
+                var userDependencyException =
+                    new UserDependencyException(failedUserStorageException);
+
+                this.loggingBroker.LogError(userDependencyException);
 
                 throw userDependencyException;
             }
