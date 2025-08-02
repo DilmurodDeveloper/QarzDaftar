@@ -1,6 +1,6 @@
 ﻿using QarzDaftar.Server.Api.Models.Foundations.Users;
 
-namespace QarzDaftar.Server.Api.Services.Foundatios.Users
+namespace QarzDaftar.Server.Api.Services.Foundations.Users
 {
     public interface IUserService
     {

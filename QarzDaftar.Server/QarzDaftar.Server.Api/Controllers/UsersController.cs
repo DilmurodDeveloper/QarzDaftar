@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QarzDaftar.Server.Api.Models.Foundations.Users;
 using QarzDaftar.Server.Api.Models.Foundations.Users.Exceptions;
-using QarzDaftar.Server.Api.Services.Foundatios.Users;
+using QarzDaftar.Server.Api.Services.Foundations.Users;
 using RESTFulSense.Controllers;
 
 namespace QarzDaftar.Server.Api.Controllers
