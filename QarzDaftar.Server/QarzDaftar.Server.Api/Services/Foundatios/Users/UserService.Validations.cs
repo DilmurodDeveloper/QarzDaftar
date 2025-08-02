@@ -32,6 +32,17 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
             }
         }
 
+        private static void ValidateUserId(Guid userId) =>
+            Validate((Rule: IsInvalid(userId), Parameter: nameof(User.Id)));
+
+        private static void ValidateStorageUser(User maybeUser, Guid userId)
+        {
+            if (maybeUser is null)
+            {
+                throw new NotFoundUserException(userId);
+            }
+        }
+
         private static dynamic IsInvalid(Guid Id) => new
         {
             Condition = Id == default,

@@ -9,6 +9,7 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
     public partial class UserService
     {
         private delegate ValueTask<User> ReturningUserFunction();
+        private delegate IQueryable<User> ReturningUsersFunction();
 
         private async ValueTask<User> TryCatch(ReturningUserFunction returningUserFunction)
         {
@@ -19,6 +20,10 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
             catch (NullUserException nullUserException)
             {
                 throw CreateAndLogValidationException(nullUserException);
+            }
+            catch (NotFoundUserException notFoundUserException)
+            {
+                throw CreateAndLogValidationException(notFoundUserException);
             }
             catch (InvalidUserException invalidUserException)
             {
@@ -37,6 +42,28 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
                     new AlreadyExistsUserException(duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsUserException);
+            }
+            catch (Exception exception)
+            {
+                var failedUserServiceException =
+                    new FailedUserServiceException(exception);
+
+                throw CreateAndLogServiceException(failedUserServiceException);
+            }
+        }
+
+        private IQueryable<User> TryCatch(ReturningUsersFunction returningUsersFunction)
+        {
+            try
+            {
+                return returningUsersFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedUserStorageException =
+                    new FailedUserStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedUserStorageException);
             }
             catch (Exception exception)
             {
