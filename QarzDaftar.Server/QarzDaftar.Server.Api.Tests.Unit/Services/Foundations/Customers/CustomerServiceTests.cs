@@ -42,6 +42,9 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
         private static SqlException GetSqlError() =>
             (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
         private static Filler<Customer> CreateCustomerFiller(DateTimeOffset date)
         {
             var filler = new Filler<Customer>();
