@@ -1,9 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
-using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Users;
-using QarzDaftar.Server.Api.Models.Foundations.Users.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundatios.Users
 {
@@ -31,36 +29,7 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
             return await this.storageBroker.InsertUserAsync(user);
         });
 
-        public IQueryable<User> RetrieveAllUsers()
-        {
-            try
-            {
-                return this.storageBroker.SelectAllUsers();
-            }
-            catch (SqlException sqlException)
-            {
-                var failedUserStorageException =
-                    new FailedUserStorageException(sqlException);
-
-                var userDependencyException =
-                    new UserDependencyException(failedUserStorageException);
-
-                this.loggingBroker.LogCritical(userDependencyException);
-
-                throw userDependencyException;
-            }
-            catch (Exception exception)
-            {
-                var failedUserServiceException =
-                    new FailedUserServiceException(exception);
-
-                var userServiceException =
-                    new UserServiceException(failedUserServiceException);
-
-                this.loggingBroker.LogError(userServiceException);
-
-                throw userServiceException;
-            }
-        }
+        public IQueryable<User> RetrieveAllUsers() =>
+            TryCatch(() => this.storageBroker.SelectAllUsers());
     }
 }
