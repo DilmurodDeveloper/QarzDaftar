@@ -21,7 +21,7 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Customers
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<Customer> AddCustomerAsync(Customer customer) =>
-            throw new NotImplementedException();
+        public async ValueTask<Customer> AddCustomerAsync(Customer customer) =>
+            await this.storageBroker.InsertCustomerAsync(customer);
     }
 }
