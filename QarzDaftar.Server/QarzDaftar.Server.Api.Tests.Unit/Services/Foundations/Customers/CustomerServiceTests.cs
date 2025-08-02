@@ -2,7 +2,9 @@
 using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
+using QarzDaftar.Server.Api.Models.Foundations.Customers;
 using QarzDaftar.Server.Api.Services.Foundatios.Customers;
+using Tynamix.ObjectFiller;
 
 namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
 {
@@ -22,6 +24,22 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
                 storageBroker: this.storageBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object);
+        }
+
+        private static Customer CreateRandomCustomer() =>
+            CreateCustomerFiller(date: GetRandomDateTimeOffset()).Create();
+
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+            new DateTimeRange(earliestDate: DateTime.UnixEpoch).GetValue();
+
+        private static Filler<Customer> CreateCustomerFiller(DateTimeOffset date)
+        {
+            var filler = new Filler<Customer>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(date);
+
+            return filler;
         }
     }
 }
