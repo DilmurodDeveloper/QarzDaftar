@@ -116,6 +116,18 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
 
                 throw userDependencyException;
             }
+            catch (Exception exception)
+            {
+                var failedUserServiceException =
+                    new FailedUserServiceException(exception);
+
+                var userServiceException =
+                    new UserServiceException(failedUserServiceException);
+
+                this.loggingBroker.LogError(userServiceException);
+
+                throw userServiceException;
+            }
         }
     }
 }
