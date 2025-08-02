@@ -57,5 +57,18 @@ namespace QarzDaftar.Server.Api.Services.Foundatios.Users
 
             return await this.storageBroker.UpdateUserAsync(user);
         });
+
+        public ValueTask<User> RemoveUserByIdAsync(Guid userId) =>
+        TryCatch(async () =>
+        {
+            ValidateUserId(userId);
+
+            User maybeUser =
+                await this.storageBroker.SelectUserByIdAsync(userId);
+
+            ValidateStorageUser(maybeUser, userId);
+
+            return await this.storageBroker.DeleteUserAsync(maybeUser);
+        });
     }
 }
