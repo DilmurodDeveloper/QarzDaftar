@@ -42,5 +42,51 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(userServiceException.InnerException);
             }
         }
+
+        [HttpGet("All")]
+        public ActionResult<IQueryable<User>> GetAllUsers()
+        {
+            try
+            {
+                IQueryable<User> allUsers = this.userService.RetrieveAllUsers();
+
+                return Ok(allUsers);
+            }
+            catch (UserDependencyException userDependencyException)
+            {
+                return InternalServerError(userDependencyException.InnerException);
+            }
+            catch (UserServiceException userServiceException)
+            {
+                return InternalServerError(userServiceException.InnerException);
+            }
+        }
+
+        [HttpGet("ById")]
+        public async ValueTask<ActionResult<User>> GetUserByIdAsync(Guid userId)
+        {
+            try
+            {
+                return await this.userService.RetrieveUserByIdAsync(userId);
+            }
+            catch (UserDependencyException dependencyException)
+            {
+                return InternalServerError(dependencyException.InnerException);
+            }
+            catch (UserValidationException userValidationException)
+                when (userValidationException.InnerException is InvalidUserException)
+            {
+                return BadRequest(userValidationException.InnerException);
+            }
+            catch (UserValidationException userValidationException)
+                when (userValidationException.InnerException is NotFoundUserException)
+            {
+                return NotFound(userValidationException.InnerException);
+            }
+            catch (UserServiceException userServiceException)
+            {
+                return InternalServerError(userServiceException.InnerException);
+            }
+        }
     }
 }
