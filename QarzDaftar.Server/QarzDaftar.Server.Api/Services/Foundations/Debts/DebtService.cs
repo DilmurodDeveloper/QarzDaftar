@@ -1,4 +1,5 @@
-﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using Microsoft.EntityFrameworkCore;
+using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Debts;
@@ -88,6 +89,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
                 this.loggingBroker.LogError(debtValidationException);
 
                 throw debtValidationException;
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedDebtException =
+                    new LockedDebtException(dbUpdateConcurrencyException);
+
+                var debtDependencyValidationException =
+                    new DebtDependencyValidationException(lockedDebtException);
+
+                this.loggingBroker.LogError(debtDependencyValidationException);
+
+                throw debtDependencyValidationException;
             }
         }
     }
