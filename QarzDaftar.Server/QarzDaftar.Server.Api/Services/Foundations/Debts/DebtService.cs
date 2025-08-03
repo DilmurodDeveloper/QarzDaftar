@@ -2,6 +2,7 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Debts;
+using QarzDaftar.Server.Api.Models.Foundations.Debts.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.Debts
 {
@@ -46,10 +47,24 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
 
         public async ValueTask<Debt> ModifyDebtAsync(Debt debt)
         {
-            Debt maybeDebt =
-                await this.storageBroker.SelectDebtByIdAsync(debt.Id);
+            try
+            {
+                ValidateDebtNotNull(debt);
 
-            return await this.storageBroker.UpdateDebtAsync(debt);
+                Debt maybeDebt =
+                    await this.storageBroker.SelectDebtByIdAsync(debt.Id);
+
+                return await this.storageBroker.UpdateDebtAsync(debt);
+            }
+            catch (NullDebtException nullDebtException)
+            {
+                var debtValidationException =
+                    new DebtValidationException(nullDebtException);
+
+                this.loggingBroker.LogError(debtValidationException);
+
+                throw debtValidationException;
+            }
         }
     }
 }
