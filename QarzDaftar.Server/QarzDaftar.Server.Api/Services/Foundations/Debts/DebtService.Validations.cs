@@ -87,6 +87,22 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
                 (Rule: IsInvalid(debt.UserId), Parameter: nameof(Debt.UserId)));
         }
 
+        private static void ValidateAgainstStorageDebtOnModify(Debt debt, Debt storageDebt)
+        {
+            ValidateStorageDebt(storageDebt, debt.Id);
+
+            Validate(
+                (Rule: IsInvalid(debt.Id), Parameter: nameof(Debt.Id)),
+                (Rule: IsInvalid(debt.Amount), Parameter: nameof(Debt.Amount)),
+                (Rule: IsInvalid(debt.Description), Parameter: nameof(Debt.Description)),
+                (Rule: IsInvalid(debt.Status), Parameter: nameof(Debt.Status)),
+                (Rule: IsInvalid(debt.DueDate), Parameter: nameof(Debt.DueDate)),
+                (Rule: IsInvalid(debt.CreatedDate), Parameter: nameof(Debt.CreatedDate)),
+                (Rule: IsInvalid(debt.UpdatedDate), Parameter: nameof(Debt.UpdatedDate)),
+                (Rule: IsInvalid(debt.CustomerId), Parameter: nameof(Debt.CustomerId)),
+                (Rule: IsInvalid(debt.UserId), Parameter: nameof(Debt.UserId)));
+        }
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidDebtException = new InvalidDebtException();
