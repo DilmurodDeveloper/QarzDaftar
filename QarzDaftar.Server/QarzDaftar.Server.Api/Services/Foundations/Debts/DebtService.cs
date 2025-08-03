@@ -49,7 +49,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
         {
             try
             {
-                ValidateDebtNotNull(debt);
+                ValidateDebtOnModify(debt);
 
                 Debt maybeDebt =
                     await this.storageBroker.SelectDebtByIdAsync(debt.Id);
@@ -60,6 +60,15 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
             {
                 var debtValidationException =
                     new DebtValidationException(nullDebtException);
+
+                this.loggingBroker.LogError(debtValidationException);
+
+                throw debtValidationException;
+            }
+            catch (InvalidDebtException invalidDebtException)
+            {
+                var debtValidationException =
+                    new DebtValidationException(invalidDebtException);
 
                 this.loggingBroker.LogError(debtValidationException);
 
