@@ -121,5 +121,43 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(customerServiceException.InnerException);
             }
         }
+
+        [HttpDelete]
+        public async ValueTask<ActionResult<Customer>> DeleteCustomerAsync(Guid customerId)
+        {
+            try
+            {
+                Customer deleteCustomer =
+                    await this.customerService.RemoveCustomerByIdAsync(customerId);
+
+                return Ok(deleteCustomer);
+            }
+            catch (CustomerValidationException customerValidationException)
+                when (customerValidationException.InnerException is NotFoundCustomerException)
+            {
+                return NotFound(customerValidationException.InnerException);
+            }
+            catch (CustomerValidationException customerValidationException)
+            {
+                return BadRequest(customerValidationException.InnerException);
+            }
+            catch (CustomerDependencyValidationException customerDependencyValidationException)
+                when (customerDependencyValidationException.InnerException is LockedCustomerException)
+            {
+                return Locked(customerDependencyValidationException.InnerException);
+            }
+            catch (CustomerDependencyValidationException customerDependencyValidationException)
+            {
+                return BadRequest(customerDependencyValidationException.InnerException);
+            }
+            catch (CustomerDependencyException customerDependencyException)
+            {
+                return InternalServerError(customerDependencyException.InnerException);
+            }
+            catch (CustomerServiceException customerServiceException)
+            {
+                return InternalServerError(customerServiceException.InnerException);
+            }
+        }
     }
 }
