@@ -40,5 +40,75 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCustomerIsInvalidAndLogItAsync(
+            string invalidString)
+        {
+            //given
+            Customer invalidCustomer = new Customer
+            {
+                FullName = invalidString
+            };
+
+            var invalidCustomerException = new InvalidCustomerException();
+
+            invalidCustomerException.AddData(
+                key: nameof(Customer.Id),
+                values: "Id is required");
+
+            invalidCustomerException.AddData(
+                key: nameof(Customer.FullName),
+                values: "Text is required");
+
+            invalidCustomerException.AddData(
+                key: nameof(Customer.PhoneNumber),
+                values: "Text is required");
+
+            invalidCustomerException.AddData(
+                key: nameof(Customer.Address),
+                values: "Text is required");
+
+            invalidCustomerException.AddData(
+                key: nameof(Customer.CreatedDate),
+                values: "Date is required");
+
+            invalidCustomerException.AddData(
+                key: nameof(Customer.UpdatedDate),
+                values: "Date is required");
+
+            invalidCustomerException.AddData(
+                key: nameof(Customer.UserId),
+                values: "Id is required");
+
+            var expectedCustomerValidationException =
+                new CustomerValidationException(invalidCustomerException);
+
+            // when
+            ValueTask<Customer> modifyCustomerTask =
+                this.customerService.ModifyCustomerAsync(invalidCustomer);
+
+            CustomerValidationException actualCustomerValidationException =
+                await Assert.ThrowsAsync<CustomerValidationException>(
+                    modifyCustomerTask.AsTask);
+
+            // then
+            actualCustomerValidationException.Should()
+                .BeEquivalentTo(expectedCustomerValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedCustomerValidationException))), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateCustomerAsync(It.IsAny<Customer>()), Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
