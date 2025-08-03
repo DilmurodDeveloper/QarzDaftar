@@ -15,7 +15,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
             // given
             User randomUser = CreateRandomUser();
             User someUser = randomUser;
-            Guid UserId = someUser.Id;
+            Guid userId = someUser.Id;
             SqlException sqlException = GetSqlError();
 
             var failedUserStorageException =
@@ -25,7 +25,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
                 new UserDependencyException(failedUserStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectUserByIdAsync(UserId)).Throws(sqlException);
+                broker.SelectUserByIdAsync(userId)).Throws(sqlException);
 
             // when
             ValueTask<User> modifyUserTask =
@@ -44,7 +44,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
                     expectedUserDependencyException))), Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectUserByIdAsync(UserId), Times.Once);
+                broker.SelectUserByIdAsync(userId), Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateUserAsync(someUser), Times.Never);
@@ -60,7 +60,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
             // given
             User randomUser = CreateRandomUser();
             User someUser = randomUser;
-            Guid UserId = someUser.Id;
+            Guid userId = someUser.Id;
             var databaseUpdateException = new DbUpdateException();
 
             var failedUserStorageException =
@@ -70,7 +70,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
                 new UserDependencyException(failedUserStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectUserByIdAsync(UserId)).Throws(databaseUpdateException);
+                broker.SelectUserByIdAsync(userId)).Throws(databaseUpdateException);
 
             // when
             ValueTask<User> modifyUserTask =
@@ -89,7 +89,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
                     expectedUserDependencyException))), Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectUserByIdAsync(UserId), Times.Once);
+                broker.SelectUserByIdAsync(userId), Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateUserAsync(someUser), Times.Never);
@@ -105,7 +105,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
             // given
             User randomUser = CreateRandomUser();
             User someUser = randomUser;
-            Guid UserId = someUser.Id;
+            Guid userId = someUser.Id;
             var dbUpdateConcurrencyException = new DbUpdateConcurrencyException();
 
             var lockedUserException =
@@ -115,7 +115,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
                 new UserDependencyValidationException(lockedUserException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectUserByIdAsync(UserId))
+                broker.SelectUserByIdAsync(userId))
                     .Throws(dbUpdateConcurrencyException);
 
             // when
@@ -135,7 +135,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
                     expectedUserDependencyValidationException))), Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectUserByIdAsync(UserId), Times.Once);
+                broker.SelectUserByIdAsync(userId), Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateUserAsync(someUser), Times.Never);
@@ -151,7 +151,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
             // given
             User randomUser = CreateRandomUser();
             User someUser = randomUser;
-            Guid UserId = someUser.Id;
+            Guid userId = someUser.Id;
             var serviceException = new Exception();
 
             var failedUserServiceException =
@@ -161,7 +161,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
                 new UserServiceException(failedUserServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                    broker.SelectUserByIdAsync(UserId))
+                    broker.SelectUserByIdAsync(userId))
                 .Throws(serviceException);
 
             // when
@@ -181,7 +181,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
                     expectedUserServiceException))), Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectUserByIdAsync(UserId), Times.Once);
+                broker.SelectUserByIdAsync(userId), Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateUserAsync(someUser), Times.Never);
