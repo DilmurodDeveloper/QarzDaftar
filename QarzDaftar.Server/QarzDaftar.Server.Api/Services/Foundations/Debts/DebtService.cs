@@ -99,6 +99,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
 
                 throw debtDependencyException;
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedDebtException =
+                    new LockedDebtException(dbUpdateConcurrencyException);
+
+                var debtDependencyValidationException =
+                    new DebtDependencyValidationException(lockedDebtException);
+
+                this.loggingBroker.LogError(debtDependencyValidationException);
+
+                throw debtDependencyValidationException;
+            }
             catch (DbUpdateException dbUpdateException)
             {
                 var failedDebtStorageException =
