@@ -30,6 +30,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
         });
 
         public IQueryable<Debt> RetrieveAllDebts() =>
-            throw new NotImplementedException();
+            this.storageBroker.SelectAllDebts();
     }
 }
