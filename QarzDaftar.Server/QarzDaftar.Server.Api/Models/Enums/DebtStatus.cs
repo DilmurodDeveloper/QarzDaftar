@@ -2,8 +2,8 @@
 {
     public enum DebtStatus
     {
-        Unpaid = 1,
-        Paid = 2,
-        Overdue = 3
+        Unpaid = 0,
+        Paid = 1,
+        Overdue = 2
     }
 }
