@@ -63,6 +63,14 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
         private void ValidateDebtId(Guid debtId) =>
             Validate((Rule: IsInvalid(debtId), Parameter: nameof(Debt.Id)));
 
+        private static void ValidateStorageDebt(Debt maybeDebt, Guid debtId)
+        {
+            if (maybeDebt is null)
+            {
+                throw new NotFoundDebtException(debtId);
+            }
+        }
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidDebtException = new InvalidDebtException();
