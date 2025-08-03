@@ -7,5 +7,6 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
         ValueTask<Debt> InsertDebtAsync(Debt debt);
         IQueryable<Debt> SelectAllDebts();
         ValueTask<Debt> SelectDebtByIdAsync(Guid debtId);
+        ValueTask<Debt> UpdateDebtAsync(Debt debt);
     }
 }
