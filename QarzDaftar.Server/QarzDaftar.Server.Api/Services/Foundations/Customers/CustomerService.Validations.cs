@@ -5,7 +5,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
 {
     public partial class CustomerService
     {
-        private void ValidateUserOnAdd(Customer customer)
+        private void ValidateCustomerOnAdd(Customer customer)
         {
             ValidateCustomerNotNull(customer);
 
@@ -44,6 +44,9 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static void ValidateCustomerId(Guid customerId) =>
+            Validate((Rule: IsInvalid(customerId), Parameter: nameof(Customer.Id)));
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

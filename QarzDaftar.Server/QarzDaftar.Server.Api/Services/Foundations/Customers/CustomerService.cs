@@ -2,6 +2,7 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Customers;
+using QarzDaftar.Server.Api.Models.Foundations.Customers.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.Customers
 {
@@ -24,7 +25,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
         public ValueTask<Customer> AddCustomerAsync(Customer customer) =>
         TryCatch(async () =>
         {
-            ValidateUserOnAdd(customer);
+            ValidateCustomerOnAdd(customer);
 
             return await this.storageBroker.InsertCustomerAsync(customer);
         });
@@ -32,7 +33,23 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
         public IQueryable<Customer> RetrieveAllCustomers() =>
             TryCatch(() => this.storageBroker.SelectAllCustomers());
 
-        public async ValueTask<Customer> RetrieveCustomerByIdAsync(Guid customerId) =>
-            await this.storageBroker.SelectCustomerByIdAsync(customerId);
+        public async ValueTask<Customer> RetrieveCustomerByIdAsync(Guid customerId)
+        {
+            try
+            {
+                ValidateCustomerId(customerId);
+
+                return await this.storageBroker.SelectCustomerByIdAsync(customerId);
+            }
+            catch (InvalidCustomerException invalidCustomerException)
+            {
+                var customerValidationException =
+                    new CustomerValidationException(invalidCustomerException);
+
+                this.loggingBroker.LogError(customerValidationException);
+
+                throw customerValidationException;
+            }
+        }
     }
 }
