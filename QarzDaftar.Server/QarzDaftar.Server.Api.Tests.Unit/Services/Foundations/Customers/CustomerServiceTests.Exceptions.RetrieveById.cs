@@ -45,8 +45,8 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
                     expectedCustomerDependencyException))), Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -86,8 +86,8 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
                     expectedCustomerServiceException))), Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
