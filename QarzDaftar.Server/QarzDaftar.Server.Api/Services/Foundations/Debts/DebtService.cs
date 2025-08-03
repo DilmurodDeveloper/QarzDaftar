@@ -1,4 +1,5 @@
-﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using Microsoft.Data.SqlClient;
+using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Debts;
@@ -62,6 +63,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
                 this.loggingBroker.LogError(debtValidationException);
 
                 throw debtValidationException;
+            }
+            catch (SqlException sqlException)
+            {
+                var failedDebtStorageException =
+                    new FailedDebtStorageException(sqlException);
+
+                var debtDependencyException =
+                    new DebtDependencyException(failedDebtStorageException);
+
+                this.loggingBroker.LogCritical(debtDependencyException);
+
+                throw debtDependencyException;
             }
         }
     }
