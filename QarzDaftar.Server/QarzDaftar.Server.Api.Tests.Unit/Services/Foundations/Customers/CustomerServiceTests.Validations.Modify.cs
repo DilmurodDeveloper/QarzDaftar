@@ -110,5 +110,50 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCustomerDoesNotExistAndLogItAsync()
+        {
+            // given
+            Customer randomCustomer = CreateRandomCustomer();
+            Customer nonExistCustomer = randomCustomer;
+            Customer nullCustomer = null;
+
+            var notFoundCustomerException =
+                new NotFoundCustomerException(nonExistCustomer.Id);
+
+            var expectedCustomerValidationException =
+                new CustomerValidationException(notFoundCustomerException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectCustomerByIdAsync(nonExistCustomer.Id))
+                    .ReturnsAsync(nullCustomer);
+
+            // when
+            ValueTask<Customer> modifyCustomerTask =
+                this.customerService.ModifyCustomerAsync(nonExistCustomer);
+
+            CustomerValidationException actualCustomerValidationException =
+                await Assert.ThrowsAsync<CustomerValidationException>
+                    (modifyCustomerTask.AsTask);
+
+            // then
+            actualCustomerValidationException.Should()
+                .BeEquivalentTo(expectedCustomerValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectCustomerByIdAsync(nonExistCustomer.Id), Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedCustomerValidationException))), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateCustomerAsync(nonExistCustomer), Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
