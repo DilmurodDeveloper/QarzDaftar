@@ -99,6 +99,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
 
                 throw customerDependencyException;
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedCustomerException =
+                    new LockedCustomerException(dbUpdateConcurrencyException);
+
+                var customerDependencyValidationException =
+                    new CustomerDependencyValidationException(lockedCustomerException);
+
+                this.loggingBroker.LogError(customerDependencyValidationException);
+
+                throw customerDependencyValidationException;
+            }
             catch (DbUpdateException dbUpdateException)
             {
                 var failedCustomerStorageException =
