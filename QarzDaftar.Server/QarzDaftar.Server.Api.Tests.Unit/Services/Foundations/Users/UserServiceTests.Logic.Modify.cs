@@ -39,9 +39,9 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateUserAsync(inputUser), Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

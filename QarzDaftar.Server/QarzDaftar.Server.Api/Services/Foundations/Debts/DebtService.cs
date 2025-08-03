@@ -43,5 +43,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
 
             return maybeDebt;
         });
+
+        public ValueTask<Debt> ModifyDebtAsync(Debt debt) =>
+            throw new NotImplementedException();
     }
 }
