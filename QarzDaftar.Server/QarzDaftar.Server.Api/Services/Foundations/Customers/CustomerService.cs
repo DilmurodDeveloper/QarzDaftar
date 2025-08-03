@@ -1,9 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
-using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Customers;
-using QarzDaftar.Server.Api.Models.Foundations.Customers.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.Customers
 {
@@ -34,60 +32,16 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
         public IQueryable<Customer> RetrieveAllCustomers() =>
             TryCatch(() => this.storageBroker.SelectAllCustomers());
 
-        public async ValueTask<Customer> RetrieveCustomerByIdAsync(Guid customerId)
+        public ValueTask<Customer> RetrieveCustomerByIdAsync(Guid customerId) =>
+        TryCatch(async () =>
         {
-            try
-            {
-                ValidateCustomerId(customerId);
+            ValidateCustomerId(customerId);
 
-                Customer maybeCustomer = await this.storageBroker.SelectCustomerByIdAsync(customerId);
+            Customer maybeCustomer = await this.storageBroker.SelectCustomerByIdAsync(customerId);
 
-                ValidateStorageCustomer(maybeCustomer, customerId);
+            ValidateStorageCustomer(maybeCustomer, customerId);
 
-                return maybeCustomer;
-            }
-            catch (InvalidCustomerException invalidCustomerException)
-            {
-                var customerValidationException =
-                    new CustomerValidationException(invalidCustomerException);
-
-                this.loggingBroker.LogError(customerValidationException);
-
-                throw customerValidationException;
-            }
-            catch (NotFoundCustomerException notFoundCustomerException)
-            {
-                var customerValidationException =
-                    new CustomerValidationException(notFoundCustomerException);
-
-                this.loggingBroker.LogError(customerValidationException);
-
-                throw customerValidationException;
-            }
-            catch (SqlException sqlException)
-            {
-                var failedCustomerStorageException =
-                    new FailedCustomerStorageException(sqlException);
-
-                var customerDependencyException =
-                    new CustomerDependencyException(failedCustomerStorageException);
-
-                this.loggingBroker.LogCritical(customerDependencyException);
-
-                throw customerDependencyException;
-            }
-            catch (Exception exception)
-            {
-                var failedCustomerServiceException =
-                    new FailedCustomerServiceException(exception);
-
-                var customerServiceException =
-                    new CustomerServiceException(failedCustomerServiceException);
-
-                this.loggingBroker.LogError(customerServiceException);
-
-                throw customerServiceException;
-            }
-        }
+            return maybeCustomer;
+        });
     }
 }

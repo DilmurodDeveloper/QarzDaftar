@@ -25,6 +25,10 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
             {
                 throw CreateAndLogValidationException(invalidCustomerException);
             }
+            catch (NotFoundCustomerException notFoundCustomerException)
+            {
+                throw CreateAndLogValidationException(notFoundCustomerException);
+            }
             catch (SqlException sqlException)
             {
                 var failedCustomerStorageException =
