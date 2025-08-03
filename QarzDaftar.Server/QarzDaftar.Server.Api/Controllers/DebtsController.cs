@@ -42,5 +42,51 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(debtServiceException.InnerException);
             }
         }
+
+        [HttpGet("All")]
+        public ActionResult<IQueryable<Debt>> GetAllDebts()
+        {
+            try
+            {
+                IQueryable<Debt> allDebts = this.debtService.RetrieveAllDebts();
+
+                return Ok(allDebts);
+            }
+            catch (DebtDependencyException debtDependencyException)
+            {
+                return InternalServerError(debtDependencyException.InnerException);
+            }
+            catch (DebtServiceException debtServiceException)
+            {
+                return InternalServerError(debtServiceException.InnerException);
+            }
+        }
+
+        [HttpGet("ById")]
+        public async ValueTask<ActionResult<Debt>> GetDebtByIdAsync(Guid debtId)
+        {
+            try
+            {
+                return await this.debtService.RetrieveDebtByIdAsync(debtId);
+            }
+            catch (DebtDependencyException debtDependencyException)
+            {
+                return InternalServerError(debtDependencyException.InnerException);
+            }
+            catch (DebtValidationException debtValidationException)
+                when (debtValidationException.InnerException is InvalidDebtException)
+            {
+                return BadRequest(debtValidationException.InnerException);
+            }
+            catch (DebtValidationException debtValidationException)
+                when (debtValidationException.InnerException is NotFoundDebtException)
+            {
+                return NotFound(debtValidationException.InnerException);
+            }
+            catch (DebtServiceException debtServiceException)
+            {
+                return InternalServerError(debtServiceException.InnerException);
+            }
+        }
     }
 }
