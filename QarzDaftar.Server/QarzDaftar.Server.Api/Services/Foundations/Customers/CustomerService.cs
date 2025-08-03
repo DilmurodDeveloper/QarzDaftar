@@ -76,6 +76,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
 
                 throw customerDependencyException;
             }
+            catch (Exception exception)
+            {
+                var failedCustomerServiceException =
+                    new FailedCustomerServiceException(exception);
+
+                var customerServiceException =
+                    new CustomerServiceException(failedCustomerServiceException);
+
+                this.loggingBroker.LogError(customerServiceException);
+
+                throw customerServiceException;
+            }
         }
     }
 }
