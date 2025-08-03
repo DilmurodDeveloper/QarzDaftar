@@ -94,5 +94,48 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Debts
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRemoveIfExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someDebtId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedDebtServiceException =
+                new FailedDebtServiceException(serviceException);
+
+            var expectedDebtServiceException =
+                new DebtServiceException(failedDebtServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDebtByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<Debt> removeDebtByIdTask =
+                this.debtService.RemoveDebtByIdAsync(someDebtId);
+
+            DebtServiceException actualDebtServiceException =
+                await Assert.ThrowsAsync<DebtServiceException>(
+                    removeDebtByIdTask.AsTask);
+
+            // then
+            actualDebtServiceException.Should()
+                .BeEquivalentTo(expectedDebtServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDebtByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDebtServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
