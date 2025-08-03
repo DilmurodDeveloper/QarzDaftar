@@ -57,7 +57,12 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
             return await this.storageBroker.UpdateDebtAsync(debt);
         });
 
-        public ValueTask<Debt> RemoveDebtByIdAsync(Guid debtId) =>
-            throw new NotImplementedException();
+        public async ValueTask<Debt> RemoveDebtByIdAsync(Guid debtId)
+        {
+            Debt maybeDebt =
+                await this.storageBroker.SelectDebtByIdAsync(debtId);
+
+            return await this.storageBroker.DeleteDebtAsync(maybeDebt);
+        }
     }
 }
