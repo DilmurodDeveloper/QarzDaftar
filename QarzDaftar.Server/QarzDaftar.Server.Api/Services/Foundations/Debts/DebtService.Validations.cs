@@ -60,6 +60,9 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
             Message = "Date is required"
         };
 
+        private void ValidateDebtId(Guid debtId) =>
+            Validate((Rule: IsInvalid(debtId), Parameter: nameof(Debt.Id)));
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidDebtException = new InvalidDebtException();
