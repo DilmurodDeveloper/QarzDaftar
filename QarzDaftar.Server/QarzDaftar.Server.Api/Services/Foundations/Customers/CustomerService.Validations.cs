@@ -48,6 +48,14 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
         private static void ValidateCustomerId(Guid customerId) =>
             Validate((Rule: IsInvalid(customerId), Parameter: nameof(Customer.Id)));
 
+        private static void ValidateStorageCustomer(Customer maybeCustomer, Guid customerId)
+        {
+            if (maybeCustomer is null)
+            {
+                throw new NotFoundCustomerException(customerId);
+            }
+        }
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidCustomerException = new InvalidCustomerException();

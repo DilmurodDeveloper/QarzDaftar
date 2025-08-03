@@ -68,7 +68,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
             ValueTask<Customer> retriveByIdCustomerTask =
                 this.customerService.RetrieveCustomerByIdAsync(someCustomerId);
 
-            var actualCustomerValidationException =
+            CustomerValidationException actualCustomerValidationException =
                 await Assert.ThrowsAsync<CustomerValidationException>(
                     retriveByIdCustomerTask.AsTask);
 
