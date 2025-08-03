@@ -115,6 +115,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
 
                 throw debtDependencyException;
             }
+            catch (Exception exception)
+            {
+                var failedDebtServiceException =
+                    new FailedDebtServiceException(exception);
+
+                var debtServiceException =
+                    new DebtServiceException(failedDebtServiceException);
+
+                this.loggingBroker.LogError(debtServiceException);
+
+                throw debtServiceException;
+            }
         }
     }
 }
