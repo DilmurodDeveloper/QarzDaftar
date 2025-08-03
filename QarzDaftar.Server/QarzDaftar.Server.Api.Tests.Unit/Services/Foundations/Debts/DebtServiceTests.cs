@@ -39,6 +39,8 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Debts
         private static int GetRandomNumber() =>
             new IntRange(min: 3, max: 9).GetValue();
 
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
 
         private static T GetInvalidEnum<T>()
         {
