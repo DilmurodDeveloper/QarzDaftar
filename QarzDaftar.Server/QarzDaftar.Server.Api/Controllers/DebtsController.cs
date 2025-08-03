@@ -88,5 +88,38 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(debtServiceException.InnerException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<Debt>> PutDebtAsync(Debt debt)
+        {
+            try
+            {
+                Debt modifyDebt =
+                    await this.debtService.ModifyDebtAsync(debt);
+
+                return Ok(modifyDebt);
+            }
+            catch (DebtValidationException debtValidationException)
+                when (debtValidationException.InnerException is NotFoundDebtException)
+            {
+                return NotFound(debtValidationException.InnerException);
+            }
+            catch (DebtValidationException debtValidationException)
+            {
+                return BadRequest(debtValidationException.InnerException);
+            }
+            catch (DebtDependencyValidationException debtDependencyValidationException)
+            {
+                return Conflict(debtDependencyValidationException.InnerException);
+            }
+            catch (DebtDependencyException debtDependencyException)
+            {
+                return InternalServerError(debtDependencyException.InnerException);
+            }
+            catch (DebtServiceException debtServiceException)
+            {
+                return InternalServerError(debtServiceException.InnerException);
+            }
+        }
     }
 }
