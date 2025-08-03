@@ -1,5 +1,6 @@
 ﻿using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using QarzDaftar.Server.Api.Models.Foundations.Customers;
 using QarzDaftar.Server.Api.Models.Foundations.Customers.Exceptions;
 using Xeptions;
@@ -35,6 +36,20 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
                     new FailedCustomerStorageException(sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedCustomerStorageException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedCustomerException =
+                    new LockedCustomerException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedCustomerException);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedCustomerStorageException =
+                    new FailedCustomerStorageException(dbUpdateException);
+
+                throw CreateAndLogDependencyException(failedCustomerStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -99,6 +114,14 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
             this.loggingBroker.LogError(CustomerDependencyValidationException);
 
             return CustomerDependencyValidationException;
+        }
+
+        private CustomerDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var customerDependencyException = new CustomerDependencyException(exception);
+            this.loggingBroker.LogError(customerDependencyException);
+
+            throw customerDependencyException;
         }
 
         private CustomerServiceException CreateAndLogServiceException(Xeption exception)
