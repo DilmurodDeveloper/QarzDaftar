@@ -40,6 +40,81 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Debts
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnModifyIfDebtIsInvalidAndLogItAsync(
+            string invalidString)
+        {
+            //given
+            Debt invalidDebt = new Debt
+            {
+                Description = invalidString
+            };
+
+            var invalidDebtException = new InvalidDebtException();
+
+            invalidDebtException.AddData(
+                key: nameof(Debt.Id),
+                values: "Id is required");
+
+            invalidDebtException.AddData(
+                key: nameof(Debt.Amount),
+                values: "Amount is required");
+
+            invalidDebtException.AddData(
+                key: nameof(Debt.Description),
+                values: "Text is required");
+
+            invalidDebtException.AddData(
+                key: nameof(Debt.DueDate),
+                values: "Date is required");
+
+            invalidDebtException.AddData(
+                key: nameof(Debt.CreatedDate),
+                values: "Date is required");
+
+            invalidDebtException.AddData(
+                key: nameof(Debt.UpdatedDate),
+                values: "Date is required");
+
+            invalidDebtException.AddData(
+                key: nameof(Debt.CustomerId),
+                values: "Id is required");
+
+            invalidDebtException.AddData(
+                key: nameof(Debt.UserId),
+                values: "Id is required");
+
+            var expectedDebtValidationException =
+                new DebtValidationException(invalidDebtException);
+
+            // when
+            ValueTask<Debt> modifyDebtTask =
+                this.debtService.ModifyDebtAsync(invalidDebt);
+
+            DebtValidationException actualDebtValidationException =
+                await Assert.ThrowsAsync<DebtValidationException>(
+                    modifyDebtTask.AsTask);
+
+            // then
+            actualDebtValidationException.Should()
+                .BeEquivalentTo(expectedDebtValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDebtValidationException))), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateDebtAsync(It.IsAny<Debt>()), Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
