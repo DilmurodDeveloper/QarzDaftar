@@ -1,5 +1,6 @@
 ﻿using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using QarzDaftar.Server.Api.Models.Foundations.Debts;
 using QarzDaftar.Server.Api.Models.Foundations.Debts.Exceptions;
 using Xeptions;
@@ -35,6 +36,20 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
                     new FailedDebtStorageException(sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedDebtStorageException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedDebtException =
+                    new LockedDebtException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedDebtException);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedDebtStorageException =
+                    new FailedDebtStorageException(dbUpdateException);
+
+                throw CreateAndLogDependencyException(failedDebtStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -99,6 +114,14 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
             this.loggingBroker.LogError(DebtDependencyValidationException);
 
             return DebtDependencyValidationException;
+        }
+
+        private DebtDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var debtDependencyException = new DebtDependencyException(exception);
+            this.loggingBroker.LogError(debtDependencyException);
+
+            throw debtDependencyException;
         }
 
         private DebtServiceException CreateAndLogServiceException(Xeption exception)

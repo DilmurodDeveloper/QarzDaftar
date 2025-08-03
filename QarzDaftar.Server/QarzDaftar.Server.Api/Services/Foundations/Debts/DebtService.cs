@@ -1,10 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Debts;
-using QarzDaftar.Server.Api.Models.Foundations.Debts.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.Debts
 {
@@ -47,94 +44,17 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
             return maybeDebt;
         });
 
-        public async ValueTask<Debt> ModifyDebtAsync(Debt debt)
+        public ValueTask<Debt> ModifyDebtAsync(Debt debt) =>
+        TryCatch(async () =>
         {
-            try
-            {
-                ValidateDebtOnModify(debt);
+            ValidateDebtOnModify(debt);
 
-                Debt maybeDebt =
-                    await this.storageBroker.SelectDebtByIdAsync(debt.Id);
+            Debt maybeDebt =
+                await this.storageBroker.SelectDebtByIdAsync(debt.Id);
 
-                ValidateAgainstStorageDebtOnModify(debt, maybeDebt);
+            ValidateAgainstStorageDebtOnModify(debt, maybeDebt);
 
-                return await this.storageBroker.UpdateDebtAsync(debt);
-            }
-            catch (NullDebtException nullDebtException)
-            {
-                var debtValidationException =
-                    new DebtValidationException(nullDebtException);
-
-                this.loggingBroker.LogError(debtValidationException);
-
-                throw debtValidationException;
-            }
-            catch (InvalidDebtException invalidDebtException)
-            {
-                var debtValidationException =
-                    new DebtValidationException(invalidDebtException);
-
-                this.loggingBroker.LogError(debtValidationException);
-
-                throw debtValidationException;
-            }
-            catch (NotFoundDebtException notFoundDebtException)
-            {
-                var debtValidationException =
-                    new DebtValidationException(notFoundDebtException);
-
-                this.loggingBroker.LogError(debtValidationException);
-
-                throw debtValidationException;
-            }
-            catch (SqlException sqlException)
-            {
-                var failedDebtStorageException =
-                    new FailedDebtStorageException(sqlException);
-
-                var debtDependencyException =
-                    new DebtDependencyException(failedDebtStorageException);
-
-                this.loggingBroker.LogCritical(debtDependencyException);
-
-                throw debtDependencyException;
-            }
-            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
-            {
-                var lockedDebtException =
-                    new LockedDebtException(dbUpdateConcurrencyException);
-
-                var debtDependencyValidationException =
-                    new DebtDependencyValidationException(lockedDebtException);
-
-                this.loggingBroker.LogError(debtDependencyValidationException);
-
-                throw debtDependencyValidationException;
-            }
-            catch (DbUpdateException dbUpdateException)
-            {
-                var failedDebtStorageException =
-                    new FailedDebtStorageException(dbUpdateException);
-
-                var debtDependencyException =
-                    new DebtDependencyException(failedDebtStorageException);
-
-                this.loggingBroker.LogError(debtDependencyException);
-
-                throw debtDependencyException;
-            }
-            catch (Exception exception)
-            {
-                var failedDebtServiceException =
-                    new FailedDebtServiceException(exception);
-
-                var debtServiceException =
-                    new DebtServiceException(failedDebtServiceException);
-
-                this.loggingBroker.LogError(debtServiceException);
-
-                throw debtServiceException;
-            }
-        }
+            return await this.storageBroker.UpdateDebtAsync(debt);
+        });
     }
 }
