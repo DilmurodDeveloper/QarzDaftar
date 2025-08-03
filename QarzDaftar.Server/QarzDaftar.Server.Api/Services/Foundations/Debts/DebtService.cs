@@ -2,10 +2,11 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Debts;
+using QarzDaftar.Server.Api.Models.Foundations.Debts.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.Debts
 {
-    public class DebtService : IDebtService
+    public partial class DebtService : IDebtService
     {
         private readonly IStorageBroker storageBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -21,7 +22,23 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask<Debt> AddDebtAsync(Debt debt) =>
-            await this.storageBroker.InsertDebtAsync(debt);
+        public async ValueTask<Debt> AddDebtAsync(Debt debt)
+        {
+            try
+            {
+                ValidateDebtNotNull(debt);
+
+                return await this.storageBroker.InsertDebtAsync(debt);
+            }
+            catch (NullDebtException nullDebtException)
+            {
+                var debtValidationException =
+                    new DebtValidationException(nullDebtException);
+
+                this.loggingBroker.LogError(debtValidationException);
+
+                throw debtValidationException;
+            }
+        }
     }
 }
