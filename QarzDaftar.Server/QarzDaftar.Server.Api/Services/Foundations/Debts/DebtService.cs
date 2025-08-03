@@ -32,7 +32,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
         public IQueryable<Debt> RetrieveAllDebts() =>
             TryCatch(() => this.storageBroker.SelectAllDebts());
 
-        public ValueTask<Debt> RetrieveDebtByIdAsync(Guid debtId) =>
-            throw new NotImplementedException();
+        public async ValueTask<Debt> RetrieveDebtByIdAsync(Guid debtId) =>
+            await this.storageBroker.SelectDebtByIdAsync(debtId);
     }
 }
