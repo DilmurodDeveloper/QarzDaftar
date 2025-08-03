@@ -25,6 +25,10 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
             {
                 throw CreateAndLogValidationException(invalidDebtException);
             }
+            catch (NotFoundDebtException notFoundDebtException)
+            {
+                throw CreateAndLogValidationException(notFoundDebtException);
+            }
             catch (SqlException sqlException)
             {
                 var failedDebtStorageException =
