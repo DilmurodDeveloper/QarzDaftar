@@ -28,5 +28,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
 
             return await this.storageBroker.InsertCustomerAsync(customer);
         });
+
+        public IQueryable<Customer> RetrieveAllCustomers() =>
+            throw new NotImplementedException();
     }
 }
