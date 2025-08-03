@@ -88,5 +88,38 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(customerServiceException.InnerException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<Customer>> PutCustomerAsync(Customer customer)
+        {
+            try
+            {
+                Customer modifyCustomer =
+                    await this.customerService.ModifyCustomerAsync(customer);
+
+                return Ok(modifyCustomer);
+            }
+            catch (CustomerValidationException customerValidationException)
+                when (customerValidationException.InnerException is NotFoundCustomerException)
+            {
+                return NotFound(customerValidationException.InnerException);
+            }
+            catch (CustomerValidationException customerValidationException)
+            {
+                return BadRequest(customerValidationException.InnerException);
+            }
+            catch (CustomerDependencyValidationException customerDependencyValidationException)
+            {
+                return Conflict(customerDependencyValidationException.InnerException);
+            }
+            catch (CustomerDependencyException customerDependencyException)
+            {
+                return InternalServerError(customerDependencyException.InnerException);
+            }
+            catch (CustomerServiceException customerServiceException)
+            {
+                return InternalServerError(customerServiceException.InnerException);
+            }
+        }
     }
 }
