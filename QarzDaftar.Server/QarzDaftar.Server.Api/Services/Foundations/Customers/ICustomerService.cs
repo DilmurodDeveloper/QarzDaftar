@@ -8,5 +8,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
         IQueryable<Customer> RetrieveAllCustomers();
         ValueTask<Customer> RetrieveCustomerByIdAsync(Guid customerId);
         ValueTask<Customer> ModifyCustomerAsync(Customer customer);
+        ValueTask<Customer> RemoveCustomerByIdAsync(Guid customerId);
     }
 }

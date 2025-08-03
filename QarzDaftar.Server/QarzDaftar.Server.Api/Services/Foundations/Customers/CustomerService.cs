@@ -56,5 +56,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
 
             return await this.storageBroker.UpdateCustomerAsync(customer);
         });
+
+        public ValueTask<Customer> RemoveCustomerByIdAsync(Guid customerId) =>
+        TryCatch(async () =>
+        {
+            ValidateCustomerId(customerId);
+
+            Customer maybeCustomer =
+            await this.storageBroker.SelectCustomerByIdAsync(customerId);
+
+            ValidateStorageCustomer(maybeCustomer, customerId);
+
+            return await this.storageBroker.DeleteCustomerAsync(maybeCustomer);
+        });
     }
 }

@@ -62,7 +62,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Users
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectUserByIdAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(noUser);
+                    .ReturnsAsync(noUser);
 
             // when
             ValueTask<User> removeUserById =
