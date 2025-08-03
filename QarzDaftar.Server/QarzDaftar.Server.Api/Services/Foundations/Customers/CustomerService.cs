@@ -2,6 +2,7 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Customers;
+using QarzDaftar.Server.Api.Models.Foundations.Customers.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.Customers
 {
@@ -46,10 +47,24 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
 
         public async ValueTask<Customer> ModifyCustomerAsync(Customer customer)
         {
-            Customer maybeCustomer =
-                await this.storageBroker.SelectCustomerByIdAsync(customer.Id);
+            try
+            {
+                ValidateCustomerNotNull(customer);
 
-            return await this.storageBroker.UpdateCustomerAsync(customer);
+                Customer maybeCustomer =
+                    await this.storageBroker.SelectCustomerByIdAsync(customer.Id);
+
+                return await this.storageBroker.UpdateCustomerAsync(customer);
+            }
+            catch (NullCustomerException nullCustomerException)
+            {
+                var customerValidationException =
+                    new CustomerValidationException(nullCustomerException);
+
+                this.loggingBroker.LogError(customerValidationException);
+
+                throw customerValidationException;
+            }
         }
     }
 }
