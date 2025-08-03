@@ -28,5 +28,20 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
 
             return await this.storageBroker.InsertDebtAsync(debt);
         });
+
+        public IQueryable<Debt> RetrieveAllDebts() =>
+            TryCatch(() => this.storageBroker.SelectAllDebts());
+
+        public ValueTask<Debt> RetrieveDebtByIdAsync(Guid debtId) =>
+        TryCatch(async () =>
+        {
+            ValidateDebtId(debtId);
+
+            Debt maybeDebt = await this.storageBroker.SelectDebtByIdAsync(debtId);
+
+            ValidateStorageDebt(maybeDebt, debtId);
+
+            return maybeDebt;
+        });
     }
 }

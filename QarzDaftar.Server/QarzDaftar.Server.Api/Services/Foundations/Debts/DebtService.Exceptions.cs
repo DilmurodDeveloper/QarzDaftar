@@ -9,6 +9,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
     public partial class DebtService
     {
         private delegate ValueTask<Debt> ReturningDebtFunction();
+        private delegate IQueryable<Debt> ReturningDebtsFunction();
 
         private async ValueTask<Debt> TryCatch(ReturningDebtFunction returningDebtFunction)
         {
@@ -24,6 +25,10 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
             {
                 throw CreateAndLogValidationException(invalidDebtException);
             }
+            catch (NotFoundDebtException notFoundDebtException)
+            {
+                throw CreateAndLogValidationException(notFoundDebtException);
+            }
             catch (SqlException sqlException)
             {
                 var failedDebtStorageException =
@@ -37,6 +42,28 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
                     new AlreadyExistsDebtException(duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsDebtException);
+            }
+            catch (Exception exception)
+            {
+                var failedDebtServiceException =
+                    new FailedDebtServiceException(exception);
+
+                throw CreateAndLogServiceException(failedDebtServiceException);
+            }
+        }
+
+        private IQueryable<Debt> TryCatch(ReturningDebtsFunction returningDebtsFunction)
+        {
+            try
+            {
+                return returningDebtsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedDebtStorageException =
+                    new FailedDebtStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedDebtStorageException);
             }
             catch (Exception exception)
             {
