@@ -9,6 +9,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
     public partial class CustomerService
     {
         private delegate ValueTask<Customer> ReturningCustomerFunction();
+        private delegate IQueryable<Customer> ReturningCustomersFunction();
 
         private async ValueTask<Customer> TryCatch(ReturningCustomerFunction returningCustomerFunction)
         {
@@ -24,6 +25,10 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
             {
                 throw CreateAndLogValidationException(invalidCustomerException);
             }
+            catch (NotFoundCustomerException notFoundCustomerException)
+            {
+                throw CreateAndLogValidationException(notFoundCustomerException);
+            }
             catch (SqlException sqlException)
             {
                 var failedCustomerStorageException =
@@ -37,6 +42,28 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
                     new AlreadyExistsCustomerException(duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsCustomerException);
+            }
+            catch (Exception exception)
+            {
+                var failedCustomerServiceException =
+                    new FailedCustomerServiceException(exception);
+
+                throw CreateAndLogServiceException(failedCustomerServiceException);
+            }
+        }
+
+        private IQueryable<Customer> TryCatch(ReturningCustomersFunction returningCustomersFunction)
+        {
+            try
+            {
+                return returningCustomersFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedCustomerStorageException =
+                    new FailedCustomerStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedCustomerStorageException);
             }
             catch (Exception exception)
             {
