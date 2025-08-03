@@ -54,6 +54,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
                 Customer maybeCustomer =
                     await this.storageBroker.SelectCustomerByIdAsync(customer.Id);
 
+                ValidateAgainstStorageCustomerOnModify(customer, maybeCustomer);
+
                 return await this.storageBroker.UpdateCustomerAsync(customer);
             }
             catch (NullCustomerException nullCustomerException)
@@ -69,6 +71,15 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
             {
                 var customerValidationException =
                     new CustomerValidationException(invalidCustomerException);
+
+                this.loggingBroker.LogError(customerValidationException);
+
+                throw customerValidationException;
+            }
+            catch (NotFoundCustomerException notFoundCustomerException)
+            {
+                var customerValidationException =
+                    new CustomerValidationException(notFoundCustomerException);
 
                 this.loggingBroker.LogError(customerValidationException);
 
