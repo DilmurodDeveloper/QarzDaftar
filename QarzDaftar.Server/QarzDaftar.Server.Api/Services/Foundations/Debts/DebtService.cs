@@ -21,7 +21,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<Debt> AddDebtAsync(Debt debt) =>
-            throw new NotImplementedException();
+        public async ValueTask<Debt> AddDebtAsync(Debt debt) =>
+            await this.storageBroker.InsertDebtAsync(debt);
     }
 }
