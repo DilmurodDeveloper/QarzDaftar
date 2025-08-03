@@ -67,12 +67,23 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
                 Debt maybeDebt =
                     await this.storageBroker.SelectDebtByIdAsync(debtId);
 
+                ValidateStorageDebt(maybeDebt, debtId);
+
                 return await this.storageBroker.DeleteDebtAsync(maybeDebt);
             }
             catch (InvalidDebtException invalidDebtException)
             {
                 var debtValidationException =
                     new DebtValidationException(invalidDebtException);
+
+                this.loggingBroker.LogError(debtValidationException);
+
+                throw debtValidationException;
+            }
+            catch (NotFoundDebtException notFoundDebtException)
+            {
+                var debtValidationException =
+                    new DebtValidationException(notFoundDebtException);
 
                 this.loggingBroker.LogError(debtValidationException);
 
