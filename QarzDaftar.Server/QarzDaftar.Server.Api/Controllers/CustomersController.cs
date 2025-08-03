@@ -42,5 +42,51 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(customerServiceException.InnerException);
             }
         }
+
+        [HttpGet("All")]
+        public ActionResult<IQueryable<Customer>> GetAllCustomers()
+        {
+            try
+            {
+                IQueryable<Customer> allCustomers = this.customerService.RetrieveAllCustomers();
+
+                return Ok(allCustomers);
+            }
+            catch (CustomerDependencyException customerDependencyException)
+            {
+                return InternalServerError(customerDependencyException.InnerException);
+            }
+            catch (CustomerServiceException customerServiceException)
+            {
+                return InternalServerError(customerServiceException.InnerException);
+            }
+        }
+
+        [HttpGet("ById")]
+        public async ValueTask<ActionResult<Customer>> GetCustomerByIdAsync(Guid customerId)
+        {
+            try
+            {
+                return await this.customerService.RetrieveCustomerByIdAsync(customerId);
+            }
+            catch (CustomerDependencyException customerDependencyException)
+            {
+                return InternalServerError(customerDependencyException.InnerException);
+            }
+            catch (CustomerValidationException customerValidationException)
+                when (customerValidationException.InnerException is InvalidCustomerException)
+            {
+                return BadRequest(customerValidationException.InnerException);
+            }
+            catch (CustomerValidationException customerValidationException)
+                when (customerValidationException.InnerException is NotFoundCustomerException)
+            {
+                return NotFound(customerValidationException.InnerException);
+            }
+            catch (CustomerServiceException customerServiceException)
+            {
+                return InternalServerError(customerServiceException.InnerException);
+            }
+        }
     }
 }
