@@ -43,5 +43,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
 
             return maybeDebt;
         });
+
+        public ValueTask<Debt> ModifyDebtAsync(Debt debt) =>
+        TryCatch(async () =>
+        {
+            ValidateDebtOnModify(debt);
+
+            Debt maybeDebt =
+                await this.storageBroker.SelectDebtByIdAsync(debt.Id);
+
+            ValidateAgainstStorageDebtOnModify(debt, maybeDebt);
+
+            return await this.storageBroker.UpdateDebtAsync(debt);
+        });
     }
 }
