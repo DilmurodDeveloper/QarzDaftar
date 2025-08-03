@@ -1,4 +1,5 @@
-﻿using QarzDaftar.Server.Api.Models.Foundations.Debts;
+﻿using QarzDaftar.Server.Api.Models.Enums;
+using QarzDaftar.Server.Api.Models.Foundations.Debts;
 using QarzDaftar.Server.Api.Models.Foundations.Debts.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.Debts
@@ -13,6 +14,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
                 (Rule: IsInvalid(debt.Id), Parameter: nameof(Debt.Id)),
                 (Rule: IsInvalid(debt.Amount), Parameter: nameof(Debt.Amount)),
                 (Rule: IsInvalid(debt.Description), Parameter: nameof(Debt.Description)),
+                (Rule: IsInvalid(debt.Status), Parameter: nameof(Debt.Status)),
                 (Rule: IsInvalid(debt.DueDate), Parameter: nameof(Debt.DueDate)),
                 (Rule: IsInvalid(debt.CreatedDate), Parameter: nameof(Debt.CreatedDate)),
                 (Rule: IsInvalid(debt.UpdatedDate), Parameter: nameof(Debt.UpdatedDate)),
@@ -40,6 +42,11 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
             Message = "Amount is required"
         };
 
+        private static dynamic IsInvalid(DebtStatus status) => new
+        {
+            Condition = Enum.IsDefined(typeof(DebtStatus), status) is false,
+            Message = "Value is invalid"
+        };
 
         private static dynamic IsInvalid(string text) => new
         {
