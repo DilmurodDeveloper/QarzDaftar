@@ -9,5 +9,24 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
 
         public async ValueTask<Customer> InsertCustomerAsync(Customer customer) =>
             await InsertAsync(customer);
+
+        public IQueryable<Customer> SelectAllCustomers()
+        {
+            var customers = SelectAll<Customer>()
+                .Include(c => c.Debts)
+                .Include(c => c.Payments);
+
+            return customers;
+        }
+
+        public async ValueTask<Customer> SelectCustomerByIdAsync(Guid customerId)
+        {
+            var customerWithDetails = Customers
+                .Include(c => c.Debts)
+                .Include(c => c.Payments)
+                .FirstOrDefault(c => c.Id == customerId);
+
+            return await ValueTask.FromResult(customerWithDetails);
+        }
     }
 }
