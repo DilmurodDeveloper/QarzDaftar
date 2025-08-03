@@ -6,5 +6,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
     {
         ValueTask<Customer> AddCustomerAsync(Customer customer);
         IQueryable<Customer> RetrieveAllCustomers();
+        ValueTask<Customer> RetrieveCustomerByIdAsync(Guid customerId);
     }
 }
