@@ -31,5 +31,8 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
 
         public async ValueTask<Customer> UpdateCustomerAsync(Customer customer) =>
             await UpdateAsync(customer);
+
+        public async ValueTask<Customer> DeleteCustomerAsync(Customer customer) =>
+            await DeleteAsync(customer);
     }
 }

@@ -8,5 +8,6 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
         IQueryable<Customer> SelectAllCustomers();
         ValueTask<Customer> SelectCustomerByIdAsync(Guid customerId);
         ValueTask<Customer> UpdateCustomerAsync(Customer customer);
+        ValueTask<Customer> DeleteCustomerAsync(Customer customer);
     }
 }
