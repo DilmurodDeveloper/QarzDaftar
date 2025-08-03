@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Moq;
+using QarzDaftar.Server.Api.Models.Enums;
 using QarzDaftar.Server.Api.Models.Foundations.Debts;
 using QarzDaftar.Server.Api.Models.Foundations.Debts.Exceptions;
 
@@ -101,6 +102,43 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Debts
             // then
             actualDebtValidationException.Should()
                 .BeEquivalentTo(expectedDebtValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDebtValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDebtAsync(It.IsAny<Debt>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfStatusIsInvalidAndLogItAsync()
+        {
+            // given
+            Debt randomDebt = CreateRandomDebt();
+            Debt invalidDebt = randomDebt;
+            invalidDebt.Status = GetInvalidEnum<DebtStatus>();
+            var invalidDebtException = new InvalidDebtException();
+
+            invalidDebtException.AddData(
+                key: nameof(Debt.Status),
+                values: "Value is invalid");
+
+            var expectedDebtValidationException =
+                new DebtValidationException(invalidDebtException);
+
+            // when
+            ValueTask<Debt> addDebtTask =
+                this.debtService.AddDebtAsync(invalidDebt);
+
+            // then
+            await Assert.ThrowsAsync<DebtValidationException>(() =>
+                addDebtTask.AsTask());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
