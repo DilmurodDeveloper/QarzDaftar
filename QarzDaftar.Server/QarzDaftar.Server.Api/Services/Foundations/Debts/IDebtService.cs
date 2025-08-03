@@ -8,5 +8,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
         IQueryable<Debt> RetrieveAllDebts();
         ValueTask<Debt> RetrieveDebtByIdAsync(Guid debtId);
         ValueTask<Debt> ModifyDebtAsync(Debt debt);
+        ValueTask<Debt> RemoveDebtByIdAsync(Guid debtId);
     }
 }
