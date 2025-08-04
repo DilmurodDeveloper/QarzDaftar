@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using QarzDaftar.Server.Api.Models.Foundations.Payments;
@@ -46,6 +47,48 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Payments
 
             this.storageBrokerMock.Verify(broker =>
                 broker.DeletePaymentAsync(It.IsAny<Payment>()), Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid somePaymentId = Guid.NewGuid();
+            SqlException sqlException = GetSqlError();
+
+            var failedPaymentStorageException =
+                new FailedPaymentStorageException(sqlException);
+
+            var expectedPaymentDependencyException =
+                new PaymentDependencyException(failedPaymentStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectPaymentByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+            // when
+            ValueTask<Payment> deletePaymentTask =
+                this.paymentService.RemovePaymentByIdAsync(somePaymentId);
+
+            PaymentDependencyException actualPaymentDependencyException =
+                await Assert.ThrowsAsync<PaymentDependencyException>(
+                    deletePaymentTask.AsTask);
+
+            // then
+            actualPaymentDependencyException.Should()
+                .BeEquivalentTo(expectedPaymentDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPaymentByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedPaymentDependencyException))),
+                        Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
