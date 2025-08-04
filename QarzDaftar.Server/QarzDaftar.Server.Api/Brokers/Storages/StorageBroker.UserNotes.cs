@@ -7,7 +7,7 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
     {
         public DbSet<UserNote> UserNotes { get; set; }
 
-        public async ValueTask<UserNote> InsertPaymentAsync(UserNote userNote) =>
+        public async ValueTask<UserNote> InsertUserNoteAsync(UserNote userNote) =>
             await InsertAsync(userNote);
     }
 }
