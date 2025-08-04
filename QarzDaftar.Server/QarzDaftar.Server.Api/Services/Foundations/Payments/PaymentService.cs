@@ -55,6 +55,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
                 Payment maybePayment =
                     await this.storageBroker.SelectPaymentByIdAsync(payment.Id);
 
+                ValidateAgainstStoragePaymentOnModify(payment, maybePayment);
+
                 return await this.storageBroker.UpdatePaymentAsync(payment);
             }
             catch (NullPaymentException nullPaymentException)
@@ -70,6 +72,15 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
             {
                 var paymentValidationException =
                     new PaymentValidationException(invalidPaymentException);
+
+                this.loggingBroker.LogError(paymentValidationException);
+
+                throw paymentValidationException;
+            }
+            catch (NotFoundPaymentException notFoundPaymentException)
+            {
+                var paymentValidationException =
+                    new PaymentValidationException(notFoundPaymentException);
 
                 this.loggingBroker.LogError(paymentValidationException);
 

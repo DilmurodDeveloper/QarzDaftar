@@ -85,6 +85,21 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
                 (Rule: IsInvalid(payment.CustomerId), Parameter: nameof(Payment.CustomerId)));
         }
 
+        private void ValidateAgainstStoragePaymentOnModify(Payment payment, Payment storagePayment)
+        {
+            ValidateStoragePayment(storagePayment, payment.Id);
+
+            Validate(
+                (Rule: IsInvalid(payment.Id), Parameter: nameof(Payment.Id)),
+                (Rule: IsInvalid(payment.Amount), Parameter: nameof(Payment.Amount)),
+                (Rule: IsInvalid(payment.Description), Parameter: nameof(Payment.Description)),
+                (Rule: IsInvalid(payment.Method), Parameter: nameof(Payment.Method)),
+                (Rule: IsInvalid(payment.PaymentDate), Parameter: nameof(Payment.PaymentDate)),
+                (Rule: IsInvalid(payment.CreatedDate), Parameter: nameof(Payment.CreatedDate)),
+                (Rule: IsInvalid(payment.UpdatedDate), Parameter: nameof(Payment.UpdatedDate)),
+                (Rule: IsInvalid(payment.CustomerId), Parameter: nameof(Payment.CustomerId)));
+        }
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidPaymentException = new InvalidPaymentException();
