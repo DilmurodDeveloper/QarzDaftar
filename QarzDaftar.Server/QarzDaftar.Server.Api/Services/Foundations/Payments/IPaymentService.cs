@@ -8,5 +8,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
         IQueryable<Payment> RetrieveAllPayments();
         ValueTask<Payment> RetrievePaymentByIdAsync(Guid paymentId);
         ValueTask<Payment> ModifyPaymentAsync(Payment payment);
+        ValueTask<Payment> RemovePaymentByIdAsync(Guid paymentId);
     }
 }
