@@ -8,5 +8,6 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
         IQueryable<Payment> SelectAllPayments();
         ValueTask<Payment> SelectPaymentByIdAsync(Guid paymentId);
         ValueTask<Payment> UpdatePaymentAsync(Payment payment);
+        ValueTask<Payment> DeletePaymentAsync(Payment payment);
     }
 }
