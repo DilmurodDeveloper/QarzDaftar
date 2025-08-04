@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using QarzDaftar.Server.Api.Models.Foundations.Payments;
 using QarzDaftar.Server.Api.Models.Foundations.Payments.Exceptions;
@@ -40,6 +41,52 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Payments
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedPaymentDependencyException))), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPaymentByIdAsync(PaymentId), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdatePaymentAsync(somePayment), Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnModifyIfDatabaseUpdateExceptionOccursAndLogItAsync()
+        {
+            // given
+            Payment randomPayment = CreateRandomPayment();
+            Payment somePayment = randomPayment;
+            Guid PaymentId = somePayment.Id;
+            var databaseUpdateException = new DbUpdateException();
+
+            var failedPaymentStorageException =
+                new FailedPaymentStorageException(databaseUpdateException);
+
+            var expectedPaymentDependencyException =
+                new PaymentDependencyException(failedPaymentStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectPaymentByIdAsync(PaymentId))
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<Payment> modifyPaymentTask =
+                this.paymentService.ModifyPaymentAsync(somePayment);
+
+            PaymentDependencyException actualPaymentDependencyException =
+                 await Assert.ThrowsAsync<PaymentDependencyException>(
+                    modifyPaymentTask.AsTask);
+
+            // then
+            actualPaymentDependencyException.Should()
+                .BeEquivalentTo(expectedPaymentDependencyException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
                     expectedPaymentDependencyException))), Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
