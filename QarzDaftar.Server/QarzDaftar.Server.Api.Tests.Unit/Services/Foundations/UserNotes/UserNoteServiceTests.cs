@@ -36,6 +36,12 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserNotes
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: DateTime.UnixEpoch).GetValue();
 
+        private IQueryable<UserNote> CreateRandomUserNotes()
+        {
+            return CreateUserNoteFiller(GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber()).AsQueryable();
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 3, max: 9).GetValue();
 
