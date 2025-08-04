@@ -1,4 +1,5 @@
-﻿using QarzDaftar.Server.Api.Models.Enums;
+﻿using System.Text.Json.Serialization;
+using QarzDaftar.Server.Api.Models.Enums;
 using QarzDaftar.Server.Api.Models.Foundations.Users;
 
 namespace QarzDaftar.Server.Api.Models.Foundations.UserNotes
@@ -11,6 +12,8 @@ namespace QarzDaftar.Server.Api.Models.Foundations.UserNotes
         public DateTimeOffset CreatedAt { get; set; }
         public ReminderStatus Status { get; set; }
         public Guid UserId { get; set; }
-        public User User { get; set; }
+
+        [JsonIgnore]
+        public User? User { get; set; }
     }
 }
