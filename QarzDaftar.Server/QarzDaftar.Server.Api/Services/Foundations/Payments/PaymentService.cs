@@ -45,7 +45,12 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
             return maybePayment;
         });
 
-        public ValueTask<Payment> ModifyPaymentAsync(Payment payment) =>
-            throw new NotImplementedException();
+        public async ValueTask<Payment> ModifyPaymentAsync(Payment payment)
+        {
+            Payment maybePayment =
+                await this.storageBroker.SelectPaymentByIdAsync(payment.Id);
+
+            return await this.storageBroker.UpdatePaymentAsync(payment);
+        }
     }
 }
