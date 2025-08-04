@@ -26,7 +26,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
         {
             try
             {
-                ValidatePaymentNotNull(payment);
+                ValidatePaymentOnAdd(payment);
 
                 return await this.storageBroker.InsertPaymentAsync(payment);
             }
@@ -34,6 +34,15 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
             {
                 var paymentValidationException =
                     new PaymentValidationException(nullPaymentException);
+
+                this.loggingBroker.LogError(paymentValidationException);
+
+                throw paymentValidationException;
+            }
+            catch (InvalidPaymentException invalidPaymentException)
+            {
+                var paymentValidationException =
+                    new PaymentValidationException(invalidPaymentException);
 
                 this.loggingBroker.LogError(paymentValidationException);
 
