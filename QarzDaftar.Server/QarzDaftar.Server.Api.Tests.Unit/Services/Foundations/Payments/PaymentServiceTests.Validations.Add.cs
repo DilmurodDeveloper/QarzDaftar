@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Moq;
+using QarzDaftar.Server.Api.Models.Enums;
 using QarzDaftar.Server.Api.Models.Foundations.Payments;
 using QarzDaftar.Server.Api.Models.Foundations.Payments.Exceptions;
 
@@ -97,6 +98,43 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Payments
             // then
             actualPaymentValidationException.Should()
                 .BeEquivalentTo(expectedPaymentValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedPaymentValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertPaymentAsync(It.IsAny<Payment>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfMethodIsInvalidAndLogItAsync()
+        {
+            // given
+            Payment randomPayment = CreateRandomPayment();
+            Payment invalidPayment = randomPayment;
+            invalidPayment.Method = GetInvalidEnum<PaymentMethod>();
+            var invalidPaymentException = new InvalidPaymentException();
+
+            invalidPaymentException.AddData(
+                key: nameof(Payment.Method),
+                values: "Value is invalid");
+
+            var expectedPaymentValidationException =
+                new PaymentValidationException(invalidPaymentException);
+
+            // when
+            ValueTask<Payment> addPaymentTask =
+                this.paymentService.AddPaymentAsync(invalidPayment);
+
+            // then
+            await Assert.ThrowsAsync<PaymentValidationException>(() =>
+                addPaymentTask.AsTask());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
