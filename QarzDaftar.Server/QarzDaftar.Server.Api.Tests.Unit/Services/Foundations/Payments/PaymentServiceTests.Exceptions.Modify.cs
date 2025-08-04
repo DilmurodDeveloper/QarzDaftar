@@ -1,0 +1,56 @@
+﻿using FluentAssertions;
+using Microsoft.Data.SqlClient;
+using Moq;
+using QarzDaftar.Server.Api.Models.Foundations.Payments;
+using QarzDaftar.Server.Api.Models.Foundations.Payments.Exceptions;
+
+namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Payments
+{
+    public partial class PaymentServiceTests
+    {
+        [Fact]
+        public async Task ShouldThrowCriticalDependencyExceptionOnModifyIfSqlErrorOccursAndLogItAsync()
+        {
+            // given
+            Payment randomPayment = CreateRandomPayment();
+            Payment somePayment = randomPayment;
+            Guid PaymentId = somePayment.Id;
+            SqlException sqlException = GetSqlError();
+
+            var failedPaymentStorageException =
+                new FailedPaymentStorageException(sqlException);
+
+            var expectedPaymentDependencyException =
+                new PaymentDependencyException(failedPaymentStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectPaymentByIdAsync(PaymentId)).Throws(sqlException);
+
+            // when
+            ValueTask<Payment> modifyPaymentTask =
+                this.paymentService.ModifyPaymentAsync(somePayment);
+
+            PaymentDependencyException actualPaymentDependencyException =
+                 await Assert.ThrowsAsync<PaymentDependencyException>(
+                    modifyPaymentTask.AsTask);
+
+            // then
+            actualPaymentDependencyException.Should()
+                .BeEquivalentTo(expectedPaymentDependencyException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedPaymentDependencyException))), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPaymentByIdAsync(PaymentId), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdatePaymentAsync(somePayment), Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}
