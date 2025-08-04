@@ -100,6 +100,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
 
                 throw paymentDependencyException;
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedPaymentException =
+                    new LockedPaymentException(dbUpdateConcurrencyException);
+
+                var paymentDependencyValidationException =
+                    new PaymentDependencyValidationException(lockedPaymentException);
+
+                this.loggingBroker.LogError(paymentDependencyValidationException);
+
+                throw paymentDependencyValidationException;
+            }
             catch (DbUpdateException dbUpdateException)
             {
                 var failedPaymentStorageException =
