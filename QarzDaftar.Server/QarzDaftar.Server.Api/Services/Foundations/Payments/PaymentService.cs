@@ -21,7 +21,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<Payment> AddPaymentAsync(Payment payment) =>
-            throw new NotImplementedException();
+        public async ValueTask<Payment> AddPaymentAsync(Payment payment) =>
+            await this.storageBroker.InsertPaymentAsync(payment);
     }
 }
