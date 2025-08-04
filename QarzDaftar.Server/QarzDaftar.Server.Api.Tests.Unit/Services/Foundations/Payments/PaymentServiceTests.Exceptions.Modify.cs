@@ -145,5 +145,51 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Payments
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            Payment randomPayment = CreateRandomPayment();
+            Payment somePayment = randomPayment;
+            Guid PaymentId = somePayment.Id;
+            var serviceException = new Exception();
+
+            var failedPaymentServiceException =
+                new FailedPaymentServiceException(serviceException);
+
+            var expectedPaymentServiceException =
+                new PaymentServiceException(failedPaymentServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                    broker.SelectPaymentByIdAsync(PaymentId))
+                .Throws(serviceException);
+
+            // when
+            ValueTask<Payment> modifyPaymentTask =
+                this.paymentService.ModifyPaymentAsync(somePayment);
+
+            PaymentServiceException actualPaymentServiceException =
+                await Assert.ThrowsAsync<PaymentServiceException>(
+                    modifyPaymentTask.AsTask);
+
+            // then
+            actualPaymentServiceException.Should()
+                .BeEquivalentTo(expectedPaymentServiceException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedPaymentServiceException))), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPaymentByIdAsync(PaymentId), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdatePaymentAsync(somePayment), Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
