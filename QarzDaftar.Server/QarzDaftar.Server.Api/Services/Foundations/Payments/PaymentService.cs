@@ -2,6 +2,7 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Payments;
+using QarzDaftar.Server.Api.Models.Foundations.Payments.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.Payments
 {
@@ -60,10 +61,24 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
 
         public async ValueTask<Payment> RemovePaymentByIdAsync(Guid paymentId)
         {
-            Payment maybePayment =
-                await this.storageBroker.SelectPaymentByIdAsync(paymentId);
+            try
+            {
+                ValidatePaymentId(paymentId);
 
-            return await this.storageBroker.DeletePaymentAsync(maybePayment);
+                Payment maybePayment =
+                    await this.storageBroker.SelectPaymentByIdAsync(paymentId);
+
+                return await this.storageBroker.DeletePaymentAsync(maybePayment);
+            }
+            catch (InvalidPaymentException invalidPaymentException)
+            {
+                var paymentValidationException =
+                    new PaymentValidationException(invalidPaymentException);
+
+                this.loggingBroker.LogError(paymentValidationException);
+
+                throw paymentValidationException;
+            }
         }
     }
 }
