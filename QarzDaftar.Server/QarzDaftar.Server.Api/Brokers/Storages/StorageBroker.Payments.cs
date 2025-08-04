@@ -26,5 +26,8 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
 
             return await ValueTask.FromResult(paymentWithDetails);
         }
+
+        public async ValueTask<Payment> UpdatePaymentAsync(Payment payment) =>
+            await UpdateAsync(payment);
     }
 }
