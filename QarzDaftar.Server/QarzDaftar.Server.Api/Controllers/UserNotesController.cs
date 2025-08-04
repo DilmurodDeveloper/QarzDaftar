@@ -7,7 +7,7 @@ using RESTFulSense.Controllers;
 namespace QarzDaftar.Server.Api.Controllers
 {
     [ApiController]
-    [Route("api/controller")]
+    [Route("api/[controller]")]
     public class UserNotesController : RESTFulController
     {
         private readonly IUserNoteService userNoteService;
