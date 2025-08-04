@@ -44,5 +44,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
 
             return maybePayment;
         });
+
+        public ValueTask<Payment> ModifyPaymentAsync(Payment payment) =>
+            throw new NotImplementedException();
     }
 }
