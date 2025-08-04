@@ -122,5 +122,43 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(paymentServiceException.InnerException);
             }
         }
+
+        [HttpDelete]
+        public async ValueTask<ActionResult<Payment>> DeletePaymentAsync(Guid paymentId)
+        {
+            try
+            {
+                Payment deletePayment =
+                    await this.paymentService.RemovePaymentByIdAsync(paymentId);
+
+                return Ok(deletePayment);
+            }
+            catch (PaymentValidationException paymentValidationException)
+                when (paymentValidationException.InnerException is NotFoundPaymentException)
+            {
+                return NotFound(paymentValidationException.InnerException);
+            }
+            catch (PaymentValidationException paymentValidationException)
+            {
+                return BadRequest(paymentValidationException.InnerException);
+            }
+            catch (PaymentDependencyValidationException paymentDependencyValidationException)
+                when (paymentDependencyValidationException.InnerException is LockedPaymentException)
+            {
+                return Locked(paymentDependencyValidationException.InnerException);
+            }
+            catch (PaymentDependencyValidationException paymentDependencyValidationException)
+            {
+                return BadRequest(paymentDependencyValidationException.InnerException);
+            }
+            catch (PaymentDependencyException paymentDependencyException)
+            {
+                return InternalServerError(paymentDependencyException.InnerException);
+            }
+            catch (PaymentServiceException paymentServiceException)
+            {
+                return InternalServerError(paymentServiceException.InnerException);
+            }
+        }
     }
 }
