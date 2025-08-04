@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
@@ -96,6 +97,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
                     new PaymentDependencyException(failedPaymentStorageException);
 
                 this.loggingBroker.LogCritical(paymentDependencyException);
+
+                throw paymentDependencyException;
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedPaymentStorageException =
+                    new FailedPaymentStorageException(dbUpdateException);
+
+                var paymentDependencyException =
+                    new PaymentDependencyException(failedPaymentStorageException);
+
+                this.loggingBroker.LogError(paymentDependencyException);
 
                 throw paymentDependencyException;
             }
