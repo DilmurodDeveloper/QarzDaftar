@@ -1,4 +1,5 @@
-﻿using QarzDaftar.Server.Api.Models.Enums;
+﻿using System.Text.Json.Serialization;
+using QarzDaftar.Server.Api.Models.Enums;
 using QarzDaftar.Server.Api.Models.Foundations.Customers;
 
 namespace QarzDaftar.Server.Api.Models.Foundations.Payments
@@ -13,6 +14,8 @@ namespace QarzDaftar.Server.Api.Models.Foundations.Payments
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
         public Guid CustomerId { get; set; }
-        public Customer Customer { get; set; }
+
+        [JsonIgnore]
+        public Customer? Customer { get; set; }
     }
 }
