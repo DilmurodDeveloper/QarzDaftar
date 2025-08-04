@@ -9,6 +9,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
     public partial class UserNoteService
     {
         private delegate ValueTask<UserNote> ReturningUserNoteFunction();
+        private delegate IQueryable<UserNote> ReturningUserNotesFunction();
 
         private async ValueTask<UserNote> TryCatch(ReturningUserNoteFunction returningUserNoteFunction)
         {
@@ -37,6 +38,28 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
                     new AlreadyExistsUserNoteException(duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsUserNoteException);
+            }
+            catch (Exception exception)
+            {
+                var failedUserNoteServiceException =
+                    new FailedUserNoteServiceException(exception);
+
+                throw CreateAndLogServiceException(failedUserNoteServiceException);
+            }
+        }
+
+        private IQueryable<UserNote> TryCatch(ReturningUserNotesFunction returningUserNotesFunction)
+        {
+            try
+            {
+                return returningUserNotesFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedUserNoteStorageException =
+                    new FailedUserNoteStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedUserNoteStorageException);
             }
             catch (Exception exception)
             {
