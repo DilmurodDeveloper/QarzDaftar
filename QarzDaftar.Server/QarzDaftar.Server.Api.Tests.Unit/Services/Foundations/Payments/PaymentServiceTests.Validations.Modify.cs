@@ -112,5 +112,50 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Payments
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfPaymentDoesNotExistAndLogItAsync()
+        {
+            // given
+            Payment randomPayment = CreateRandomPayment();
+            Payment nonExistPayment = randomPayment;
+            Payment nullPayment = null;
+
+            var notFoundPaymentException =
+                new NotFoundPaymentException(nonExistPayment.Id);
+
+            var expectedPaymentValidationException =
+                new PaymentValidationException(notFoundPaymentException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectPaymentByIdAsync(nonExistPayment.Id))
+                    .ReturnsAsync(nullPayment);
+
+            // when
+            ValueTask<Payment> modifyPaymentTask =
+                this.paymentService.ModifyPaymentAsync(nonExistPayment);
+
+            PaymentValidationException actualPaymentValidationException =
+                await Assert.ThrowsAsync<PaymentValidationException>
+                    (modifyPaymentTask.AsTask);
+
+            // then
+            actualPaymentValidationException.Should()
+                .BeEquivalentTo(expectedPaymentValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPaymentByIdAsync(nonExistPayment.Id), Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedPaymentValidationException))), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdatePaymentAsync(nonExistPayment), Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
