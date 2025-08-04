@@ -152,7 +152,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Payments
             // given
             Payment randomPayment = CreateRandomPayment();
             Payment somePayment = randomPayment;
-            Guid PaymentId = somePayment.Id;
+            Guid paymentId = somePayment.Id;
             var serviceException = new Exception();
 
             var failedPaymentServiceException =
@@ -162,7 +162,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Payments
                 new PaymentServiceException(failedPaymentServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                    broker.SelectPaymentByIdAsync(PaymentId))
+                    broker.SelectPaymentByIdAsync(paymentId))
                 .Throws(serviceException);
 
             // when
@@ -182,7 +182,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Payments
                     expectedPaymentServiceException))), Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectPaymentByIdAsync(PaymentId), Times.Once);
+                broker.SelectPaymentByIdAsync(paymentId), Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdatePaymentAsync(somePayment), Times.Never);
