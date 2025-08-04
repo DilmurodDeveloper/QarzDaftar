@@ -9,6 +9,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
     public partial class PaymentService
     {
         private delegate ValueTask<Payment> ReturningPaymentFunction();
+        private delegate IQueryable<Payment> ReturningPaymentsFunction();
 
         private async ValueTask<Payment> TryCatch(ReturningPaymentFunction returningPaymentFunction)
         {
@@ -37,6 +38,28 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
                     new AlreadyExistsPaymentException(duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsPaymentException);
+            }
+            catch (Exception exception)
+            {
+                var failedPaymentServiceException =
+                    new FailedPaymentServiceException(exception);
+
+                throw CreateAndLogServiceException(failedPaymentServiceException);
+            }
+        }
+
+        private IQueryable<Payment> TryCatch(ReturningPaymentsFunction returningPaymentsFunction)
+        {
+            try
+            {
+                return returningPaymentsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedPaymentStorageException =
+                    new FailedPaymentStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedPaymentStorageException);
             }
             catch (Exception exception)
             {
