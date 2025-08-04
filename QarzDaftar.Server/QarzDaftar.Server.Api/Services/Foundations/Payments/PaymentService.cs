@@ -28,5 +28,21 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
 
             return await this.storageBroker.InsertPaymentAsync(payment);
         });
+
+        public IQueryable<Payment> RetrieveAllPayments() =>
+            TryCatch(() => this.storageBroker.SelectAllPayments());
+
+        public ValueTask<Payment> RetrievePaymentByIdAsync(Guid paymentId) =>
+        TryCatch(async () =>
+        {
+            ValidatePaymentId(paymentId);
+
+            Payment maybePayment =
+                await this.storageBroker.SelectPaymentByIdAsync(paymentId);
+
+            ValidateStoragePayment(maybePayment, paymentId);
+
+            return maybePayment;
+        });
     }
 }

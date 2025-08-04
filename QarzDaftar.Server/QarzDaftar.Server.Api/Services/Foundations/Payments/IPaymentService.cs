@@ -5,5 +5,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
     public interface IPaymentService
     {
         ValueTask<Payment> AddPaymentAsync(Payment payment);
+        IQueryable<Payment> RetrieveAllPayments();
+        ValueTask<Payment> RetrievePaymentByIdAsync(Guid paymentId);
     }
 }

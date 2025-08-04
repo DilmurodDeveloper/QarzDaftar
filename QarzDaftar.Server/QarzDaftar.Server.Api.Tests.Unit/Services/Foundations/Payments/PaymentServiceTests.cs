@@ -36,6 +36,12 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Payments
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: DateTime.UnixEpoch).GetValue();
 
+        private IQueryable<Payment> CreateRandomPayments()
+        {
+            return CreatePaymentFiller(GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber()).AsQueryable();
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 5, max: 9).GetValue();
 

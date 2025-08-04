@@ -59,6 +59,17 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
             Message = "Date is required"
         };
 
+        private void ValidatePaymentId(Guid paymentId) =>
+            Validate((Rule: IsInvalid(paymentId), Parameter: nameof(Payment.Id)));
+
+        private static void ValidateStoragePayment(Payment maybePayment, Guid paymentId)
+        {
+            if (maybePayment is null)
+            {
+                throw new NotFoundPaymentException(paymentId);
+            }
+        }
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidPaymentException = new InvalidPaymentException();
