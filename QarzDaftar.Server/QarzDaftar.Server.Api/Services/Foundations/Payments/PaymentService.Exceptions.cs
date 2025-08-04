@@ -1,5 +1,6 @@
 ﻿using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using QarzDaftar.Server.Api.Models.Foundations.Payments;
 using QarzDaftar.Server.Api.Models.Foundations.Payments.Exceptions;
 using Xeptions;
@@ -35,6 +36,20 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
                     new FailedPaymentStorageException(sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedPaymentStorageException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedPaymentException =
+                    new LockedPaymentException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedPaymentException);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedPaymentStorageException =
+                    new FailedPaymentStorageException(dbUpdateException);
+
+                throw CreateAndLogDependencyException(failedPaymentStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -99,6 +114,14 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
             this.loggingBroker.LogError(PaymentDependencyValidationException);
 
             return PaymentDependencyValidationException;
+        }
+
+        private PaymentDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var paymentDependencyException = new PaymentDependencyException(exception);
+            this.loggingBroker.LogError(paymentDependencyException);
+
+            throw paymentDependencyException;
         }
 
         private PaymentServiceException CreateAndLogServiceException(Xeption exception)
