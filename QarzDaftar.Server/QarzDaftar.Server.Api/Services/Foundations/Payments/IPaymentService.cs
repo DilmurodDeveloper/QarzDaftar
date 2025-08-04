@@ -6,5 +6,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
     {
         ValueTask<Payment> AddPaymentAsync(Payment payment);
         IQueryable<Payment> RetrieveAllPayments();
+        ValueTask<Payment> RetrievePaymentByIdAsync(Guid paymentId);
     }
 }
