@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Moq;
+using QarzDaftar.Server.Api.Models.Enums;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes.Exceptions;
 
@@ -89,6 +90,43 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserNotes
             // then
             actualUserNoteValidationException.Should()
                 .BeEquivalentTo(expectedUserNoteValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserNoteValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertUserNoteAsync(It.IsAny<UserNote>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfStatusIsInvalidAndLogItAsync()
+        {
+            // given
+            UserNote randomUserNote = CreateRandomUserNote();
+            UserNote invalidUserNote = randomUserNote;
+            invalidUserNote.Status = GetInvalidEnum<ReminderStatus>();
+            var invalidUserNoteException = new InvalidUserNoteException();
+
+            invalidUserNoteException.AddData(
+                key: nameof(UserNote.Status),
+                values: "Value is invalid");
+
+            var expectedUserNoteValidationException =
+                new UserNoteValidationException(invalidUserNoteException);
+
+            // when
+            ValueTask<UserNote> addUserNoteTask =
+                this.userNoteService.AddUserNoteAsync(invalidUserNote);
+
+            // then
+            await Assert.ThrowsAsync<UserNoteValidationException>(() =>
+                addUserNoteTask.AsTask());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

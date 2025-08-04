@@ -2,8 +2,8 @@
 {
     public enum ReminderStatus
     {
-        Pending = 1,
-        Done = 2,
-        Overdue = 3
+        Pending = 0,
+        Done = 1,
+        Overdue = 2
     }
 }
