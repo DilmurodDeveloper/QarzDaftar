@@ -86,5 +86,46 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Payments
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Payment somePayment = CreateRandomPayment();
+            var serviceException = new Exception();
+
+            var failedPaymentServiceException =
+                new FailedPaymentServiceException(serviceException);
+
+            var expectedPaymentServiceException =
+                new PaymentServiceException(failedPaymentServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.InsertPaymentAsync(somePayment))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<Payment> addPaymentTask =
+                this.paymentService.AddPaymentAsync(somePayment);
+
+            PaymentServiceException actualPaymentService =
+                await Assert.ThrowsAsync<PaymentServiceException>(
+                    addPaymentTask.AsTask);
+
+            // then
+            actualPaymentService.Should()
+                .BeEquivalentTo(expectedPaymentServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertPaymentAsync(somePayment), Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedPaymentServiceException))), Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
