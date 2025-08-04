@@ -1,4 +1,5 @@
-﻿using QarzDaftar.Server.Api.Models.Foundations.Payments;
+﻿using QarzDaftar.Server.Api.Models.Enums;
+using QarzDaftar.Server.Api.Models.Foundations.Payments;
 using QarzDaftar.Server.Api.Models.Foundations.Payments.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.Payments
@@ -13,6 +14,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
                 (Rule: IsInvalid(payment.Id), Parameter: nameof(Payment.Id)),
                 (Rule: IsInvalid(payment.Amount), Parameter: nameof(Payment.Amount)),
                 (Rule: IsInvalid(payment.Description), Parameter: nameof(Payment.Description)),
+                (Rule: IsInvalid(payment.Method), Parameter: nameof(Payment.Method)),
                 (Rule: IsInvalid(payment.PaymentDate), Parameter: nameof(Payment.PaymentDate)),
                 (Rule: IsInvalid(payment.CreatedDate), Parameter: nameof(Payment.CreatedDate)),
                 (Rule: IsInvalid(payment.UpdatedDate), Parameter: nameof(Payment.UpdatedDate)),
@@ -43,6 +45,12 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(PaymentMethod method) => new
+        {
+            Condition = Enum.IsDefined(typeof(PaymentMethod), method) is false,
+            Message = "Value is invalid"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new
