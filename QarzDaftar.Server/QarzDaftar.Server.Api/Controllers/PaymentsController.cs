@@ -42,5 +42,52 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(paymentServiceException.InnerException);
             }
         }
+
+        [HttpGet("All")]
+        public ActionResult<IQueryable<Payment>> GetAllPayments()
+        {
+            try
+            {
+                IQueryable<Payment> allpayments =
+                    this.paymentService.RetrieveAllPayments();
+
+                return Ok(allpayments);
+            }
+            catch (PaymentDependencyException paymentDependencyException)
+            {
+                return InternalServerError(paymentDependencyException.InnerException);
+            }
+            catch (PaymentServiceException paymentServiceException)
+            {
+                return InternalServerError(paymentServiceException.InnerException);
+            }
+        }
+
+        [HttpGet("ById")]
+        public async ValueTask<ActionResult<Payment>> GetPaymentByIdAsync(Guid paymentId)
+        {
+            try
+            {
+                return await this.paymentService.RetrievePaymentByIdAsync(paymentId);
+            }
+            catch (PaymentDependencyException paymentDependencyException)
+            {
+                return InternalServerError(paymentDependencyException.InnerException);
+            }
+            catch (PaymentValidationException paymentValidationException)
+                when (paymentValidationException.InnerException is InvalidPaymentException)
+            {
+                return BadRequest(paymentValidationException.InnerException);
+            }
+            catch (PaymentValidationException paymentValidationException)
+                when (paymentValidationException.InnerException is NotFoundPaymentException)
+            {
+                return NotFound(paymentValidationException.InnerException);
+            }
+            catch (PaymentServiceException paymentServiceException)
+            {
+                return InternalServerError(paymentServiceException.InnerException);
+            }
+        }
     }
 }
