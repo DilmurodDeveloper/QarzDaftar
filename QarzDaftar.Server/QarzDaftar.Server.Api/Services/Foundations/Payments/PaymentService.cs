@@ -46,7 +46,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
                     new PaymentDependencyException(failedPaymentStorageException);
 
                 this.loggingBroker.LogCritical(paymentDependencyException);
-                
+
                 throw paymentDependencyException;
             }
         }
