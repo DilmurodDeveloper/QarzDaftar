@@ -89,5 +89,38 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(paymentServiceException.InnerException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<Payment>> PutPaymentAsync(Payment payment)
+        {
+            try
+            {
+                Payment modifyPayment =
+                    await this.paymentService.ModifyPaymentAsync(payment);
+
+                return Ok(modifyPayment);
+            }
+            catch (PaymentValidationException paymentValidationException)
+                when (paymentValidationException.InnerException is NotFoundPaymentException)
+            {
+                return NotFound(paymentValidationException.InnerException);
+            }
+            catch (PaymentValidationException paymentValidationException)
+            {
+                return BadRequest(paymentValidationException.InnerException);
+            }
+            catch (PaymentDependencyValidationException paymentDependencyValidationException)
+            {
+                return Conflict(paymentDependencyValidationException.InnerException);
+            }
+            catch (PaymentDependencyException paymentDependencyException)
+            {
+                return InternalServerError(paymentDependencyException.InnerException);
+            }
+            catch (PaymentServiceException paymentServiceException)
+            {
+                return InternalServerError(paymentServiceException.InnerException);
+            }
+        }
     }
 }
