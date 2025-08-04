@@ -28,5 +28,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
 
             return await this.storageBroker.InsertPaymentAsync(payment);
         });
+
+        public IQueryable<Payment> RetrieveAllPayments() =>
+            throw new NotImplementedException();
     }
 }
