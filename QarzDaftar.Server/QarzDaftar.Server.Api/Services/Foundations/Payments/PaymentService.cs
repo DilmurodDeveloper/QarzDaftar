@@ -57,5 +57,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
 
             return await this.storageBroker.UpdatePaymentAsync(payment);
         });
+
+        public ValueTask<Payment> RemovePaymentByIdAsync(Guid paymentId) =>
+            throw new NotImplementedException();
     }
 }
