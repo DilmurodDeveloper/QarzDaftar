@@ -1,9 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
-using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Payments;
-using QarzDaftar.Server.Api.Models.Foundations.Payments.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.Payments
 {
@@ -34,61 +32,17 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
         public IQueryable<Payment> RetrieveAllPayments() =>
             TryCatch(() => this.storageBroker.SelectAllPayments());
 
-        public async ValueTask<Payment> RetrievePaymentByIdAsync(Guid paymentId)
+        public ValueTask<Payment> RetrievePaymentByIdAsync(Guid paymentId) =>
+        TryCatch(async () =>
         {
-            try
-            {
-                ValidatePaymentId(paymentId);
+            ValidatePaymentId(paymentId);
 
-                Payment maybePayment =
-                    await this.storageBroker.SelectPaymentByIdAsync(paymentId);
+            Payment maybePayment =
+                await this.storageBroker.SelectPaymentByIdAsync(paymentId);
 
-                ValidateStoragePayment(maybePayment, paymentId);
+            ValidateStoragePayment(maybePayment, paymentId);
 
-                return maybePayment;
-            }
-            catch (InvalidPaymentException invalidPaymentException)
-            {
-                var paymentValidationException =
-                    new PaymentValidationException(invalidPaymentException);
-
-                this.loggingBroker.LogError(paymentValidationException);
-
-                throw paymentValidationException;
-            }
-            catch (NotFoundPaymentException notFoundPaymentException)
-            {
-                var paymentValidationException =
-                    new PaymentValidationException(notFoundPaymentException);
-
-                this.loggingBroker.LogError(paymentValidationException);
-
-                throw paymentValidationException;
-            }
-            catch (SqlException sqlException)
-            {
-                var failedPaymentStorageException =
-                    new FailedPaymentStorageException(sqlException);
-
-                var paymentDependencyException =
-                    new PaymentDependencyException(failedPaymentStorageException);
-
-                this.loggingBroker.LogCritical(paymentDependencyException);
-
-                throw paymentDependencyException;
-            }
-            catch (Exception exception)
-            {
-                var failedPaymentServiceException =
-                    new FailedPaymentServiceException(exception);
-
-                var paymentServiceException =
-                    new PaymentServiceException(failedPaymentServiceException);
-
-                this.loggingBroker.LogError(paymentServiceException);
-
-                throw paymentServiceException;
-            }
-        }
+            return maybePayment;
+        });
     }
 }

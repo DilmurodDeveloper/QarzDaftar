@@ -25,6 +25,10 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
             {
                 throw CreateAndLogValidationException(invalidPaymentException);
             }
+            catch (NotFoundPaymentException notFoundPaymentException)
+            {
+                throw CreateAndLogValidationException(notFoundPaymentException);
+            }
             catch (SqlException sqlException)
             {
                 var failedPaymentStorageException =
