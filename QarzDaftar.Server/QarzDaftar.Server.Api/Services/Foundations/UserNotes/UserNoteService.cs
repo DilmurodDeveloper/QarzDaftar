@@ -21,7 +21,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<UserNote> AddUserNoteAsync(UserNote userNote) =>
-            throw new NotImplementedException();
+        public async ValueTask<UserNote> AddUserNoteAsync(UserNote userNote) =>
+            await this.storageBroker.InsertUserNoteAsync(userNote);
     }
 }
