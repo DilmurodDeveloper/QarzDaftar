@@ -1,4 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using EFxceptions.Models.Exceptions;
+using FluentAssertions;
+using Microsoft.Data.SqlClient;
 using Moq;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes.Exceptions;
@@ -38,6 +40,47 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserNotes
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedUserNoteDependencyException))), Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfDuplicateKeyErrorOccursAndLogItAsync()
+        {
+            // given
+            string someMessage = GetRandomString();
+            UserNote someUserNote = CreateRandomUserNote();
+            var duplicateKeyException = new DuplicateKeyException(someMessage);
+
+            var alreadyExistsUserNoteException =
+                new AlreadyExistsUserNoteException(duplicateKeyException);
+
+            var expectedUserNoteDependencyValidationException =
+                new UserNoteDependencyValidationException(alreadyExistsUserNoteException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.InsertUserNoteAsync(someUserNote)).ThrowsAsync(duplicateKeyException);
+            // when
+            ValueTask<UserNote> addUserNoteTask =
+                this.userNoteService.AddUserNoteAsync(someUserNote);
+
+            UserNoteDependencyValidationException actualUserNoteDependencyValidationException =
+                await Assert.ThrowsAsync<UserNoteDependencyValidationException>(
+                    addUserNoteTask.AsTask);
+
+            // then
+            actualUserNoteDependencyValidationException.Should()
+                .BeEquivalentTo(expectedUserNoteDependencyValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertUserNoteAsync(someUserNote), Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserNoteDependencyValidationException))),
+                        Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

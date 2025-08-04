@@ -54,6 +54,9 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserNotes
         private static SqlException GetSqlError() =>
             (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
         private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
