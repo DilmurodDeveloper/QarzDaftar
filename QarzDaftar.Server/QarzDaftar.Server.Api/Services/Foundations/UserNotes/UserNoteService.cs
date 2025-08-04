@@ -26,7 +26,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
         {
             try
             {
-                ValidateUserNoteNotNull(userNote);
+                ValidateUserNoteOnAdd(userNote);
 
                 return await this.storageBroker.InsertUserNoteAsync(userNote);
             }
@@ -34,6 +34,15 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
             {
                 var userNoteValidationException =
                     new UserNoteValidationException(nullUserNoteException);
+
+                this.loggingBroker.LogError(userNoteValidationException);
+
+                throw userNoteValidationException;
+            }
+            catch (InvalidUserNoteException invalidUserNoteException)
+            {
+                var userNoteValidationException =
+                    new UserNoteValidationException(invalidUserNoteException);
 
                 this.loggingBroker.LogError(userNoteValidationException);
 
