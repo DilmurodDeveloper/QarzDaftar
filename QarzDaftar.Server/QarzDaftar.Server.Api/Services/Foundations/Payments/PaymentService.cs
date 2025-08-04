@@ -1,10 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Payments;
-using QarzDaftar.Server.Api.Models.Foundations.Payments.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.Payments
 {
@@ -61,73 +58,17 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
             return await this.storageBroker.UpdatePaymentAsync(payment);
         });
 
-        public async ValueTask<Payment> RemovePaymentByIdAsync(Guid paymentId)
+        public ValueTask<Payment> RemovePaymentByIdAsync(Guid paymentId) =>
+        TryCatch(async () =>
         {
-            try
-            {
-                ValidatePaymentId(paymentId);
+            ValidatePaymentId(paymentId);
 
-                Payment maybePayment =
-                    await this.storageBroker.SelectPaymentByIdAsync(paymentId);
+            Payment maybePayment =
+                await this.storageBroker.SelectPaymentByIdAsync(paymentId);
 
-                ValidateStoragePayment(maybePayment, paymentId);
+            ValidateStoragePayment(maybePayment, paymentId);
 
-                return await this.storageBroker.DeletePaymentAsync(maybePayment);
-            }
-            catch (InvalidPaymentException invalidPaymentException)
-            {
-                var paymentValidationException =
-                    new PaymentValidationException(invalidPaymentException);
-
-                this.loggingBroker.LogError(paymentValidationException);
-
-                throw paymentValidationException;
-            }
-            catch (NotFoundPaymentException notFoundPaymentException)
-            {
-                var paymentValidationException =
-                    new PaymentValidationException(notFoundPaymentException);
-
-                this.loggingBroker.LogError(paymentValidationException);
-
-                throw paymentValidationException;
-            }
-            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
-            {
-                var lockedPaymentException =
-                    new LockedPaymentException(dbUpdateConcurrencyException);
-
-                var paymentDependencyValidationException =
-                    new PaymentDependencyValidationException(lockedPaymentException);
-
-                this.loggingBroker.LogError(paymentDependencyValidationException);
-
-                throw paymentDependencyValidationException;
-            }
-            catch (SqlException sqlException)
-            {
-                var failedPaymentStorageException =
-                    new FailedPaymentStorageException(sqlException);
-
-                var paymentDependencyException =
-                    new PaymentDependencyException(failedPaymentStorageException);
-
-                this.loggingBroker.LogCritical(paymentDependencyException);
-
-                throw paymentDependencyException;
-            }
-            catch (Exception exception)
-            {
-                var failedPaymentServiceException =
-                    new FailedPaymentServiceException(exception);
-
-                var paymentServiceException =
-                    new PaymentServiceException(failedPaymentServiceException);
-
-                this.loggingBroker.LogError(paymentServiceException);
-
-                throw paymentServiceException;
-            }
-        }
+            return await this.storageBroker.DeletePaymentAsync(maybePayment);
+        });
     }
 }
