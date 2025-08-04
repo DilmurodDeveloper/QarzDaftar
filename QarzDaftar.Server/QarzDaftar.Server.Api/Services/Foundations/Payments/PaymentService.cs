@@ -2,10 +2,11 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Payments;
+using QarzDaftar.Server.Api.Models.Foundations.Payments.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.Payments
 {
-    public class PaymentService : IPaymentService
+    public partial class PaymentService : IPaymentService
     {
         private readonly IStorageBroker storageBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -21,7 +22,23 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask<Payment> AddPaymentAsync(Payment payment) =>
-            await this.storageBroker.InsertPaymentAsync(payment);
+        public async ValueTask<Payment> AddPaymentAsync(Payment payment)
+        {
+            try
+            {
+                ValidatePaymentNotNull(payment);
+
+                return await this.storageBroker.InsertPaymentAsync(payment);
+            }
+            catch (NullPaymentException nullPaymentException)
+            {
+                var paymentValidationException =
+                    new PaymentValidationException(nullPaymentException);
+
+                this.loggingBroker.LogError(paymentValidationException);
+
+                throw paymentValidationException;
+            }
+        }
     }
 }
