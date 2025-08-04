@@ -30,6 +30,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
         });
 
         public IQueryable<UserNote> RetrieveAllUserNotes() =>
-            throw new NotImplementedException();
+            this.storageBroker.SelectAllUserNotes();
     }
 }
