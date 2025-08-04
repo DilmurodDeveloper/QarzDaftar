@@ -99,5 +99,51 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Payments
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDatabaseUpdateConcurrencyErrorOccursAndLogItAsync()
+        {
+            // given
+            Payment randomPayment = CreateRandomPayment();
+            Payment somePayment = randomPayment;
+            Guid PaymentId = somePayment.Id;
+            var dbUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedPaymentException =
+                new LockedPaymentException(dbUpdateConcurrencyException);
+
+            var expectedPaymentDependencyValidationException =
+                new PaymentDependencyValidationException(lockedPaymentException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectPaymentByIdAsync(PaymentId))
+                    .Throws(dbUpdateConcurrencyException);
+
+            // when
+            ValueTask<Payment> modifyPaymentTask =
+                this.paymentService.ModifyPaymentAsync(somePayment);
+
+            PaymentDependencyValidationException actualPaymentDependencyValidationException =
+                 await Assert.ThrowsAsync<PaymentDependencyValidationException>(
+                    modifyPaymentTask.AsTask);
+
+            // then
+            actualPaymentDependencyValidationException.Should()
+                .BeEquivalentTo(expectedPaymentDependencyValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedPaymentDependencyValidationException))), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPaymentByIdAsync(PaymentId), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdatePaymentAsync(somePayment), Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
