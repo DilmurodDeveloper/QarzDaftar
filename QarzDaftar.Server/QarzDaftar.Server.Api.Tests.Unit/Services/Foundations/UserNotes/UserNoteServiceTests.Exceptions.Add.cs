@@ -86,5 +86,46 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserNotes
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            UserNote someUserNote = CreateRandomUserNote();
+            var serviceException = new Exception();
+
+            var failedUserNoteServiceException =
+                new FailedUserNoteServiceException(serviceException);
+
+            var expectedUserNoteServiceException =
+                new UserNoteServiceException(failedUserNoteServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.InsertUserNoteAsync(someUserNote))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<UserNote> addUserNoteTask =
+                this.userNoteService.AddUserNoteAsync(someUserNote);
+
+            UserNoteServiceException actualUserNoteService =
+                await Assert.ThrowsAsync<UserNoteServiceException>(
+                    addUserNoteTask.AsTask);
+
+            // then
+            actualUserNoteService.Should()
+                .BeEquivalentTo(expectedUserNoteServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertUserNoteAsync(someUserNote), Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserNoteServiceException))), Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
