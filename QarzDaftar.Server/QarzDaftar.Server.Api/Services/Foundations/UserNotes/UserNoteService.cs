@@ -74,6 +74,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
 
                 throw userNoteDependencyValidationException;
             }
+            catch (Exception exception)
+            {
+                var failedUserNoteServiceException =
+                    new FailedUserNoteServiceException(exception);
+
+                var userNoteServiceException =
+                    new UserNoteServiceException(failedUserNoteServiceException);
+
+                this.loggingBroker.LogError(userNoteServiceException);
+
+                throw userNoteServiceException;
+            }
         }
     }
 }
