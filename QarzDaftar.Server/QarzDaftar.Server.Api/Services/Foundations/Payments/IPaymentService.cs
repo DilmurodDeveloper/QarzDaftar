@@ -1,0 +1,9 @@
+﻿using QarzDaftar.Server.Api.Models.Foundations.Payments;
+
+namespace QarzDaftar.Server.Api.Services.Foundations.Payments
+{
+    public interface IPaymentService
+    {
+        ValueTask<Payment> AddPaymentAsync(Payment payment);
+    }
+}
