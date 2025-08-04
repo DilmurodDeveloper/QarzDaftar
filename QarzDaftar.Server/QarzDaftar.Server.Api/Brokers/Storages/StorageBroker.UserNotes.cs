@@ -9,5 +9,22 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
 
         public async ValueTask<UserNote> InsertUserNoteAsync(UserNote userNote) =>
             await InsertAsync(userNote);
+
+        public IQueryable<UserNote> SelectAllUserNotes()
+        {
+            var userNotes = SelectAll<UserNote>()
+                .Include(c => c.User);
+
+            return userNotes;
+        }
+
+        public async ValueTask<UserNote> SelectUserNoteByIdAsync(Guid userNoteId)
+        {
+            var userNoteWithDetails = UserNotes
+                .Include(c => c.User)
+                .FirstOrDefault(c => c.Id == userNoteId);
+
+            return await ValueTask.FromResult(userNoteWithDetails);
+        }
     }
 }
