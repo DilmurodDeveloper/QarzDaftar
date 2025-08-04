@@ -46,5 +46,46 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Payments
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnRetrieveByIdIfPaymentNotFoundAndLogItAsync()
+        {
+            // given
+            Guid somePaymentId = Guid.NewGuid();
+            Payment noPayment = null;
+
+            var notFoundPaymentException =
+                new NotFoundPaymentException(somePaymentId);
+
+            var expetedPaymentValidationException =
+                new PaymentValidationException(notFoundPaymentException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectPaymentByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noPayment);
+
+            // when
+            ValueTask<Payment> retriveByIdPaymentTask =
+                this.paymentService.RetrievePaymentByIdAsync(somePaymentId);
+
+            PaymentValidationException actualPaymentValidationException =
+                await Assert.ThrowsAsync<PaymentValidationException>(
+                    retriveByIdPaymentTask.AsTask);
+
+            // then
+            actualPaymentValidationException.Should()
+                .BeEquivalentTo(expetedPaymentValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPaymentByIdAsync(somePaymentId), Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expetedPaymentValidationException))), Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
