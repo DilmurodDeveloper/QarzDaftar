@@ -100,6 +100,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
 
                 throw userNoteDependencyException;
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedUserNoteException =
+                    new LockedUserNoteException(dbUpdateConcurrencyException);
+
+                var userNoteDependencyValidationException =
+                    new UserNoteDependencyValidationException(lockedUserNoteException);
+
+                this.loggingBroker.LogError(userNoteDependencyValidationException);
+
+                throw userNoteDependencyValidationException;
+            }
             catch (DbUpdateException dbUpdateException)
             {
                 var failedUserNoteStorageException =
