@@ -94,5 +94,48 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.SubscriptionHist
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRemoveIfExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someSubscriptionHistoryId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedSubscriptionHistoryServiceException =
+                new FailedSubscriptionHistoryServiceException(serviceException);
+
+            var expectedSubscriptionHistoryServiceException =
+                new SubscriptionHistoryServiceException(failedSubscriptionHistoryServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectSubscriptionHistoryByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<SubscriptionHistory> removeSubscriptionHistoryByIdTask =
+                this.subscriptionHistoryService.RemoveSubscriptionHistoryByIdAsync(someSubscriptionHistoryId);
+
+            SubscriptionHistoryServiceException actualSubscriptionHistoryServiceException =
+                await Assert.ThrowsAsync<SubscriptionHistoryServiceException>(
+                    removeSubscriptionHistoryByIdTask.AsTask);
+
+            // then
+            actualSubscriptionHistoryServiceException.Should()
+                .BeEquivalentTo(expectedSubscriptionHistoryServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSubscriptionHistoryByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSubscriptionHistoryServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
