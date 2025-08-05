@@ -99,5 +99,51 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserNotes
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDatabaseUpdateConcurrencyErrorOccursAndLogItAsync()
+        {
+            // given
+            UserNote randomUserNote = CreateRandomUserNote();
+            UserNote someUserNote = randomUserNote;
+            Guid UserNoteId = someUserNote.Id;
+            var dbUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedUserNoteException =
+                new LockedUserNoteException(dbUpdateConcurrencyException);
+
+            var expectedUserNoteDependencyValidationException =
+                new UserNoteDependencyValidationException(lockedUserNoteException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectUserNoteByIdAsync(UserNoteId))
+                    .Throws(dbUpdateConcurrencyException);
+
+            // when
+            ValueTask<UserNote> modifyUserNoteTask =
+                this.userNoteService.ModifyUserNoteAsync(someUserNote);
+
+            UserNoteDependencyValidationException actualUserNoteDependencyValidationException =
+                 await Assert.ThrowsAsync<UserNoteDependencyValidationException>(
+                    modifyUserNoteTask.AsTask);
+
+            // then
+            actualUserNoteDependencyValidationException.Should()
+                .BeEquivalentTo(expectedUserNoteDependencyValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserNoteDependencyValidationException))), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectUserNoteByIdAsync(UserNoteId), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateUserNoteAsync(someUserNote), Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
