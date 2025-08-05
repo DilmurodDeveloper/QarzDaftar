@@ -107,5 +107,54 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.SubscriptionHist
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfSubscriptionHistoryDoesNotExistAndLogItAsync()
+        {
+            // given
+            SubscriptionHistory randomSubscriptionHistory = CreateRandomSubscriptionHistory();
+            SubscriptionHistory nonExistSubscriptionHistory = randomSubscriptionHistory;
+            SubscriptionHistory nullSubscriptionHistory = null;
+
+            var notFoundSubscriptionHistoryException =
+                new NotFoundSubscriptionHistoryException(nonExistSubscriptionHistory.Id);
+
+            var expectedSubscriptionHistoryValidationException =
+                new SubscriptionHistoryValidationException(notFoundSubscriptionHistoryException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectSubscriptionHistoryByIdAsync(
+                    nonExistSubscriptionHistory.Id)).ReturnsAsync(nullSubscriptionHistory);
+
+            // when
+            ValueTask<SubscriptionHistory> modifySubscriptionHistoryTask =
+                this.subscriptionHistoryService.ModifySubscriptionHistoryAsync(
+                    nonExistSubscriptionHistory);
+
+            var actualSubscriptionHistoryValidationException =
+                await Assert.ThrowsAsync<SubscriptionHistoryValidationException>
+                    (modifySubscriptionHistoryTask.AsTask);
+
+            // then
+            actualSubscriptionHistoryValidationException.Should()
+                .BeEquivalentTo(expectedSubscriptionHistoryValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSubscriptionHistoryByIdAsync(
+                    nonExistSubscriptionHistory.Id), Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSubscriptionHistoryValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateSubscriptionHistoryAsync(
+                    nonExistSubscriptionHistory), Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
