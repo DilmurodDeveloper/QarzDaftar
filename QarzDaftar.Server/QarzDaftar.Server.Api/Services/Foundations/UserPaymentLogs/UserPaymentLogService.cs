@@ -21,7 +21,9 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<UserPaymentLog> AddUserPaymentLogAsync(
-            UserPaymentLog userPaymentLog) => throw new NotImplementedException();
+        public async ValueTask<UserPaymentLog> AddUserPaymentLogAsync(UserPaymentLog userPaymentLog)
+        {
+            return await this.storageBroker.InsertUserPaymentLogAsync(userPaymentLog);
+        }
     }
 }
