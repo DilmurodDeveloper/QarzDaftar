@@ -94,5 +94,48 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserNotes
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRemoveIfExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someUserNoteId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedUserNoteServiceException =
+                new FailedUserNoteServiceException(serviceException);
+
+            var expectedUserNoteServiceException =
+                new UserNoteServiceException(failedUserNoteServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectUserNoteByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<UserNote> removeUserNoteByIdTask =
+                this.userNoteService.RemoveUserNoteByIdAsync(someUserNoteId);
+
+            UserNoteServiceException actualUserNoteServiceException =
+                await Assert.ThrowsAsync<UserNoteServiceException>(
+                    removeUserNoteByIdTask.AsTask);
+
+            // then
+            actualUserNoteServiceException.Should()
+                .BeEquivalentTo(expectedUserNoteServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectUserNoteByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserNoteServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
