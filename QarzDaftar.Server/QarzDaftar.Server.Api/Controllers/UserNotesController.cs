@@ -122,5 +122,43 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(userNoteServiceException.InnerException);
             }
         }
+
+        [HttpDelete]
+        public async ValueTask<ActionResult<UserNote>> DeleteuserNoteAsync(Guid userNoteId)
+        {
+            try
+            {
+                UserNote deleteUserNote =
+                    await this.userNoteService.RemoveUserNoteByIdAsync(userNoteId);
+
+                return Ok(deleteUserNote);
+            }
+            catch (UserNoteValidationException userNoteValidationException)
+                when (userNoteValidationException.InnerException is NotFoundUserNoteException)
+            {
+                return NotFound(userNoteValidationException.InnerException);
+            }
+            catch (UserNoteValidationException userNoteValidationException)
+            {
+                return BadRequest(userNoteValidationException.InnerException);
+            }
+            catch (UserNoteDependencyValidationException userNoteDependencyValidationException)
+                when (userNoteDependencyValidationException.InnerException is LockedUserNoteException)
+            {
+                return Locked(userNoteDependencyValidationException.InnerException);
+            }
+            catch (UserNoteDependencyValidationException userNoteDependencyValidationException)
+            {
+                return BadRequest(userNoteDependencyValidationException.InnerException);
+            }
+            catch (UserNoteDependencyException userNoteDependencyException)
+            {
+                return InternalServerError(userNoteDependencyException.InnerException);
+            }
+            catch (UserNoteServiceException userNoteServiceException)
+            {
+                return InternalServerError(userNoteServiceException.InnerException);
+            }
+        }
     }
 }
