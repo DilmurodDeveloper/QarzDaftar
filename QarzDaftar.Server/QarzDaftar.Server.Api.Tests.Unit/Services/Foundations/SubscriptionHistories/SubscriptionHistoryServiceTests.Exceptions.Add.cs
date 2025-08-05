@@ -1,9 +1,9 @@
 ﻿using EFxceptions.Models.Exceptions;
+using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
 using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories;
 using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories.Exceptions;
-using FluentAssertions;
 
 namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.SubscriptionHistories
 {
@@ -89,6 +89,51 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.SubscriptionHist
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedSubscriptionHistoryDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            SubscriptionHistory someSubscriptionHistory = CreateRandomSubscriptionHistory();
+            var serviceException = new Exception();
+
+            var failedSubscriptionHistoryServiceException =
+                new FailedSubscriptionHistoryServiceException(serviceException);
+
+            var expectedSubscriptionHistoryServiceException =
+                new SubscriptionHistoryServiceException(
+                    failedSubscriptionHistoryServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.InsertSubscriptionHistoryAsync(someSubscriptionHistory))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<SubscriptionHistory> addSubscriptionHistoryTask =
+                this.subscriptionHistoryService.AddSubscriptionHistoryAsync(
+                    someSubscriptionHistory);
+
+            var actualSubscriptionHistoryService =
+                await Assert.ThrowsAsync<SubscriptionHistoryServiceException>(
+                    addSubscriptionHistoryTask.AsTask);
+
+            // then
+            actualSubscriptionHistoryService.Should()
+                .BeEquivalentTo(expectedSubscriptionHistoryServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertSubscriptionHistoryAsync(someSubscriptionHistory),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSubscriptionHistoryServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
