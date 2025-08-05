@@ -2,10 +2,11 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs;
+using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 {
-    public class UserPaymentLogService : IUserPaymentLogService
+    public partial class UserPaymentLogService : IUserPaymentLogService
     {
         private readonly IStorageBroker storageBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -23,7 +24,21 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 
         public async ValueTask<UserPaymentLog> AddUserPaymentLogAsync(UserPaymentLog userPaymentLog)
         {
-            return await this.storageBroker.InsertUserPaymentLogAsync(userPaymentLog);
+            try
+            {
+                ValidateUserPaymentLogNotNull(userPaymentLog);
+
+                return await this.storageBroker.InsertUserPaymentLogAsync(userPaymentLog);
+            }
+            catch (NullUserPaymentLogException nullUserPaymentLogException)
+            {
+                var userPaymentLogValidationException =
+                    new UserPaymentLogValidationException(nullUserPaymentLogException);
+
+                this.loggingBroker.LogError(userPaymentLogValidationException);
+
+                throw userPaymentLogValidationException;
+            }
         }
     }
 }
