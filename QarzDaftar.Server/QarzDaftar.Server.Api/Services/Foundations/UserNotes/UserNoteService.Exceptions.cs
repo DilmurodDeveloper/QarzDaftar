@@ -25,6 +25,10 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
             {
                 throw CreateAndLogValidationException(invalidUserNoteException);
             }
+            catch (NotFoundUserNoteException notFoundUserNoteException)
+            {
+                throw CreateAndLogValidationException(notFoundUserNoteException);
+            }
             catch (SqlException sqlException)
             {
                 var failedUserNoteStorageException =
