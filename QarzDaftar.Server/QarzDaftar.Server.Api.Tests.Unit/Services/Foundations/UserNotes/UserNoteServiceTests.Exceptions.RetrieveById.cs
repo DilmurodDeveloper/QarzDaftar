@@ -3,8 +3,6 @@ using Microsoft.Data.SqlClient;
 using Moq;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes.Exceptions;
-using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
-using QarzDaftar.Server.Api.Models.Foundations.UserNotes.Exceptions;
 
 namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserNotes
 {
