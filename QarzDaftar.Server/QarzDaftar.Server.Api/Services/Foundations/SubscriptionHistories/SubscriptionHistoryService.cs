@@ -2,7 +2,6 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories;
-using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
 {
@@ -47,47 +46,17 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
             return maybeSubscriptionHistory;
         });
 
-        public async ValueTask<SubscriptionHistory> ModifySubscriptionHistoryAsync(
-            SubscriptionHistory subscriptionHistory)
+        public ValueTask<SubscriptionHistory> ModifySubscriptionHistoryAsync(SubscriptionHistory subscriptionHistory) =>
+        TryCatch(async () =>
         {
-            try
-            {
-                ValidateSubscriptionHistoryOnModify(subscriptionHistory);
+            ValidateSubscriptionHistoryOnModify(subscriptionHistory);
 
-                SubscriptionHistory maybeSubscriptionHistory =
-                    await this.storageBroker.SelectSubscriptionHistoryByIdAsync(subscriptionHistory.Id);
+            SubscriptionHistory maybeSubscriptionHistory =
+                await this.storageBroker.SelectSubscriptionHistoryByIdAsync(subscriptionHistory.Id);
 
-                ValidateAgainstStorageSubscriptionHistoryOnModify(subscriptionHistory, maybeSubscriptionHistory);
+            ValidateAgainstStorageSubscriptionHistoryOnModify(subscriptionHistory, maybeSubscriptionHistory);
 
-                return await this.storageBroker.UpdateSubscriptionHistoryAsync(subscriptionHistory);
-            }
-            catch (NullSubscriptionHistoryException nullSubscriptionHistoryException)
-            {
-                var subscriptionHistoryValidationException =
-                    new SubscriptionHistoryValidationException(nullSubscriptionHistoryException);
-
-                this.loggingBroker.LogError(subscriptionHistoryValidationException);
-
-                throw subscriptionHistoryValidationException;
-            }
-            catch (InvalidSubscriptionHistoryException invalidSubscriptionHistoryException)
-            {
-                var subscriptionHistoryValidationException =
-                    new SubscriptionHistoryValidationException(invalidSubscriptionHistoryException);
-
-                this.loggingBroker.LogError(subscriptionHistoryValidationException);
-
-                throw subscriptionHistoryValidationException;
-            }
-            catch (NotFoundSubscriptionHistoryException notFoundSubscriptionHistoryException)
-            {
-                var subscriptionHistoryValidationException =
-                    new SubscriptionHistoryValidationException(notFoundSubscriptionHistoryException);
-
-                this.loggingBroker.LogError(subscriptionHistoryValidationException);
-
-                throw subscriptionHistoryValidationException;
-            }
-        }
+            return await this.storageBroker.UpdateSubscriptionHistoryAsync(subscriptionHistory);
+        });
     }
 }
