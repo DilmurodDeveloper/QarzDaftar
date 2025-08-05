@@ -2,6 +2,7 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
+using QarzDaftar.Server.Api.Models.Foundations.UserNotes.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
 {
@@ -47,10 +48,24 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
 
         public async ValueTask<UserNote> ModifyUserNoteAsync(UserNote userNote)
         {
-            UserNote maybeUserNote =
-                await this.storageBroker.SelectUserNoteByIdAsync(userNote.Id);
+            try
+            {
+                ValidateUserNoteNotNull(userNote);
 
-            return await this.storageBroker.UpdateUserNoteAsync(userNote);
+                UserNote maybeUserNote =
+                    await this.storageBroker.SelectUserNoteByIdAsync(userNote.Id);
+
+                return await this.storageBroker.UpdateUserNoteAsync(userNote);
+            }
+            catch (NullUserNoteException nullUserNoteException)
+            {
+                var userNoteValidationException =
+                    new UserNoteValidationException(nullUserNoteException);
+
+                this.loggingBroker.LogError(userNoteValidationException);
+
+                throw userNoteValidationException;
+            }
         }
     }
 }
