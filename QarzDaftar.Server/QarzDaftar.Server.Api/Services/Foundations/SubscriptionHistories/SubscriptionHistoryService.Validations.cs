@@ -68,6 +68,19 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
                 (Rule: IsInvalid(subscriptionHistory.UserId), Parameter: nameof(SubscriptionHistory.UserId)));
         }
 
+        private void ValidateAgainstStorageSubscriptionHistoryOnModify(
+            SubscriptionHistory subscriptionHistory, SubscriptionHistory storageSubscriptionHistory)
+        {
+            ValidateStorageSubscriptionHistory(storageSubscriptionHistory, subscriptionHistory.Id);
+
+            Validate(
+                (Rule: IsInvalid(subscriptionHistory.Id), Parameter: nameof(SubscriptionHistory.Id)),
+                (Rule: IsInvalid(subscriptionHistory.Amount), Parameter: nameof(SubscriptionHistory.Amount)),
+                (Rule: IsInvalid(subscriptionHistory.PurchasedAt), Parameter: nameof(SubscriptionHistory.PurchasedAt)),
+                (Rule: IsInvalid(subscriptionHistory.ExpiresAt), Parameter: nameof(SubscriptionHistory.ExpiresAt)),
+                (Rule: IsInvalid(subscriptionHistory.UserId), Parameter: nameof(SubscriptionHistory.UserId)));
+        }
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidSubscriptionHistoryException = new InvalidSubscriptionHistoryException();
