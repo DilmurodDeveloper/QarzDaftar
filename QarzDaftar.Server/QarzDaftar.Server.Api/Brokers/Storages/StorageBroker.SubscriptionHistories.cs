@@ -9,5 +9,22 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
 
         public async ValueTask<SubscriptionHistory> InsertSubscriptionHistoryAsync(
             SubscriptionHistory subscriptionHistory) => await InsertAsync(subscriptionHistory);
+
+        public IQueryable<SubscriptionHistory> SelectAllSubscriptionHistories()
+        {
+            var subscriptionHistorys = SelectAll<SubscriptionHistory>()
+                .Include(c => c.User);
+
+            return subscriptionHistorys;
+        }
+
+        public async ValueTask<SubscriptionHistory> SelectSubscriptionHistoryByIdAsync(Guid subscriptionHistoryId)
+        {
+            var subscriptionHistoryWithDetails = SubscriptionHistories
+                .Include(c => c.User)
+                .FirstOrDefault(c => c.Id == subscriptionHistoryId);
+
+            return await ValueTask.FromResult(subscriptionHistoryWithDetails);
+        }
     }
 }

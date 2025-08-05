@@ -5,5 +5,7 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
     public partial interface IStorageBroker
     {
         ValueTask<SubscriptionHistory> InsertSubscriptionHistoryAsync(SubscriptionHistory subscriptionHistory);
+        IQueryable<SubscriptionHistory> SelectAllSubscriptionHistories();
+        ValueTask<SubscriptionHistory> SelectSubscriptionHistoryByIdAsync(Guid subscriptionHistoryId);
     }
 }
