@@ -44,6 +44,9 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
             Message = "Date is required"
         };
 
+        private void ValidateSubscriptionHistoryId(Guid subscriptionHistoryId) =>
+            Validate((Rule: IsInvalid(subscriptionHistoryId), Parameter: nameof(SubscriptionHistory.Id)));
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidSubscriptionHistoryException = new InvalidSubscriptionHistoryException();
