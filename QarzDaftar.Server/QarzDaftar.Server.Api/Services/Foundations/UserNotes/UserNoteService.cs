@@ -28,5 +28,21 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
 
             return await this.storageBroker.InsertUserNoteAsync(userNote);
         });
+
+        public IQueryable<UserNote> RetrieveAllUserNotes() =>
+            TryCatch(() => this.storageBroker.SelectAllUserNotes());
+
+        public ValueTask<UserNote> RetrieveUserNoteByIdAsync(Guid userNoteId) =>
+        TryCatch(async () =>
+        {
+            ValidateUserNoteId(userNoteId);
+
+            UserNote maybeUserNote =
+                await this.storageBroker.SelectUserNoteByIdAsync(userNoteId);
+
+            ValidateStorageUserNote(maybeUserNote, userNoteId);
+
+            return maybeUserNote;
+        });
     }
 }
