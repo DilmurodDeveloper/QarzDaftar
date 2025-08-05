@@ -7,7 +7,7 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
     {
         public DbSet<SubscriptionHistory> SubscriptionHistories { get; set; }
 
-        public async ValueTask<SubscriptionHistory> InsertSubscriptionHistory(
+        public async ValueTask<SubscriptionHistory> InsertSubscriptionHistoryAsync(
             SubscriptionHistory subscriptionHistory) => await InsertAsync(subscriptionHistory);
     }
 }
