@@ -41,13 +41,26 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
             {
                 ValidateSubscriptionHistoryId(subscriptionHistoryId);
 
-                return await this.storageBroker
-                    .SelectSubscriptionHistoryByIdAsync(subscriptionHistoryId);
+                SubscriptionHistory maybeSubscriptionHistory =
+                    await this.storageBroker.SelectSubscriptionHistoryByIdAsync(subscriptionHistoryId);
+
+                ValidateStorageSubscriptionHistory(maybeSubscriptionHistory, subscriptionHistoryId);
+
+                return maybeSubscriptionHistory;
             }
             catch (InvalidSubscriptionHistoryException invalidSubscriptionHistoryException)
             {
                 var subscriptionHistoryValidationException =
                     new SubscriptionHistoryValidationException(invalidSubscriptionHistoryException);
+
+                this.loggingBroker.LogError(subscriptionHistoryValidationException);
+
+                throw subscriptionHistoryValidationException;
+            }
+            catch (NotFoundSubscriptionHistoryException notFoundSubscriptionHistoryException)
+            {
+                var subscriptionHistoryValidationException =
+                    new SubscriptionHistoryValidationException(notFoundSubscriptionHistoryException);
 
                 this.loggingBroker.LogError(subscriptionHistoryValidationException);
 
