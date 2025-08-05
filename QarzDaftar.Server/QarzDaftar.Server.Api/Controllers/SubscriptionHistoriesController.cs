@@ -6,6 +6,8 @@ using RESTFulSense.Controllers;
 
 namespace QarzDaftar.Server.Api.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class SubscriptionHistoriesController : RESTFulController
     {
         private readonly ISubscriptionHistoryService subscriptionHistoryService;
