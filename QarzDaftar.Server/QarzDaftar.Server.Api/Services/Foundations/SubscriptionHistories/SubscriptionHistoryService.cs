@@ -29,5 +29,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
             return await this.storageBroker
                 .InsertSubscriptionHistoryAsync(subscriptionHistory);
         });
+
+        public IQueryable<SubscriptionHistory> RetrieveAllSubscriptionHistories() =>
+            throw new NotImplementedException();
     }
 }
