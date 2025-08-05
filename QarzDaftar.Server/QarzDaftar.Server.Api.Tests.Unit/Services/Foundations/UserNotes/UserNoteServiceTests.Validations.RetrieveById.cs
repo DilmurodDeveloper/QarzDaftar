@@ -46,5 +46,46 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserNotes
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnRetrieveByIdIfUserNoteNotFoundAndLogItAsync()
+        {
+            // given
+            Guid someUserNoteId = Guid.NewGuid();
+            UserNote noUserNote = null;
+
+            var notFoundUserNoteException =
+                new NotFoundUserNoteException(someUserNoteId);
+
+            var expetedUserNoteValidationException =
+                new UserNoteValidationException(notFoundUserNoteException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectUserNoteByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noUserNote);
+
+            // when
+            ValueTask<UserNote> retriveByIdUserNoteTask =
+                this.userNoteService.RetrieveUserNoteByIdAsync(someUserNoteId);
+
+            UserNoteValidationException actualUserNoteValidationException =
+                await Assert.ThrowsAsync<UserNoteValidationException>(
+                    retriveByIdUserNoteTask.AsTask);
+
+            // then
+            actualUserNoteValidationException.Should()
+                .BeEquivalentTo(expetedUserNoteValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectUserNoteByIdAsync(someUserNoteId), Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expetedUserNoteValidationException))), Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
