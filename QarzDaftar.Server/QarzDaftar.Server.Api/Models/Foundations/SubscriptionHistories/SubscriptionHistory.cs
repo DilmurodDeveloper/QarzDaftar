@@ -1,4 +1,5 @@
-﻿using QarzDaftar.Server.Api.Models.Foundations.Users;
+﻿using System.Text.Json.Serialization;
+using QarzDaftar.Server.Api.Models.Foundations.Users;
 
 namespace QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories
 {
@@ -9,6 +10,8 @@ namespace QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories
         public DateTimeOffset PurchasedAt { get; set; }
         public DateTimeOffset ExpiresAt { get; set; }
         public Guid UserId { get; set; }
-        public User User { get; set; }
+
+        [JsonIgnore]
+        public User? User { get; set; }
     }
 }
