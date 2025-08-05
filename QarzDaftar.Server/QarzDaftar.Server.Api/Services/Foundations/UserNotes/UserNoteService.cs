@@ -45,7 +45,12 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
             return maybeUserNote;
         });
 
-        public ValueTask<UserNote> ModifyUserNoteAsync(UserNote userNote) =>
-            throw new NotImplementedException();
+        public async ValueTask<UserNote> ModifyUserNoteAsync(UserNote userNote)
+        {
+            UserNote maybeUserNote =
+                await this.storageBroker.SelectUserNoteByIdAsync(userNote.Id);
+
+            return await this.storageBroker.UpdateUserNoteAsync(userNote);
+        }
     }
 }
