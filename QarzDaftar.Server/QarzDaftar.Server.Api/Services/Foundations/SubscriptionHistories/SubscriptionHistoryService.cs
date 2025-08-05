@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using EFxceptions.Models.Exceptions;
+using Microsoft.Data.SqlClient;
 using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
@@ -63,6 +64,19 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
                 this.loggingBroker.LogCritical(subscriptionHistoryDependencyException);
 
                 throw subscriptionHistoryDependencyException;
+            }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsSubscriptionHistoryException =
+                    new AlreadyExistsSubscriptionHistoryException(duplicateKeyException);
+
+                var subscriptionHistoryDependencyValidationException =
+                    new SubscriptionHistoryDependencyValidationException(
+                        alreadyExistsSubscriptionHistoryException);
+
+                this.loggingBroker.LogError(subscriptionHistoryDependencyValidationException);
+
+                throw subscriptionHistoryDependencyValidationException;
             }
         }
     }
