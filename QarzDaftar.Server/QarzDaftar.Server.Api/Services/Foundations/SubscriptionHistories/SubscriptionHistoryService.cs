@@ -58,5 +58,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
 
             return await this.storageBroker.UpdateSubscriptionHistoryAsync(subscriptionHistory);
         });
+
+        public ValueTask<SubscriptionHistory> RemoveSubscriptionHistoryByIdAsync(Guid subscriptionHistoryId) =>
+        TryCatch(async () =>
+        {
+            ValidateSubscriptionHistoryId(subscriptionHistoryId);
+
+            SubscriptionHistory maybeSubscriptionHistory =
+                await this.storageBroker.SelectSubscriptionHistoryByIdAsync(subscriptionHistoryId);
+
+            ValidateStorageSubscriptionHistory(maybeSubscriptionHistory, subscriptionHistoryId);
+
+            return await this.storageBroker.DeleteSubscriptionHistoryAsync(maybeSubscriptionHistory);
+        });
     }
 }
