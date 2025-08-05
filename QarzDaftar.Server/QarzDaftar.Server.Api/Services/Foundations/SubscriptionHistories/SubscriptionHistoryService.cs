@@ -2,10 +2,11 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories;
+using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
 {
-    public class SubscriptionHistoryService : ISubscriptionHistoryService
+    public partial class SubscriptionHistoryService : ISubscriptionHistoryService
     {
         private readonly IStorageBroker storageBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -22,7 +23,24 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
         }
 
         public async ValueTask<SubscriptionHistory> AddSubscriptionHistoryAsync(
-            SubscriptionHistory subscriptionHistory) =>
-                await this.storageBroker.InsertSubscriptionHistoryAsync(subscriptionHistory);
+            SubscriptionHistory subscriptionHistory)
+        {
+            try
+            {
+                ValidateSubscriptionHistoryNotNull(subscriptionHistory);
+
+                return await this.storageBroker
+                    .InsertSubscriptionHistoryAsync(subscriptionHistory);
+            }
+            catch (NullSubscriptionHistoryException nullSubscriptionHistoryException)
+            {
+                var subscriptionHistoryValidationException =
+                    new SubscriptionHistoryValidationException(nullSubscriptionHistoryException);
+                
+                this.loggingBroker.LogError(subscriptionHistoryValidationException);
+
+                throw subscriptionHistoryValidationException;
+            }
+        }
     }
 }
