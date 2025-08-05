@@ -2,6 +2,7 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories;
+using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
 {
@@ -62,10 +63,24 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
         public async ValueTask<SubscriptionHistory> RemoveSubscriptionHistoryByIdAsync(
             Guid subscriptionHistoryId)
         {
-            SubscriptionHistory maybeSubscriptionHistory =
-                await this.storageBroker.SelectSubscriptionHistoryByIdAsync(subscriptionHistoryId);
+            try
+            {
+                ValidateSubscriptionHistoryId(subscriptionHistoryId);
 
-            return await this.storageBroker.DeleteSubscriptionHistoryAsync(maybeSubscriptionHistory);
+                SubscriptionHistory maybeSubscriptionHistory =
+                    await this.storageBroker.SelectSubscriptionHistoryByIdAsync(subscriptionHistoryId);
+
+                return await this.storageBroker.DeleteSubscriptionHistoryAsync(maybeSubscriptionHistory);
+            }
+            catch (InvalidSubscriptionHistoryException invalidSubscriptionHistoryException)
+            {
+                var subscriptionHistoryValidationException =
+                    new SubscriptionHistoryValidationException(invalidSubscriptionHistoryException);
+
+                this.loggingBroker.LogError(subscriptionHistoryValidationException);
+
+                throw subscriptionHistoryValidationException;
+            }
         }
     }
 }
