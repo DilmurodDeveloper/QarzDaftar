@@ -3,6 +3,8 @@ using Microsoft.Data.SqlClient;
 using Moq;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes.Exceptions;
+using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
+using QarzDaftar.Server.Api.Models.Foundations.UserNotes.Exceptions;
 
 namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserNotes
 {
@@ -44,6 +46,49 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserNotes
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedUserNoteDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedUserNoteServiceException =
+                new FailedUserNoteServiceException(serviceException);
+
+            var expectedUserNoteServiceException =
+                new UserNoteServiceException(failedUserNoteServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectUserNoteByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<UserNote> retrieveUserNoteByIdTask =
+                this.userNoteService.RetrieveUserNoteByIdAsync(someId);
+
+            UserNoteServiceException actualUserNoteServiceException =
+                await Assert.ThrowsAsync<UserNoteServiceException>(
+                    retrieveUserNoteByIdTask.AsTask);
+
+            // then
+            actualUserNoteServiceException.Should()
+                .BeEquivalentTo(expectedUserNoteServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectUserNoteByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserNoteServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
