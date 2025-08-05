@@ -9,8 +9,10 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
     public partial class SubscriptionHistoryService
     {
         private delegate ValueTask<SubscriptionHistory> ReturningSubscriptionHistoryFunction();
+        private delegate IQueryable<SubscriptionHistory> ReturningSubscriptionHistoriesFunction();
 
-        private async ValueTask<SubscriptionHistory> TryCatch(ReturningSubscriptionHistoryFunction returningSubscriptionHistoryFunction)
+        private async ValueTask<SubscriptionHistory> TryCatch(
+            ReturningSubscriptionHistoryFunction returningSubscriptionHistoryFunction)
         {
             try
             {
@@ -46,9 +48,35 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
                 throw CreateAndLogServiceException(failedSubscriptionHistoryServiceException);
             }
         }
+
+        private IQueryable<SubscriptionHistory> TryCatch(
+            ReturningSubscriptionHistoriesFunction returningSubscriptionHistoriesFunction)
+        {
+            try
+            {
+                return returningSubscriptionHistoriesFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedSubscriptionHistoryStorageException =
+                    new FailedSubscriptionHistoryStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedSubscriptionHistoryStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedSubscriptionHistoryServiceException =
+                    new FailedSubscriptionHistoryServiceException(exception);
+
+                throw CreateAndLogServiceException(failedSubscriptionHistoryServiceException);
+            }
+        }
+
         private SubscriptionHistoryValidationException CreateAndLogValidationException(Xeption exception)
         {
-            var SubscriptionHistoryValidationException = new SubscriptionHistoryValidationException(exception);
+            var SubscriptionHistoryValidationException =
+                new SubscriptionHistoryValidationException(exception);
+
             this.loggingBroker.LogError(SubscriptionHistoryValidationException);
 
             return SubscriptionHistoryValidationException;
@@ -75,7 +103,9 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
 
         private SubscriptionHistoryServiceException CreateAndLogServiceException(Xeption exception)
         {
-            var SubscriptionHistoryServiceException = new SubscriptionHistoryServiceException(exception);
+            var SubscriptionHistoryServiceException =
+                new SubscriptionHistoryServiceException(exception);
+
             this.loggingBroker.LogError(SubscriptionHistoryServiceException);
 
             return SubscriptionHistoryServiceException;
