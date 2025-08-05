@@ -126,5 +126,43 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(subscriptionHistoryServiceException.InnerException);
             }
         }
+
+        [HttpDelete]
+        public async ValueTask<ActionResult<SubscriptionHistory>> DeletesubscriptionHistoryAsync(Guid subscriptionHistoryId)
+        {
+            try
+            {
+                SubscriptionHistory deleteSubscriptionHistory =
+                    await this.subscriptionHistoryService.RemoveSubscriptionHistoryByIdAsync(subscriptionHistoryId);
+
+                return Ok(deleteSubscriptionHistory);
+            }
+            catch (SubscriptionHistoryValidationException subscriptionHistoryValidationException)
+                when (subscriptionHistoryValidationException.InnerException is NotFoundSubscriptionHistoryException)
+            {
+                return NotFound(subscriptionHistoryValidationException.InnerException);
+            }
+            catch (SubscriptionHistoryValidationException subscriptionHistoryValidationException)
+            {
+                return BadRequest(subscriptionHistoryValidationException.InnerException);
+            }
+            catch (SubscriptionHistoryDependencyValidationException subscriptionHistoryDependencyValidationException)
+                when (subscriptionHistoryDependencyValidationException.InnerException is LockedSubscriptionHistoryException)
+            {
+                return Locked(subscriptionHistoryDependencyValidationException.InnerException);
+            }
+            catch (SubscriptionHistoryDependencyValidationException subscriptionHistoryDependencyValidationException)
+            {
+                return BadRequest(subscriptionHistoryDependencyValidationException.InnerException);
+            }
+            catch (SubscriptionHistoryDependencyException subscriptionHistoryDependencyException)
+            {
+                return InternalServerError(subscriptionHistoryDependencyException.InnerException);
+            }
+            catch (SubscriptionHistoryServiceException subscriptionHistoryServiceException)
+            {
+                return InternalServerError(subscriptionHistoryServiceException.InnerException);
+            }
+        }
     }
 }
