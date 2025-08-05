@@ -1,4 +1,5 @@
-﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using Microsoft.EntityFrameworkCore;
+using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories;
@@ -91,6 +92,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
                 this.loggingBroker.LogError(subscriptionHistoryValidationException);
 
                 throw subscriptionHistoryValidationException;
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedSubscriptionHistoryException =
+                    new LockedSubscriptionHistoryException(dbUpdateConcurrencyException);
+
+                var subscriptionHistoryDependencyValidationException =
+                    new SubscriptionHistoryDependencyValidationException(lockedSubscriptionHistoryException);
+
+                this.loggingBroker.LogError(subscriptionHistoryDependencyValidationException);
+
+                throw subscriptionHistoryDependencyValidationException;
             }
         }
     }
