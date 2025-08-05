@@ -1,10 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
-using QarzDaftar.Server.Api.Models.Foundations.UserNotes.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
 {
@@ -61,73 +58,17 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
             return await this.storageBroker.UpdateUserNoteAsync(userNote);
         });
 
-        public async ValueTask<UserNote> RemoveUserNoteByIdAsync(Guid userNoteId)
+        public ValueTask<UserNote> RemoveUserNoteByIdAsync(Guid userNoteId) =>
+        TryCatch(async () =>
         {
-            try
-            {
-                ValidateUserNoteId(userNoteId);
+            ValidateUserNoteId(userNoteId);
 
-                UserNote maybeUserNote =
-                    await this.storageBroker.SelectUserNoteByIdAsync(userNoteId);
+            UserNote maybeUserNote =
+                await this.storageBroker.SelectUserNoteByIdAsync(userNoteId);
 
-                ValidateStorageUserNote(maybeUserNote, userNoteId);
+            ValidateStorageUserNote(maybeUserNote, userNoteId);
 
-                return await this.storageBroker.DeleteUserNoteAsync(maybeUserNote);
-            }
-            catch (InvalidUserNoteException invalidUserNoteException)
-            {
-                var userNoteValidationException =
-                    new UserNoteValidationException(invalidUserNoteException);
-
-                this.loggingBroker.LogError(userNoteValidationException);
-
-                throw userNoteValidationException;
-            }
-            catch (NotFoundUserNoteException notFoundUserNoteException)
-            {
-                var userNoteValidationException =
-                    new UserNoteValidationException(notFoundUserNoteException);
-
-                this.loggingBroker.LogError(userNoteValidationException);
-
-                throw userNoteValidationException;
-            }
-            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
-            {
-                var lockedUserNoteException =
-                    new LockedUserNoteException(dbUpdateConcurrencyException);
-
-                var userNoteDependencyValidationException =
-                    new UserNoteDependencyValidationException(lockedUserNoteException);
-
-                this.loggingBroker.LogError(userNoteDependencyValidationException);
-
-                throw userNoteDependencyValidationException;
-            }
-            catch (SqlException sqlException)
-            {
-                var failedUserNoteStorageException =
-                    new FailedUserNoteStorageException(sqlException);
-
-                var userNoteDependencyException =
-                    new UserNoteDependencyException(failedUserNoteStorageException);
-
-                this.loggingBroker.LogCritical(userNoteDependencyException);
-
-                throw userNoteDependencyException;
-            }
-            catch (Exception exception)
-            {
-                var failedUserNoteServiceException =
-                    new FailedUserNoteServiceException(exception);
-
-                var userNoteServiceException =
-                    new UserNoteServiceException(failedUserNoteServiceException);
-
-                this.loggingBroker.LogError(userNoteServiceException);
-
-                throw userNoteServiceException;
-            }
-        }
+            return await this.storageBroker.DeleteUserNoteAsync(maybeUserNote);
+        });
     }
 }
