@@ -145,5 +145,51 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserNotes
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            UserNote randomUserNote = CreateRandomUserNote();
+            UserNote someUserNote = randomUserNote;
+            Guid UserNoteId = someUserNote.Id;
+            var serviceException = new Exception();
+
+            var failedUserNoteServiceException =
+                new FailedUserNoteServiceException(serviceException);
+
+            var expectedUserNoteServiceException =
+                new UserNoteServiceException(failedUserNoteServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                    broker.SelectUserNoteByIdAsync(UserNoteId))
+                .Throws(serviceException);
+
+            // when
+            ValueTask<UserNote> modifyUserNoteTask =
+                this.userNoteService.ModifyUserNoteAsync(someUserNote);
+
+            UserNoteServiceException actualUserNoteServiceException =
+                await Assert.ThrowsAsync<UserNoteServiceException>(
+                    modifyUserNoteTask.AsTask);
+
+            // then
+            actualUserNoteServiceException.Should()
+                .BeEquivalentTo(expectedUserNoteServiceException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserNoteServiceException))), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectUserNoteByIdAsync(UserNoteId), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateUserNoteAsync(someUserNote), Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
