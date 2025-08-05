@@ -45,5 +45,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
 
             return maybeSubscriptionHistory;
         });
+
+        public ValueTask<SubscriptionHistory> ModifySubscriptionHistoryAsync(
+            SubscriptionHistory subscriptionHistory) => throw new NotImplementedException();
     }
 }

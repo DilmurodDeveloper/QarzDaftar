@@ -7,5 +7,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
         ValueTask<SubscriptionHistory> AddSubscriptionHistoryAsync(SubscriptionHistory subscriptionHistory);
         IQueryable<SubscriptionHistory> RetrieveAllSubscriptionHistories();
         ValueTask<SubscriptionHistory> RetrieveSubscriptionHistoryByIdAsync(Guid subscriptionHistoryId);
+        ValueTask<SubscriptionHistory> ModifySubscriptionHistoryAsync(SubscriptionHistory subscriptionHistory);
     }
 }
