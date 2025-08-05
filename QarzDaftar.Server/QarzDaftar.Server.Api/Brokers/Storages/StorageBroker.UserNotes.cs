@@ -29,5 +29,8 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
 
         public async ValueTask<UserNote> UpdateUserNoteAsync(UserNote userNote) =>
             await UpdateAsync(userNote);
+
+        public async ValueTask<UserNote> DeleteUserNoteAsync(UserNote userNote) =>
+            await DeleteAsync(userNote);
     }
 }

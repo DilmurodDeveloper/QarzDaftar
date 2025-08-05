@@ -8,5 +8,6 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
         IQueryable<UserNote> SelectAllUserNotes();
         ValueTask<UserNote> SelectUserNoteByIdAsync(Guid userNoteId);
         ValueTask<UserNote> UpdateUserNoteAsync(UserNote userNote);
+        ValueTask<UserNote> DeleteUserNoteAsync(UserNote userNote);
     }
 }
