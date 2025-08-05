@@ -54,6 +54,14 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
         private void ValidateUserNoteId(Guid userNoteId) =>
             Validate((Rule: IsInvalid(userNoteId), Parameter: nameof(UserNote.Id)));
 
+        private static void ValidateStorageUserNote(UserNote maybeUserNote, Guid userNoteId)
+        {
+            if (maybeUserNote is null)
+            {
+                throw new NotFoundUserNoteException(userNoteId);
+            }
+        }
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidUserNoteException = new InvalidUserNoteException();
