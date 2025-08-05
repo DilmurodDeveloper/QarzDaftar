@@ -6,5 +6,8 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
     public partial class StorageBroker
     {
         public DbSet<SubscriptionHistory> SubscriptionHistories { get; set; }
+
+        public async ValueTask<SubscriptionHistory> InsertSubscriptionHistory(
+            SubscriptionHistory subscriptionHistory) => await InsertAsync(subscriptionHistory);
     }
 }
