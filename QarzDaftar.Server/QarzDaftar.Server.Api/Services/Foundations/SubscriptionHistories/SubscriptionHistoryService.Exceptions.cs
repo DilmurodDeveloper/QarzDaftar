@@ -1,5 +1,6 @@
 ﻿using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories;
 using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories.Exceptions;
 using Xeptions;
@@ -36,6 +37,20 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
                     new FailedSubscriptionHistoryStorageException(sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedSubscriptionHistoryStorageException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedSubscriptionHistoryException =
+                    new LockedSubscriptionHistoryException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedSubscriptionHistoryException);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedSubscriptionHistoryStorageException =
+                    new FailedSubscriptionHistoryStorageException(dbUpdateException);
+
+                throw CreateAndLogDependencyException(failedSubscriptionHistoryStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -103,6 +118,16 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
             this.loggingBroker.LogError(SubscriptionHistoryDependencyValidationException);
 
             return SubscriptionHistoryDependencyValidationException;
+        }
+
+        private SubscriptionHistoryDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var subscriptionHistoryDependencyException =
+                new SubscriptionHistoryDependencyException(exception);
+
+            this.loggingBroker.LogError(subscriptionHistoryDependencyException);
+
+            throw subscriptionHistoryDependencyException;
         }
 
         private SubscriptionHistoryServiceException CreateAndLogServiceException(Xeption exception)
