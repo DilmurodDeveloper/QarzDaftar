@@ -31,5 +31,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
 
         public IQueryable<UserNote> RetrieveAllUserNotes() =>
             TryCatch(() => this.storageBroker.SelectAllUserNotes());
+
+        public ValueTask<UserNote> RetrieveUserNoteByIdAsync(Guid userNoteId) =>
+            throw new NotImplementedException();
     }
 }

@@ -6,5 +6,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
     {
         ValueTask<UserNote> AddUserNoteAsync(UserNote userNote);
         IQueryable<UserNote> RetrieveAllUserNotes();
+        ValueTask<UserNote> RetrieveUserNoteByIdAsync(Guid userNoteId);
     }
 }
