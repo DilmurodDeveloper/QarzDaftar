@@ -55,6 +55,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
                 UserNote maybeUserNote =
                     await this.storageBroker.SelectUserNoteByIdAsync(userNote.Id);
 
+                ValidateAgainstStorageUserNoteOnModify(userNote, maybeUserNote);
+
                 return await this.storageBroker.UpdateUserNoteAsync(userNote);
             }
             catch (NullUserNoteException nullUserNoteException)
@@ -70,6 +72,15 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
             {
                 var userNoteValidationException =
                     new UserNoteValidationException(invalidUserNoteException);
+
+                this.loggingBroker.LogError(userNoteValidationException);
+
+                throw userNoteValidationException;
+            }
+            catch (NotFoundUserNoteException notFoundUserNoteException)
+            {
+                var userNoteValidationException =
+                    new UserNoteValidationException(notFoundUserNoteException);
 
                 this.loggingBroker.LogError(userNoteValidationException);
 
