@@ -7,5 +7,6 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
         ValueTask<UserNote> InsertUserNoteAsync(UserNote userNote);
         IQueryable<UserNote> SelectAllUserNotes();
         ValueTask<UserNote> SelectUserNoteByIdAsync(Guid userNoteId);
+        ValueTask<UserNote> UpdateUserNoteAsync(UserNote userNote);
     }
 }
