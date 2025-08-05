@@ -8,5 +8,6 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
         IQueryable<SubscriptionHistory> SelectAllSubscriptionHistories();
         ValueTask<SubscriptionHistory> SelectSubscriptionHistoryByIdAsync(Guid subscriptionHistoryId);
         ValueTask<SubscriptionHistory> UpdateSubscriptionHistoryAsync(SubscriptionHistory subscriptionHistory);
+        ValueTask<SubscriptionHistory> DeleteSubscriptionHistoryAsync(SubscriptionHistory subscriptionHistory);
     }
 }
