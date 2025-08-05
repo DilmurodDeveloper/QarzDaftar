@@ -51,6 +51,9 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
             Message = "Date is required"
         };
 
+        private void ValidateUserNoteId(Guid userNoteId) =>
+            Validate((Rule: IsInvalid(userNoteId), Parameter: nameof(UserNote.Id)));
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidUserNoteException = new InvalidUserNoteException();

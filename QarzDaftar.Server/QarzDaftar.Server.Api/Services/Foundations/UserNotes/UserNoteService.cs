@@ -2,6 +2,7 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
+using QarzDaftar.Server.Api.Models.Foundations.UserNotes.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
 {
@@ -32,7 +33,23 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
         public IQueryable<UserNote> RetrieveAllUserNotes() =>
             TryCatch(() => this.storageBroker.SelectAllUserNotes());
 
-        public async ValueTask<UserNote> RetrieveUserNoteByIdAsync(Guid userNoteId) =>
-            await this.storageBroker.SelectUserNoteByIdAsync(userNoteId);
+        public async ValueTask<UserNote> RetrieveUserNoteByIdAsync(Guid userNoteId)
+        {
+            try
+            {
+                ValidateUserNoteId(userNoteId);
+
+                return await this.storageBroker.SelectUserNoteByIdAsync(userNoteId);
+            }
+            catch (InvalidUserNoteException invalidUserNoteException)
+            {
+                var userNoteValidationException =
+                    new UserNoteValidationException(invalidUserNoteException);
+
+                this.loggingBroker.LogError(userNoteValidationException);
+
+                throw userNoteValidationException;
+            }
+        }
     }
 }
