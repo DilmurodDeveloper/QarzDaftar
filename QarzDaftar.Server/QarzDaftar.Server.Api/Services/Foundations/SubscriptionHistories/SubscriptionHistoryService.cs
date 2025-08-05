@@ -21,7 +21,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<SubscriptionHistory> AddSubscriptionHistoryAsync(
-            SubscriptionHistory subscriptionHistory) => throw new NotImplementedException();
+        public async ValueTask<SubscriptionHistory> AddSubscriptionHistoryAsync(
+            SubscriptionHistory subscriptionHistory) =>
+                await this.storageBroker.InsertSubscriptionHistoryAsync(subscriptionHistory);
     }
 }
