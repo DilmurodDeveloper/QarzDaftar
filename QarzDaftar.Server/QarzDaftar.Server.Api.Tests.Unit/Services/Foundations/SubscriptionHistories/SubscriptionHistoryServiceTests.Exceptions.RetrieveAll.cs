@@ -47,5 +47,48 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.SubscriptionHist
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomString();
+            var serverException = new Exception(exceptionMessage);
+
+            var failedSubscriptionHistoryServiceException =
+                new FailedSubscriptionHistoryServiceException(serverException);
+
+            var expectedSubscriptionHistoryServiceException =
+                new SubscriptionHistoryServiceException(
+                    failedSubscriptionHistoryServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllSubscriptionHistories()).Throws(serverException);
+
+            // when 
+            Action retrieveAllSubscriptionHistoryActions = () =>
+                this.subscriptionHistoryService.RetrieveAllSubscriptionHistories();
+
+            var actualSubscriptionHistoryServiceException =
+                Assert.Throws<SubscriptionHistoryServiceException>(
+                    retrieveAllSubscriptionHistoryActions);
+
+            // then
+            actualSubscriptionHistoryServiceException.Should()
+                .BeEquivalentTo(expectedSubscriptionHistoryServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllSubscriptionHistories(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSubscriptionHistoryServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
