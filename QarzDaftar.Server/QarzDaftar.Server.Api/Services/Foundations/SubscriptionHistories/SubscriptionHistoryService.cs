@@ -1,7 +1,9 @@
-﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using Microsoft.Data.SqlClient;
+using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories;
+using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
 {
@@ -30,7 +32,25 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
                 .InsertSubscriptionHistoryAsync(subscriptionHistory);
         });
 
-        public IQueryable<SubscriptionHistory> RetrieveAllSubscriptionHistories() =>
-            this.storageBroker.SelectAllSubscriptionHistories();
+        public IQueryable<SubscriptionHistory> RetrieveAllSubscriptionHistories()
+        {
+            try
+            {
+                return this.storageBroker.SelectAllSubscriptionHistories();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedSubscriptionHistoryStorageException =
+                    new FailedSubscriptionHistoryStorageException(sqlException);
+
+                var subscriptionHistoryDependencyException =
+                    new SubscriptionHistoryDependencyException(
+                        failedSubscriptionHistoryStorageException);
+
+                this.loggingBroker.LogCritical(subscriptionHistoryDependencyException);
+
+                throw subscriptionHistoryDependencyException;
+            }
+        }
     }
 }
