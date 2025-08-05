@@ -93,5 +93,38 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(subscriptionHistoryServiceException.InnerException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<SubscriptionHistory>> PutSubscriptionHistoryAsync(SubscriptionHistory subscriptionHistory)
+        {
+            try
+            {
+                SubscriptionHistory modifySubscriptionHistory =
+                    await this.subscriptionHistoryService.ModifySubscriptionHistoryAsync(subscriptionHistory);
+
+                return Ok(modifySubscriptionHistory);
+            }
+            catch (SubscriptionHistoryValidationException subscriptionHistoryValidationException)
+                when (subscriptionHistoryValidationException.InnerException is NotFoundSubscriptionHistoryException)
+            {
+                return NotFound(subscriptionHistoryValidationException.InnerException);
+            }
+            catch (SubscriptionHistoryValidationException subscriptionHistoryValidationException)
+            {
+                return BadRequest(subscriptionHistoryValidationException.InnerException);
+            }
+            catch (SubscriptionHistoryDependencyValidationException subscriptionHistoryDependencyValidationException)
+            {
+                return Conflict(subscriptionHistoryDependencyValidationException.InnerException);
+            }
+            catch (SubscriptionHistoryDependencyException subscriptionHistoryDependencyException)
+            {
+                return InternalServerError(subscriptionHistoryDependencyException.InnerException);
+            }
+            catch (SubscriptionHistoryServiceException subscriptionHistoryServiceException)
+            {
+                return InternalServerError(subscriptionHistoryServiceException.InnerException);
+            }
+        }
     }
 }
