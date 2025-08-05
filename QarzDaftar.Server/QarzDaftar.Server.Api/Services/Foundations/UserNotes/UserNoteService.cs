@@ -44,5 +44,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
 
             return maybeUserNote;
         });
+
+        public ValueTask<UserNote> ModifyUserNoteAsync(UserNote userNote) =>
+            throw new NotImplementedException();
     }
 }
