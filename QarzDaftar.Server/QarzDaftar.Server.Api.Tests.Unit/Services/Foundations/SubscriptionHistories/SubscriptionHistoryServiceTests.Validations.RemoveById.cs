@@ -53,7 +53,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.SubscriptionHist
             // given
             Guid inputSubscriptionHistoryId = Guid.NewGuid();
             SubscriptionHistory noSubscriptionHistory = null;
-            
+
             var notFoundSubscriptionHistoryException =
                 new NotFoundSubscriptionHistoryException(inputSubscriptionHistoryId);
 
