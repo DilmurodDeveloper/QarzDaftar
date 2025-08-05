@@ -21,13 +21,29 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<SubscriptionHistory> AddSubscriptionHistoryAsync(
-            SubscriptionHistory subscriptionHistory) => TryCatch(async () =>
+        public ValueTask<SubscriptionHistory> AddSubscriptionHistoryAsync(SubscriptionHistory subscriptionHistory) =>
+        TryCatch(async () =>
         {
             ValidateSubscriptionHistoryOnAdd(subscriptionHistory);
 
             return await this.storageBroker
                 .InsertSubscriptionHistoryAsync(subscriptionHistory);
+        });
+
+        public IQueryable<SubscriptionHistory> RetrieveAllSubscriptionHistories() =>
+            TryCatch(() => this.storageBroker.SelectAllSubscriptionHistories());
+
+        public ValueTask<SubscriptionHistory> RetrieveSubscriptionHistoryByIdAsync(Guid subscriptionHistoryId) =>
+        TryCatch(async () =>
+        {
+            ValidateSubscriptionHistoryId(subscriptionHistoryId);
+
+            SubscriptionHistory maybeSubscriptionHistory =
+                await this.storageBroker.SelectSubscriptionHistoryByIdAsync(subscriptionHistoryId);
+
+            ValidateStorageSubscriptionHistory(maybeSubscriptionHistory, subscriptionHistoryId);
+
+            return maybeSubscriptionHistory;
         });
     }
 }
