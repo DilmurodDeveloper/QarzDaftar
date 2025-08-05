@@ -31,6 +31,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
         });
 
         public IQueryable<SubscriptionHistory> RetrieveAllSubscriptionHistories() =>
-            throw new NotImplementedException();
+            this.storageBroker.SelectAllSubscriptionHistories();
     }
 }
