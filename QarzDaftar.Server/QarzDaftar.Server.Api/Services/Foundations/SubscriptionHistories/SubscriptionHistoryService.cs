@@ -1,9 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
-using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories;
-using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
 {
@@ -23,8 +21,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<SubscriptionHistory> AddSubscriptionHistoryAsync(
-            SubscriptionHistory subscriptionHistory) => TryCatch(async () =>
+        public ValueTask<SubscriptionHistory> AddSubscriptionHistoryAsync(SubscriptionHistory subscriptionHistory) =>
+        TryCatch(async () =>
         {
             ValidateSubscriptionHistoryOnAdd(subscriptionHistory);
 
@@ -35,63 +33,17 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
         public IQueryable<SubscriptionHistory> RetrieveAllSubscriptionHistories() =>
             TryCatch(() => this.storageBroker.SelectAllSubscriptionHistories());
 
-        public async ValueTask<SubscriptionHistory> RetrieveSubscriptionHistoryByIdAsync(
-            Guid subscriptionHistoryId)
+        public ValueTask<SubscriptionHistory> RetrieveSubscriptionHistoryByIdAsync(Guid subscriptionHistoryId) =>
+        TryCatch(async () =>
         {
-            try
-            {
-                ValidateSubscriptionHistoryId(subscriptionHistoryId);
+            ValidateSubscriptionHistoryId(subscriptionHistoryId);
 
-                SubscriptionHistory maybeSubscriptionHistory =
-                    await this.storageBroker.SelectSubscriptionHistoryByIdAsync(subscriptionHistoryId);
+            SubscriptionHistory maybeSubscriptionHistory =
+                await this.storageBroker.SelectSubscriptionHistoryByIdAsync(subscriptionHistoryId);
 
-                ValidateStorageSubscriptionHistory(maybeSubscriptionHistory, subscriptionHistoryId);
+            ValidateStorageSubscriptionHistory(maybeSubscriptionHistory, subscriptionHistoryId);
 
-                return maybeSubscriptionHistory;
-            }
-            catch (InvalidSubscriptionHistoryException invalidSubscriptionHistoryException)
-            {
-                var subscriptionHistoryValidationException =
-                    new SubscriptionHistoryValidationException(invalidSubscriptionHistoryException);
-
-                this.loggingBroker.LogError(subscriptionHistoryValidationException);
-
-                throw subscriptionHistoryValidationException;
-            }
-            catch (NotFoundSubscriptionHistoryException notFoundSubscriptionHistoryException)
-            {
-                var subscriptionHistoryValidationException =
-                    new SubscriptionHistoryValidationException(notFoundSubscriptionHistoryException);
-
-                this.loggingBroker.LogError(subscriptionHistoryValidationException);
-
-                throw subscriptionHistoryValidationException;
-            }
-            catch (SqlException sqlException)
-            {
-                var failedSubscriptionHistoryStorageException =
-                    new FailedSubscriptionHistoryStorageException(sqlException);
-
-                var subscriptionHistoryDependencyException =
-                    new SubscriptionHistoryDependencyException(
-                        failedSubscriptionHistoryStorageException);
-
-                this.loggingBroker.LogCritical(subscriptionHistoryDependencyException);
-
-                throw subscriptionHistoryDependencyException;
-            }
-            catch (Exception exception)
-            {
-                var failedSubscriptionHistoryServiceException =
-                    new FailedSubscriptionHistoryServiceException(exception);
-
-                var subscriptionHistoryServiceException =
-                    new SubscriptionHistoryServiceException(failedSubscriptionHistoryServiceException);
-
-                this.loggingBroker.LogError(subscriptionHistoryServiceException);
-
-                throw subscriptionHistoryServiceException;
-            }
-        }
+            return maybeSubscriptionHistory;
+        });
     }
 }

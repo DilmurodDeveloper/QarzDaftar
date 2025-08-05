@@ -26,6 +26,10 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
             {
                 throw CreateAndLogValidationException(invalidSubscriptionHistoryException);
             }
+            catch (NotFoundSubscriptionHistoryException notFoundSubscriptionHistoryException)
+            {
+                throw CreateAndLogValidationException(notFoundSubscriptionHistoryException);
+            }
             catch (SqlException sqlException)
             {
                 var failedSubscriptionHistoryStorageException =

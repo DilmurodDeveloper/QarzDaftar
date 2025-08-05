@@ -1,5 +1,4 @@
-﻿using QarzDaftar.Server.Api.Models.Foundations.Payments;
-using Xeptions;
+﻿using Xeptions;
 
 namespace QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories.Exceptions
 {

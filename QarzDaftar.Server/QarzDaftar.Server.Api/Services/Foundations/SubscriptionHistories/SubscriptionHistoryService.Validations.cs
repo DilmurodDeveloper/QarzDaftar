@@ -48,7 +48,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
             Validate((Rule: IsInvalid(subscriptionHistoryId), Parameter: nameof(SubscriptionHistory.Id)));
 
         private static void ValidateStorageSubscriptionHistory(
-            SubscriptionHistory maybeSubscriptionHistory,Guid subscriptionHistoryId)
+            SubscriptionHistory maybeSubscriptionHistory, Guid subscriptionHistoryId)
         {
             if (maybeSubscriptionHistory is null)
             {

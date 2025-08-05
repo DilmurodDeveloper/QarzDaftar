@@ -12,7 +12,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.SubscriptionHist
         {
             // given
             Guid randomSubscriptionHistoryId = Guid.NewGuid();
-            Guid inputSubscriptionHistoryId =randomSubscriptionHistoryId;
+            Guid inputSubscriptionHistoryId = randomSubscriptionHistoryId;
 
             SubscriptionHistory randomSubscriptionHistory =
                 CreateRandomSubscriptionHistory();
