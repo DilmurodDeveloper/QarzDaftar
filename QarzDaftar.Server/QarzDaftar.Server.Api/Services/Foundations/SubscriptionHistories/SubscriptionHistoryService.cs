@@ -52,7 +52,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
         {
             try
             {
-                ValidateSubscriptionHistoryNotNull(subscriptionHistory);
+                ValidateSubscriptionHistoryOnModify(subscriptionHistory);
 
                 SubscriptionHistory maybeSubscriptionHistory =
                     await this.storageBroker.SelectSubscriptionHistoryByIdAsync(subscriptionHistory.Id);
@@ -63,6 +63,15 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
             {
                 var subscriptionHistoryValidationException =
                     new SubscriptionHistoryValidationException(nullSubscriptionHistoryException);
+
+                this.loggingBroker.LogError(subscriptionHistoryValidationException);
+
+                throw subscriptionHistoryValidationException;
+            }
+            catch (InvalidSubscriptionHistoryException invalidSubscriptionHistoryException)
+            {
+                var subscriptionHistoryValidationException =
+                    new SubscriptionHistoryValidationException(invalidSubscriptionHistoryException);
 
                 this.loggingBroker.LogError(subscriptionHistoryValidationException);
 
