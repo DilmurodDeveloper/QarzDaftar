@@ -89,5 +89,38 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(userNoteServiceException.InnerException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<UserNote>> PutUserNoteAsync(UserNote userNote)
+        {
+            try
+            {
+                UserNote modifyUserNote =
+                    await this.userNoteService.ModifyUserNoteAsync(userNote);
+
+                return Ok(modifyUserNote);
+            }
+            catch (UserNoteValidationException userNoteValidationException)
+                when (userNoteValidationException.InnerException is NotFoundUserNoteException)
+            {
+                return NotFound(userNoteValidationException.InnerException);
+            }
+            catch (UserNoteValidationException userNoteValidationException)
+            {
+                return BadRequest(userNoteValidationException.InnerException);
+            }
+            catch (UserNoteDependencyValidationException userNoteDependencyValidationException)
+            {
+                return Conflict(userNoteDependencyValidationException.InnerException);
+            }
+            catch (UserNoteDependencyException userNoteDependencyException)
+            {
+                return InternalServerError(userNoteDependencyException.InnerException);
+            }
+            catch (UserNoteServiceException userNoteServiceException)
+            {
+                return InternalServerError(userNoteServiceException.InnerException);
+            }
+        }
     }
 }
