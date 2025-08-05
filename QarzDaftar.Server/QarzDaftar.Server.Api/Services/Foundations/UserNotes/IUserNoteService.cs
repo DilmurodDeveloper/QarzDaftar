@@ -8,5 +8,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
         IQueryable<UserNote> RetrieveAllUserNotes();
         ValueTask<UserNote> RetrieveUserNoteByIdAsync(Guid userNoteId);
         ValueTask<UserNote> ModifyUserNoteAsync(UserNote userNote);
+        ValueTask<UserNote> RemoveUserNoteByIdAsync(Guid userNoteId);
     }
 }
