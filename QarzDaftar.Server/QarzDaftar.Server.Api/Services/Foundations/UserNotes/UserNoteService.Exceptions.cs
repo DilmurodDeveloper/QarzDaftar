@@ -1,5 +1,6 @@
 ﻿using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes.Exceptions;
 using Xeptions;
@@ -35,6 +36,20 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
                     new FailedUserNoteStorageException(sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedUserNoteStorageException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedUserNoteException =
+                    new LockedUserNoteException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedUserNoteException);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedUserNoteStorageException =
+                    new FailedUserNoteStorageException(dbUpdateException);
+
+                throw CreateAndLogDependencyException(failedUserNoteStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -99,6 +114,14 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
             this.loggingBroker.LogError(UserNoteDependencyValidationException);
 
             return UserNoteDependencyValidationException;
+        }
+
+        private UserNoteDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var userNoteDependencyException = new UserNoteDependencyException(exception);
+            this.loggingBroker.LogError(userNoteDependencyException);
+
+            throw userNoteDependencyException;
         }
 
         private UserNoteServiceException CreateAndLogServiceException(Xeption exception)
