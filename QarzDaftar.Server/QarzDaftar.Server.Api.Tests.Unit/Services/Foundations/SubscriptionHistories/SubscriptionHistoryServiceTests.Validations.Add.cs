@@ -12,8 +12,8 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.SubscriptionHist
         {
             // given
             SubscriptionHistory nullSubscriptionHistory = null;
-            
-            var nullSubscriptionHistoryException = 
+
+            var nullSubscriptionHistoryException =
                 new NullSubscriptionHistoryException();
 
             var expectedSubscriptionHistoryValidationException =
