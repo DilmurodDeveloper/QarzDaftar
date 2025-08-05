@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
@@ -104,6 +105,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
                 this.loggingBroker.LogError(subscriptionHistoryDependencyValidationException);
 
                 throw subscriptionHistoryDependencyValidationException;
+            }
+            catch (SqlException sqlException)
+            {
+                var failedSubscriptionHistoryStorageException =
+                    new FailedSubscriptionHistoryStorageException(sqlException);
+
+                var subscriptionHistoryDependencyException =
+                    new SubscriptionHistoryDependencyException(failedSubscriptionHistoryStorageException);
+
+                this.loggingBroker.LogCritical(subscriptionHistoryDependencyException);
+
+                throw subscriptionHistoryDependencyException;
             }
         }
     }
