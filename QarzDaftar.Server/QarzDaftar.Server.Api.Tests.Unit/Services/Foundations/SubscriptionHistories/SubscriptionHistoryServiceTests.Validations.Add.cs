@@ -46,6 +46,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.SubscriptionHist
         }
 
         [Theory]
+        [InlineData(null)]
         [InlineData(0)]
         [InlineData(-1)]
         public async Task ShouldThrowValidationExceptionOnAddIfSubscriptionHistoryIsInvalidAndLogItAsync(
