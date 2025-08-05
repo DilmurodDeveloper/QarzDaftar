@@ -80,6 +80,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories
 
                 throw subscriptionHistoryDependencyException;
             }
+            catch (Exception exception)
+            {
+                var failedSubscriptionHistoryServiceException =
+                    new FailedSubscriptionHistoryServiceException(exception);
+
+                var subscriptionHistoryServiceException =
+                    new SubscriptionHistoryServiceException(failedSubscriptionHistoryServiceException);
+
+                this.loggingBroker.LogError(subscriptionHistoryServiceException);
+
+                throw subscriptionHistoryServiceException;
+            }
         }
     }
 }
