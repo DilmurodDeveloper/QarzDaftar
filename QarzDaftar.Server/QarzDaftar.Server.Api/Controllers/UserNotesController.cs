@@ -42,5 +42,52 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(userNoteServiceException.InnerException);
             }
         }
+
+        [HttpGet("All")]
+        public ActionResult<IQueryable<UserNote>> GetAlluserNotes()
+        {
+            try
+            {
+                IQueryable<UserNote> alluserNotes =
+                    this.userNoteService.RetrieveAllUserNotes();
+
+                return Ok(alluserNotes);
+            }
+            catch (UserNoteDependencyException userNoteDependencyException)
+            {
+                return InternalServerError(userNoteDependencyException.InnerException);
+            }
+            catch (UserNoteServiceException userNoteServiceException)
+            {
+                return InternalServerError(userNoteServiceException.InnerException);
+            }
+        }
+
+        [HttpGet("ById")]
+        public async ValueTask<ActionResult<UserNote>> GetUserNoteByIdAsync(Guid userNoteId)
+        {
+            try
+            {
+                return await this.userNoteService.RetrieveUserNoteByIdAsync(userNoteId);
+            }
+            catch (UserNoteDependencyException userNoteDependencyException)
+            {
+                return InternalServerError(userNoteDependencyException.InnerException);
+            }
+            catch (UserNoteValidationException userNoteValidationException)
+                when (userNoteValidationException.InnerException is InvalidUserNoteException)
+            {
+                return BadRequest(userNoteValidationException.InnerException);
+            }
+            catch (UserNoteValidationException userNoteValidationException)
+                when (userNoteValidationException.InnerException is NotFoundUserNoteException)
+            {
+                return NotFound(userNoteValidationException.InnerException);
+            }
+            catch (UserNoteServiceException userNoteServiceException)
+            {
+                return InternalServerError(userNoteServiceException.InnerException);
+            }
+        }
     }
 }
