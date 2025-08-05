@@ -7,5 +7,6 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
         ValueTask<SubscriptionHistory> InsertSubscriptionHistoryAsync(SubscriptionHistory subscriptionHistory);
         IQueryable<SubscriptionHistory> SelectAllSubscriptionHistories();
         ValueTask<SubscriptionHistory> SelectSubscriptionHistoryByIdAsync(Guid subscriptionHistoryId);
+        ValueTask<SubscriptionHistory> UpdateSubscriptionHistoryAsync(SubscriptionHistory subscriptionHistory);
     }
 }
