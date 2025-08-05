@@ -1,4 +1,5 @@
-﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using Microsoft.Data.SqlClient;
+using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
@@ -63,6 +64,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
                 this.loggingBroker.LogError(userNoteValidationException);
 
                 throw userNoteValidationException;
+            }
+            catch (SqlException sqlException)
+            {
+                var failedUserNoteStorageException =
+                    new FailedUserNoteStorageException(sqlException);
+
+                var userNoteDependencyException =
+                    new UserNoteDependencyException(failedUserNoteStorageException);
+
+                this.loggingBroker.LogCritical(userNoteDependencyException);
+
+                throw userNoteDependencyException;
             }
         }
     }
