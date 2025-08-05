@@ -26,5 +26,8 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
 
             return await ValueTask.FromResult(subscriptionHistoryWithDetails);
         }
+
+        public async ValueTask<SubscriptionHistory> UpdateSubscriptionHistoryAsync(
+            SubscriptionHistory subscriptionHistory) => await UpdateAsync(subscriptionHistory);
     }
 }
