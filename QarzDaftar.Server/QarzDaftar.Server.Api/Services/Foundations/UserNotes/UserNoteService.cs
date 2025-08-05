@@ -50,7 +50,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
         {
             try
             {
-                ValidateUserNoteNotNull(userNote);
+                ValidateUserNoteOnModify(userNote);
 
                 UserNote maybeUserNote =
                     await this.storageBroker.SelectUserNoteByIdAsync(userNote.Id);
@@ -61,6 +61,15 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
             {
                 var userNoteValidationException =
                     new UserNoteValidationException(nullUserNoteException);
+
+                this.loggingBroker.LogError(userNoteValidationException);
+
+                throw userNoteValidationException;
+            }
+            catch (InvalidUserNoteException invalidUserNoteException)
+            {
+                var userNoteValidationException =
+                    new UserNoteValidationException(invalidUserNoteException);
 
                 this.loggingBroker.LogError(userNoteValidationException);
 
