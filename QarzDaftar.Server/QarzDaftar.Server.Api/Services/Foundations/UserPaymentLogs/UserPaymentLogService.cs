@@ -44,5 +44,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 
             return maybeUserPaymentLog;
         });
+
+        public ValueTask<UserPaymentLog> ModifyUserPaymentLogAsync(UserPaymentLog userPaymentLog) =>
+        TryCatch(async () =>
+        {
+            ValidateUserPaymentLogOnModify(userPaymentLog);
+
+            UserPaymentLog maybeUserPaymentLog =
+                await this.storageBroker.SelectUserPaymentLogByIdAsync(userPaymentLog.Id);
+
+            ValidateAgainstStorageUserPaymentLogOnModify(userPaymentLog, maybeUserPaymentLog);
+
+            return await this.storageBroker.UpdateUserPaymentLogAsync(userPaymentLog);
+        });
     }
 }

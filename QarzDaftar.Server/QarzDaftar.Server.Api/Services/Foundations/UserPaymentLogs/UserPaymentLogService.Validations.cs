@@ -63,6 +63,37 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
             }
         }
 
+        private void ValidateUserPaymentLogOnModify(UserPaymentLog userPaymentLog)
+        {
+            ValidateUserPaymentLogNotNull(userPaymentLog);
+
+            Validate(
+                (Rule: IsInvalid(userPaymentLog.Id), Parameter: nameof(UserPaymentLog.Id)),
+                (Rule: IsInvalid(userPaymentLog.Amount), Parameter: nameof(UserPaymentLog.Amount)),
+                (Rule: IsInvalid(userPaymentLog.PaymentMethod), Parameter: nameof(UserPaymentLog.PaymentMethod)),
+                (Rule: IsInvalid(userPaymentLog.Purpose), Parameter: nameof(UserPaymentLog.Purpose)),
+                (Rule: IsInvalid(userPaymentLog.Comment), Parameter: nameof(UserPaymentLog.Comment)),
+                (Rule: IsInvalid(userPaymentLog.PaidAt), Parameter: nameof(UserPaymentLog.PaidAt)),
+                (Rule: IsInvalid(userPaymentLog.CreatedDate), Parameter: nameof(UserPaymentLog.CreatedDate)),
+                (Rule: IsInvalid(userPaymentLog.UserId), Parameter: nameof(UserPaymentLog.UserId)));
+        }
+
+        private void ValidateAgainstStorageUserPaymentLogOnModify(
+            UserPaymentLog userPaymentLog, UserPaymentLog storageUserPaymentLog)
+        {
+            ValidateStorageUserPaymentLog(storageUserPaymentLog, userPaymentLog.Id);
+
+            Validate(
+                (Rule: IsInvalid(userPaymentLog.Id), Parameter: nameof(UserPaymentLog.Id)),
+                (Rule: IsInvalid(userPaymentLog.Amount), Parameter: nameof(UserPaymentLog.Amount)),
+                (Rule: IsInvalid(userPaymentLog.PaymentMethod), Parameter: nameof(UserPaymentLog.PaymentMethod)),
+                (Rule: IsInvalid(userPaymentLog.Purpose), Parameter: nameof(UserPaymentLog.Purpose)),
+                (Rule: IsInvalid(userPaymentLog.Comment), Parameter: nameof(UserPaymentLog.Comment)),
+                (Rule: IsInvalid(userPaymentLog.PaidAt), Parameter: nameof(UserPaymentLog.PaidAt)),
+                (Rule: IsInvalid(userPaymentLog.CreatedDate), Parameter: nameof(UserPaymentLog.CreatedDate)),
+                (Rule: IsInvalid(userPaymentLog.UserId), Parameter: nameof(UserPaymentLog.UserId)));
+        }
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidUserPaymentLogException = new InvalidUserPaymentLogException();
