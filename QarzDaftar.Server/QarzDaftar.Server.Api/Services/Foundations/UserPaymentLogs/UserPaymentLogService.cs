@@ -100,6 +100,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 
                 throw userPaymentLogDependencyException;
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedUserPaymentLogException =
+                    new LockedUserPaymentLogException(dbUpdateConcurrencyException);
+
+                var userPaymentLogDependencyValidationException =
+                    new UserPaymentLogDependencyValidationException(lockedUserPaymentLogException);
+
+                this.loggingBroker.LogError(userPaymentLogDependencyValidationException);
+
+                throw userPaymentLogDependencyValidationException;
+            }
             catch (DbUpdateException dbUpdateException)
             {
                 var failedUserPaymentLogStorageException =
