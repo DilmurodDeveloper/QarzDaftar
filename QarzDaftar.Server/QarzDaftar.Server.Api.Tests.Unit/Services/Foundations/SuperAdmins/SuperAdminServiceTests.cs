@@ -30,7 +30,11 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.SuperAdmins
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: DateTime.UnixEpoch).GetValue();
 
-        private static string GetRandomUsername() => Guid.NewGuid().ToString();
+        private static string GetRandomUsername() =>
+            Guid.NewGuid().ToString();
+
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
 
         private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
