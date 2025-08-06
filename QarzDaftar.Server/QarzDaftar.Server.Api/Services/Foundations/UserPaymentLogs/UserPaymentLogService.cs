@@ -1,9 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
-using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs;
-using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 {
@@ -31,36 +29,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
             return await this.storageBroker.InsertUserPaymentLogAsync(userPaymentLog);
         });
 
-        public IQueryable<UserPaymentLog> RetrieveAllUserPaymentLogs()
-        {
-            try
-            {
-                return this.storageBroker.SelectAllUserPaymentLogs();
-            }
-            catch (SqlException sqlException)
-            {
-                var failedUserPaymentLogStorageException =
-                    new FailedUserPaymentLogStorageException(sqlException);
-
-                var userPaymentLogDependencyException =
-                    new UserPaymentLogDependencyException(failedUserPaymentLogStorageException);
-
-                this.loggingBroker.LogCritical(userPaymentLogDependencyException);
-
-                throw userPaymentLogDependencyException;
-            }
-            catch (Exception exception)
-            {
-                var failedUserPaymentLogServiceException =
-                    new FailedUserPaymentLogServiceException(exception);
-
-                var userPaymentLogServiceException =
-                    new UserPaymentLogServiceException(failedUserPaymentLogServiceException);
-
-                this.loggingBroker.LogError(userPaymentLogServiceException);
-
-                throw userPaymentLogServiceException;
-            }
-        }
+        public IQueryable<UserPaymentLog> RetrieveAllUserPaymentLogs() =>
+            TryCatch(() => this.storageBroker.SelectAllUserPaymentLogs());
     }
 }
