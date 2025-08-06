@@ -25,6 +25,10 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
             {
                 throw CreateAndLogValidationException(invalidUserPaymentLogException);
             }
+            catch (NotFoundUserPaymentLogException notFoundUserPaymentLogException)
+            {
+                throw CreateAndLogValidationException(notFoundUserPaymentLogException);
+            }
             catch (SqlException sqlException)
             {
                 var failedUserPaymentLogStorageException =

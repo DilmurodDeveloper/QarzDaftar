@@ -1,9 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
-using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs;
-using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 {
@@ -34,61 +32,17 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
         public IQueryable<UserPaymentLog> RetrieveAllUserPaymentLogs() =>
             TryCatch(() => this.storageBroker.SelectAllUserPaymentLogs());
 
-        public async ValueTask<UserPaymentLog> RetrieveUserPaymentLogByIdAsync(Guid userPaymentLogId)
+        public ValueTask<UserPaymentLog> RetrieveUserPaymentLogByIdAsync(Guid userPaymentLogId) =>
+        TryCatch(async () =>
         {
-            try
-            {
-                ValidateUserPaymentLogId(userPaymentLogId);
+            ValidateUserPaymentLogId(userPaymentLogId);
 
-                UserPaymentLog maybeUserPaymentLog =
-                    await this.storageBroker.SelectUserPaymentLogByIdAsync(userPaymentLogId);
+            UserPaymentLog maybeUserPaymentLog =
+                await this.storageBroker.SelectUserPaymentLogByIdAsync(userPaymentLogId);
 
-                ValidateStorageUserPaymentLog(maybeUserPaymentLog, userPaymentLogId);
+            ValidateStorageUserPaymentLog(maybeUserPaymentLog, userPaymentLogId);
 
-                return maybeUserPaymentLog;
-            }
-            catch (InvalidUserPaymentLogException invalidUserPaymentLogException)
-            {
-                var userPaymentLogValidationException =
-                    new UserPaymentLogValidationException(invalidUserPaymentLogException);
-
-                this.loggingBroker.LogError(userPaymentLogValidationException);
-
-                throw userPaymentLogValidationException;
-            }
-            catch (NotFoundUserPaymentLogException notFoundUserPaymentLogException)
-            {
-                var userPaymentLogValidationException =
-                    new UserPaymentLogValidationException(notFoundUserPaymentLogException);
-
-                this.loggingBroker.LogError(userPaymentLogValidationException);
-
-                throw userPaymentLogValidationException;
-            }
-            catch (SqlException sqlException)
-            {
-                var failedUserPaymentLogStorageException =
-                    new FailedUserPaymentLogStorageException(sqlException);
-
-                var userPaymentLogDependencyException =
-                    new UserPaymentLogDependencyException(failedUserPaymentLogStorageException);
-
-                this.loggingBroker.LogCritical(userPaymentLogDependencyException);
-
-                throw userPaymentLogDependencyException;
-            }
-            catch (Exception exception)
-            {
-                var failedUserPaymentLogServiceException =
-                    new FailedUserPaymentLogServiceException(exception);
-
-                var userPaymentLogServiceException =
-                    new UserPaymentLogServiceException(failedUserPaymentLogServiceException);
-
-                this.loggingBroker.LogError(userPaymentLogServiceException);
-
-                throw userPaymentLogServiceException;
-            }
-        }
+            return maybeUserPaymentLog;
+        });
     }
 }
