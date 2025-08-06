@@ -7,5 +7,6 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
         ValueTask<UserPaymentLog> InsertUserPaymentLogAsync(UserPaymentLog userPaymentLog);
         IQueryable<UserPaymentLog> SelectAllUserPaymentLogs();
         ValueTask<UserPaymentLog> SelectUserPaymentLogByIdAsync(Guid userPaymentLogId);
+        ValueTask<UserPaymentLog> UpdateUserPaymentLogAsync(UserPaymentLog userPaymentLog);
     }
 }

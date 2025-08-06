@@ -26,5 +26,8 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
 
             return await ValueTask.FromResult(userPaymentLogWithDetails);
         }
+
+        public async ValueTask<UserPaymentLog> UpdateUserPaymentLogAsync(
+            UserPaymentLog userPaymentLog) => await UpdateAsync(userPaymentLog);
     }
 }
