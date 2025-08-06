@@ -1,10 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs;
-using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 {
@@ -61,73 +58,17 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
             return await this.storageBroker.UpdateUserPaymentLogAsync(userPaymentLog);
         });
 
-        public async ValueTask<UserPaymentLog> RemoveUserPaymentLogByIdAsync(Guid userPaymentLogId)
+        public ValueTask<UserPaymentLog> RemoveUserPaymentLogByIdAsync(Guid userPaymentLogId) =>
+        TryCatch(async () =>
         {
-            try
-            {
-                ValidateUserPaymentLogId(userPaymentLogId);
+            ValidateUserPaymentLogId(userPaymentLogId);
 
-                UserPaymentLog maybeUserPaymentLog =
-                    await this.storageBroker.SelectUserPaymentLogByIdAsync(userPaymentLogId);
+            UserPaymentLog maybeUserPaymentLog =
+                await this.storageBroker.SelectUserPaymentLogByIdAsync(userPaymentLogId);
 
-                ValidateStorageUserPaymentLog(maybeUserPaymentLog, userPaymentLogId);
+            ValidateStorageUserPaymentLog(maybeUserPaymentLog, userPaymentLogId);
 
-                return await this.storageBroker.DeleteUserPaymentLogAsync(maybeUserPaymentLog);
-            }
-            catch (InvalidUserPaymentLogException invalidUserPaymentLogException)
-            {
-                var userPaymentLogValidationException =
-                    new UserPaymentLogValidationException(invalidUserPaymentLogException);
-
-                this.loggingBroker.LogError(userPaymentLogValidationException);
-
-                throw userPaymentLogValidationException;
-            }
-            catch (NotFoundUserPaymentLogException notFoundUserPaymentLogException)
-            {
-                var userPaymentLogValidationException =
-                    new UserPaymentLogValidationException(notFoundUserPaymentLogException);
-
-                this.loggingBroker.LogError(userPaymentLogValidationException);
-
-                throw userPaymentLogValidationException;
-            }
-            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
-            {
-                var lockedUserPaymentLogException =
-                    new LockedUserPaymentLogException(dbUpdateConcurrencyException);
-
-                var userPaymentLogDependencyValidationException =
-                    new UserPaymentLogDependencyValidationException(lockedUserPaymentLogException);
-
-                this.loggingBroker.LogError(userPaymentLogDependencyValidationException);
-
-                throw userPaymentLogDependencyValidationException;
-            }
-            catch (SqlException sqlException)
-            {
-                var failedUserPaymentLogStorageException =
-                    new FailedUserPaymentLogStorageException(sqlException);
-
-                var userPaymentLogDependencyException =
-                    new UserPaymentLogDependencyException(failedUserPaymentLogStorageException);
-
-                this.loggingBroker.LogCritical(userPaymentLogDependencyException);
-
-                throw userPaymentLogDependencyException;
-            }
-            catch (Exception exception)
-            {
-                var failedUserPaymentLogServiceException =
-                    new FailedUserPaymentLogServiceException(exception);
-
-                var userPaymentLogServiceException =
-                    new UserPaymentLogServiceException(failedUserPaymentLogServiceException);
-
-                this.loggingBroker.LogError(userPaymentLogServiceException);
-
-                throw userPaymentLogServiceException;
-            }
-        }
+            return await this.storageBroker.DeleteUserPaymentLogAsync(maybeUserPaymentLog);
+        });
     }
 }
