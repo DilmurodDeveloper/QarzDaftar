@@ -1,4 +1,5 @@
-﻿using QarzDaftar.Server.Api.Brokers.DateTimes;
+﻿using Microsoft.Data.SqlClient;
+using QarzDaftar.Server.Api.Brokers.DateTimes;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs;
@@ -47,6 +48,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
                 this.loggingBroker.LogError(userPaymentLogValidationException);
 
                 throw userPaymentLogValidationException;
+            }
+            catch (SqlException sqlException)
+            {
+                var failedUserPaymentLogStorageException =
+                    new FailedUserPaymentLogStorageException(sqlException);
+
+                var userPaymentLogDependencyException =
+                    new UserPaymentLogDependencyException(failedUserPaymentLogStorageException);
+
+                this.loggingBroker.LogCritical(userPaymentLogDependencyException);
+
+                throw userPaymentLogDependencyException;
             }
         }
     }
