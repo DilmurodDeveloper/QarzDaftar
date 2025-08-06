@@ -149,5 +149,51 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserPaymentLogs
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            UserPaymentLog randomUserPaymentLog = CreateRandomUserPaymentLog();
+            UserPaymentLog someUserPaymentLog = randomUserPaymentLog;
+            Guid userPaymentLogId = someUserPaymentLog.Id;
+            var serviceException = new Exception();
+
+            var failedUserPaymentLogServiceException =
+                new FailedUserPaymentLogServiceException(serviceException);
+
+            var expectedUserPaymentLogServiceException =
+                new UserPaymentLogServiceException(failedUserPaymentLogServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                    broker.SelectUserPaymentLogByIdAsync(userPaymentLogId))
+                .Throws(serviceException);
+
+            // when
+            ValueTask<UserPaymentLog> modifyUserPaymentLogTask =
+                this.userPaymentLogService.ModifyUserPaymentLogAsync(someUserPaymentLog);
+
+            UserPaymentLogServiceException actualUserPaymentLogServiceException =
+                await Assert.ThrowsAsync<UserPaymentLogServiceException>(
+                    modifyUserPaymentLogTask.AsTask);
+
+            // then
+            actualUserPaymentLogServiceException.Should()
+                .BeEquivalentTo(expectedUserPaymentLogServiceException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserPaymentLogServiceException))), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectUserPaymentLogByIdAsync(userPaymentLogId), Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateUserPaymentLogAsync(someUserPaymentLog), Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
