@@ -1,5 +1,6 @@
 ﻿using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs;
 using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs.Exceptions;
 using Xeptions;
@@ -35,6 +36,20 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
                     new FailedUserPaymentLogStorageException(sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedUserPaymentLogStorageException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedUserPaymentLogException =
+                    new LockedUserPaymentLogException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedUserPaymentLogException);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedUserPaymentLogStorageException =
+                    new FailedUserPaymentLogStorageException(dbUpdateException);
+
+                throw CreateAndLogDependencyException(failedUserPaymentLogStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -99,6 +114,16 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
             this.loggingBroker.LogError(UserPaymentLogDependencyValidationException);
 
             return UserPaymentLogDependencyValidationException;
+        }
+
+        private UserPaymentLogDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var userPaymentLogDependencyException =
+                new UserPaymentLogDependencyException(exception);
+
+            this.loggingBroker.LogError(userPaymentLogDependencyException);
+
+            throw userPaymentLogDependencyException;
         }
 
         private UserPaymentLogServiceException CreateAndLogServiceException(Xeption exception)
