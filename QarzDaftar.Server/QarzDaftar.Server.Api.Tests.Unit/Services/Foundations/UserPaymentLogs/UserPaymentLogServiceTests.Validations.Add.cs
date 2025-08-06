@@ -61,7 +61,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserPaymentLogs
 
             invalidUserPaymentLogException.AddData(
                 key: nameof(UserPaymentLog.Amount),
-                values: "Value is required");
+                values: "Amount is invalid");
 
             invalidUserPaymentLogException.AddData(
                 key: nameof(UserPaymentLog.PaymentMethod),

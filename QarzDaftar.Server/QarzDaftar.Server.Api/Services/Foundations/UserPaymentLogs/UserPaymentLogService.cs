@@ -26,7 +26,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
         {
             try
             {
-                ValidateUserPaymentLogNotNull(userPaymentLog);
+                ValidateUserPaymentLogOnAdd(userPaymentLog);
 
                 return await this.storageBroker.InsertUserPaymentLogAsync(userPaymentLog);
             }
@@ -34,6 +34,15 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
             {
                 var userPaymentLogValidationException =
                     new UserPaymentLogValidationException(nullUserPaymentLogException);
+
+                this.loggingBroker.LogError(userPaymentLogValidationException);
+
+                throw userPaymentLogValidationException;
+            }
+            catch (InvalidUserPaymentLogException invalidUserPaymentLogException)
+            {
+                var userPaymentLogValidationException =
+                    new UserPaymentLogValidationException(invalidUserPaymentLogException);
 
                 this.loggingBroker.LogError(userPaymentLogValidationException);
 
