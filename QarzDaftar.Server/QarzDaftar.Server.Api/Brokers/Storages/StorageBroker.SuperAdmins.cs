@@ -7,6 +7,9 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
     {
         public DbSet<SuperAdmin> SuperAdmins { get; set; }
 
+        public async ValueTask<SuperAdmin> InsertSuperAdminAsync(SuperAdmin superAdmin) =>
+            await InsertAsync(superAdmin);
+
         public async ValueTask<SuperAdmin> SelectSuperAdminByUsernameAsync(string username) =>
             await this.SuperAdmins
                 .AsNoTracking()
