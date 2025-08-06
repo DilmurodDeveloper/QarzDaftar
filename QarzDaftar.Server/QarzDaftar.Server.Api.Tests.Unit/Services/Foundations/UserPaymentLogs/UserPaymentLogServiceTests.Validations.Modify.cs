@@ -42,5 +42,78 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserPaymentLogs
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUserPaymentLogIsInvalidAndLogItAsync(
+            string invalidString)
+        {
+            //given
+            var invalidUserPaymentLog = new UserPaymentLog
+            {
+                Purpose = invalidString,
+            };
+
+            var invalidUserPaymentLogException = new InvalidUserPaymentLogException();
+
+            invalidUserPaymentLogException.AddData(
+                key: nameof(UserPaymentLog.Id),
+                values: "Id is required");
+
+            invalidUserPaymentLogException.AddData(
+                key: nameof(UserPaymentLog.PaymentMethod),
+                values: "Text is required");
+
+            invalidUserPaymentLogException.AddData(
+                key: nameof(UserPaymentLog.Purpose),
+                values: "Text is required");
+
+            invalidUserPaymentLogException.AddData(
+                key: nameof(UserPaymentLog.Comment),
+                values: "Text is required");
+
+            invalidUserPaymentLogException.AddData(
+                key: nameof(UserPaymentLog.PaidAt),
+                values: "Date is required");
+
+            invalidUserPaymentLogException.AddData(
+                key: nameof(UserPaymentLog.CreatedDate),
+                values: "Date is required");
+
+            invalidUserPaymentLogException.AddData(
+                key: nameof(UserPaymentLog.UserId),
+                values: "Id is required");
+
+            var expectedUserPaymentLogValidationException =
+                new UserPaymentLogValidationException(invalidUserPaymentLogException);
+
+            // when
+            ValueTask<UserPaymentLog> modifyUserPaymentLogTask =
+                this.userPaymentLogService.ModifyUserPaymentLogAsync(
+                    invalidUserPaymentLog);
+
+            UserPaymentLogValidationException actualUserPaymentLogValidationException =
+                await Assert.ThrowsAsync<UserPaymentLogValidationException>(
+                    modifyUserPaymentLogTask.AsTask);
+
+            // then
+            actualUserPaymentLogValidationException.Should()
+                .BeEquivalentTo(expectedUserPaymentLogValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserPaymentLogValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateUserPaymentLogAsync(
+                    It.IsAny<UserPaymentLog>()), Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
