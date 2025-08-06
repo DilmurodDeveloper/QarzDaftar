@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
+using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories;
+using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories.Exceptions;
 using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs;
 using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs.Exceptions;
 
@@ -41,6 +43,54 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserPaymentLogs
 
             this.storageBrokerMock.Verify(broker =>
             broker.DeleteUserPaymentLogAsync(It.IsAny<UserPaymentLog>()), Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRemoveUserPaymentLogByIdIsNotFoundAndLogItAsync()
+        {
+            // given
+            Guid inputUserPaymentLogId = Guid.NewGuid();
+            UserPaymentLog noUserPaymentLog = null;
+
+            var notFoundUserPaymentLogException =
+                new NotFoundUserPaymentLogException(inputUserPaymentLogId);
+
+            var expectedUserPaymentLogValidationException =
+                new UserPaymentLogValidationException(notFoundUserPaymentLogException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectUserPaymentLogByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noUserPaymentLog);
+
+            // when
+            ValueTask<UserPaymentLog> removeUserPaymentLogById =
+                this.userPaymentLogService.RemoveUserPaymentLogByIdAsync(
+                    inputUserPaymentLogId);
+
+            var actualUserPaymentLogValidationException =
+                await Assert.ThrowsAsync<UserPaymentLogValidationException>(
+                    removeUserPaymentLogById.AsTask);
+
+            // then
+            actualUserPaymentLogValidationException.Should()
+                .BeEquivalentTo(expectedUserPaymentLogValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectUserPaymentLogByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserPaymentLogValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteUserPaymentLogAsync(It.IsAny<UserPaymentLog>()),
+                    Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
