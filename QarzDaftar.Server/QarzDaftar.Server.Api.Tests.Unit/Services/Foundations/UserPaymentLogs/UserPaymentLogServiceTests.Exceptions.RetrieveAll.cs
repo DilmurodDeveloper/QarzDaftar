@@ -20,7 +20,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserPaymentLogs
                 new UserPaymentLogDependencyException(failedUserPaymentLogStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllSubscriptionHistories()).Throws(sqlException);
+                broker.SelectAllUserPaymentLogs()).Throws(sqlException);
 
             // when
             Action retrieveAllUserPaymentLogsAction = () =>
