@@ -40,12 +40,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Users
 
             User maybeUser = await this.storageBroker.SelectUserByUsernameAsync(username);
 
-            if (maybeUser is null)
-                throw new NotFoundUserException(username);
-
             return maybeUser;
         }
-
 
         public ValueTask<User> RetrieveUserByIdAsync(Guid userId) =>
         TryCatch(async () =>
