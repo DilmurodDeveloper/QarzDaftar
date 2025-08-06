@@ -6,5 +6,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
     {
         ValueTask<UserPaymentLog> AddUserPaymentLogAsync(UserPaymentLog userPaymentLog);
         IQueryable<UserPaymentLog> RetrieveAllUserPaymentLogs();
+        ValueTask<UserPaymentLog> RetrieveUserPaymentLogByIdAsync(Guid userPaymentLogId);
     }
 }
