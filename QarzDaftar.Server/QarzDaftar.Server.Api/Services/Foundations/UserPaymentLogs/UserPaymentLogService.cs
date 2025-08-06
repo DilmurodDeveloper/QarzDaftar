@@ -2,6 +2,7 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs;
+using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 {
@@ -60,10 +61,24 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 
         public async ValueTask<UserPaymentLog> RemoveUserPaymentLogByIdAsync(Guid userPaymentLogId)
         {
-            UserPaymentLog maybeUserPaymentLog =
-                await this.storageBroker.SelectUserPaymentLogByIdAsync(userPaymentLogId);
+            try
+            {
+                ValidateUserPaymentLogId(userPaymentLogId);
 
-            return await this.storageBroker.DeleteUserPaymentLogAsync(maybeUserPaymentLog);
+                UserPaymentLog maybeUserPaymentLog =
+                    await this.storageBroker.SelectUserPaymentLogByIdAsync(userPaymentLogId);
+
+                return await this.storageBroker.DeleteUserPaymentLogAsync(maybeUserPaymentLog);
+            }
+            catch (InvalidUserPaymentLogException invalidUserPaymentLogException)
+            {
+                var userPaymentLogValidationException =
+                    new UserPaymentLogValidationException(invalidUserPaymentLogException);
+
+                this.loggingBroker.LogError(userPaymentLogValidationException);
+
+                throw userPaymentLogValidationException;
+            }
         }
     }
 }
