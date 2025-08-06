@@ -1,5 +1,4 @@
-﻿using QarzDaftar.Server.Api.Models.Enums;
-using QarzDaftar.Server.Api.Models.Foundations.Debts;
+﻿using QarzDaftar.Server.Api.Models.Foundations.Debts;
 using QarzDaftar.Server.Api.Models.Foundations.Debts.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.Debts

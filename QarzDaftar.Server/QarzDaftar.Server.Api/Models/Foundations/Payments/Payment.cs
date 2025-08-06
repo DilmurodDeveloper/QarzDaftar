@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using QarzDaftar.Server.Api.Models.Enums;
 using QarzDaftar.Server.Api.Models.Foundations.Customers;
 
 namespace QarzDaftar.Server.Api.Models.Foundations.Payments
