@@ -1,4 +1,6 @@
 ﻿using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+using Microsoft.Data.SqlClient;
 using Moq;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
@@ -35,6 +37,9 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.SuperAdmins
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
+
+        private static SqlException GetSqlError() =>
+            (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
         private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
