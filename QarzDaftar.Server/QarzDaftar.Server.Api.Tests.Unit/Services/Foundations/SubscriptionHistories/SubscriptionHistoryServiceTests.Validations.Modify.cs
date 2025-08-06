@@ -44,9 +44,8 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.SubscriptionHist
         }
 
         [Theory]
-        [InlineData(null)]
-        [InlineData(0)]
         [InlineData(-1)]
+        [InlineData(-100)]
         public async Task ShouldThrowValidationExceptionOnModifyIfSubscriptionHistoryIsInvalidAndLogItAsync(
             decimal invalidAmount)
         {

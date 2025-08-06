@@ -42,7 +42,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 
         private static dynamic IsInvalid(decimal amount) => new
         {
-            Condition = amount <= 0,
+            Condition = amount < 0,
             Message = "Amount must be greater than zero"
         };
 
