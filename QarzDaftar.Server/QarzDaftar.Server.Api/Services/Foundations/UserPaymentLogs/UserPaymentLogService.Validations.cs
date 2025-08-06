@@ -11,7 +11,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 
             Validate(
                 (Rule: IsInvalid(userPaymentLog.Id), Parameter: nameof(UserPaymentLog.Id)),
-                (Rule: IsInvalid(userPaymentLog.Amount), Parameter: nameof(UserPaymentLog.Amount)),
                 (Rule: IsInvalid(userPaymentLog.PaymentMethod), Parameter: nameof(UserPaymentLog.PaymentMethod)),
                 (Rule: IsInvalid(userPaymentLog.Purpose), Parameter: nameof(UserPaymentLog.Purpose)),
                 (Rule: IsInvalid(userPaymentLog.Comment), Parameter: nameof(UserPaymentLog.Comment)),
@@ -32,12 +31,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
         {
             Condition = Id == default,
             Message = "Id is required"
-        };
-
-        private static dynamic IsInvalid(decimal amount) => new
-        {
-            Condition = amount <= 0,
-            Message = "Amount is invalid"
         };
 
         private static dynamic IsInvalid(string text) => new
