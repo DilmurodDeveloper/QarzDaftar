@@ -1,4 +1,5 @@
-﻿using QarzDaftar.Server.Api.Brokers.Loggings;
+﻿using Microsoft.Data.SqlClient;
+using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.SuperAdmins;
 using QarzDaftar.Server.Api.Models.Foundations.SuperAdmins.Exceptions;
@@ -48,6 +49,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SuperAdmins
                 this.loggingBroker.LogError(superAdminValidationException);
 
                 throw superAdminValidationException;
+            }
+            catch (SqlException sqlException)
+            {
+                var failedStorageException =
+                    new FailedSuperAdminStorageException(sqlException);
+
+                var superAdminDependencyException =
+                    new SuperAdminDependencyException(failedStorageException);
+
+                this.loggingBroker.LogCritical(superAdminDependencyException);
+
+                throw superAdminDependencyException;
             }
         }
     }
