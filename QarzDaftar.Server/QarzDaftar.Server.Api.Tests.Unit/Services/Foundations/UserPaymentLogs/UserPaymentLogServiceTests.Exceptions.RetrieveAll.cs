@@ -47,5 +47,48 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserPaymentLogs
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomString();
+            var serverException = new Exception(exceptionMessage);
+
+            var failedUserPaymentLogServiceException =
+                new FailedUserPaymentLogServiceException(serverException);
+
+            var expectedUserPaymentLogServiceException =
+                new UserPaymentLogServiceException(
+                    failedUserPaymentLogServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllUserPaymentLogs()).Throws(serverException);
+
+            // when 
+            Action retrieveAllUserPaymentLogActions = () =>
+                this.userPaymentLogService.RetrieveAllUserPaymentLogs();
+
+            var actualUserPaymentLogServiceException =
+                Assert.Throws<UserPaymentLogServiceException>(
+                    retrieveAllUserPaymentLogActions);
+
+            // then
+            actualUserPaymentLogServiceException.Should()
+                .BeEquivalentTo(expectedUserPaymentLogServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllUserPaymentLogs(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedUserPaymentLogServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
