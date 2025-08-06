@@ -12,6 +12,7 @@ using QarzDaftar.Server.Api.Services.Foundations.SuperAdmins;
 using QarzDaftar.Server.Api.Services.Foundations.UserNotes;
 using QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs;
 using QarzDaftar.Server.Api.Services.Foundations.Users;
+using QarzDaftar.Server.Api.Services.Processings.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,7 @@ builder.Services.AddTransient<ISubscriptionHistoryService, SubscriptionHistorySe
 builder.Services.AddTransient<IUserPaymentLogService, UserPaymentLogService>();
 builder.Services.AddTransient<ISuperAdminService, SuperAdminService>();
 builder.Services.AddScoped<IPasswordHasher<SuperAdmin>, PasswordHasher<SuperAdmin>>();
+builder.Services.AddScoped<ITokenProcessingService, TokenProcessingService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
