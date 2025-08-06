@@ -1,5 +1,4 @@
-﻿using QarzDaftar.Server.Api.Models.Enums;
-using QarzDaftar.Server.Api.Models.Foundations.Payments;
+﻿using QarzDaftar.Server.Api.Models.Foundations.Payments;
 using QarzDaftar.Server.Api.Models.Foundations.Payments.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.Payments

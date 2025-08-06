@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Moq;
-using QarzDaftar.Server.Api.Models.Enums;
 using QarzDaftar.Server.Api.Models.Foundations.Debts;
 using QarzDaftar.Server.Api.Models.Foundations.Debts.Exceptions;
 

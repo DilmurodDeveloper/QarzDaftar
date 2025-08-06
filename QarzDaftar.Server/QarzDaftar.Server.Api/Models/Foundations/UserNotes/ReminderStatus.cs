@@ -1,4 +1,4 @@
-﻿namespace QarzDaftar.Server.Api.Models.Enums
+﻿namespace QarzDaftar.Server.Api.Models.Foundations.UserNotes
 {
     public enum ReminderStatus
     {

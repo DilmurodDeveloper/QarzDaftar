@@ -1,4 +1,4 @@
-﻿namespace QarzDaftar.Server.Api.Models.Enums
+﻿namespace QarzDaftar.Server.Api.Models.Foundations.Payments
 {
     public enum PaymentMethod
     {

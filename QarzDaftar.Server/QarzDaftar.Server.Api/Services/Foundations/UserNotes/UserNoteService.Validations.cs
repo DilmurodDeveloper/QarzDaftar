@@ -1,5 +1,4 @@
-﻿using QarzDaftar.Server.Api.Models.Enums;
-using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
+﻿using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.UserNotes
