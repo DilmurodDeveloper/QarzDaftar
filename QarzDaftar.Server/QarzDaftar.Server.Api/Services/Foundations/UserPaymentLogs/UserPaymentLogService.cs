@@ -30,6 +30,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
         });
 
         public IQueryable<UserPaymentLog> RetrieveAllUserPaymentLogs() =>
-            throw new NotImplementedException();
+            this.storageBroker.SelectAllUserPaymentLogs();
     }
 }
