@@ -22,6 +22,12 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
             return users;
         }
 
+        public async ValueTask<User> SelectUserByUsernameAsync(string username) =>
+            await this.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(user => user.Username == username);
+
+
         public async ValueTask<User> SelectUserByIdAsync(Guid userId)
         {
             var userWithDetails = Users

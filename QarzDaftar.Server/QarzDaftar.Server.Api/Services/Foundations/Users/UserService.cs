@@ -2,6 +2,7 @@
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.Users;
+using QarzDaftar.Server.Api.Models.Foundations.Users.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.Users
 {
@@ -31,6 +32,20 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Users
 
         public IQueryable<User> RetrieveAllUsers() =>
             TryCatch(() => this.storageBroker.SelectAllUsers());
+
+        public async ValueTask<User> RetrieveUserByUsernameAsync(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+                throw new InvalidUserException(nameof(User.Username), "Username is required");
+
+            User maybeUser = await this.storageBroker.SelectUserByUsernameAsync(username);
+
+            if (maybeUser is null)
+                throw new NotFoundUserException(username);
+
+            return maybeUser;
+        }
+
 
         public ValueTask<User> RetrieveUserByIdAsync(Guid userId) =>
         TryCatch(async () =>
