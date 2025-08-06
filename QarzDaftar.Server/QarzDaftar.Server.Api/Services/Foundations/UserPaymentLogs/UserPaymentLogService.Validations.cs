@@ -69,7 +69,6 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 
             Validate(
                 (Rule: IsInvalid(userPaymentLog.Id), Parameter: nameof(UserPaymentLog.Id)),
-                (Rule: IsInvalid(userPaymentLog.Amount), Parameter: nameof(UserPaymentLog.Amount)),
                 (Rule: IsInvalid(userPaymentLog.PaymentMethod), Parameter: nameof(UserPaymentLog.PaymentMethod)),
                 (Rule: IsInvalid(userPaymentLog.Purpose), Parameter: nameof(UserPaymentLog.Purpose)),
                 (Rule: IsInvalid(userPaymentLog.Comment), Parameter: nameof(UserPaymentLog.Comment)),

@@ -115,5 +115,46 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserPaymentLogs
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(-100)]
+        public async Task ShouldThrowValidationExceptionOnModifyIfAmountIsInvalidAndLogItAsync(decimal invalidAmount)
+        {
+            // given
+            UserPaymentLog randomUserPaymentLog = CreateRandomUserPaymentLog();
+            UserPaymentLog invalidUserPaymentLog = randomUserPaymentLog;
+            invalidUserPaymentLog.Amount = invalidAmount;
+
+            var invalidUserPaymentLogException = new InvalidUserPaymentLogException();
+
+            invalidUserPaymentLogException.AddData(
+                key: nameof(UserPaymentLog.Amount),
+                values: "Amount must be greater than zero");
+
+            var expectedUserPaymentLogValidationException =
+                new UserPaymentLogValidationException(invalidUserPaymentLogException);
+
+            // when
+            ValueTask<UserPaymentLog> modifyUserPaymentLogTask =
+                this.userPaymentLogService.ModifyUserPaymentLogAsync(invalidUserPaymentLog);
+
+            // then
+            await Assert.ThrowsAsync<UserPaymentLogValidationException>(() =>
+                modifyUserPaymentLogTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedUserPaymentLogValidationException))),
+                Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateUserPaymentLogAsync(It.IsAny<UserPaymentLog>()),
+                Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
     }
 }
