@@ -123,5 +123,43 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(userPaymentLogServiceException.InnerException);
             }
         }
+
+        [HttpDelete]
+        public async ValueTask<ActionResult<UserPaymentLog>> DeleteUserPaymentLogAsync(Guid userPaymentLogId)
+        {
+            try
+            {
+                UserPaymentLog deleteUserPaymentLog =
+                    await this.userPaymentLogService.RemoveUserPaymentLogByIdAsync(userPaymentLogId);
+
+                return Ok(deleteUserPaymentLog);
+            }
+            catch (UserPaymentLogValidationException userPaymentLogValidationException)
+                when (userPaymentLogValidationException.InnerException is NotFoundUserPaymentLogException)
+            {
+                return NotFound(userPaymentLogValidationException.InnerException);
+            }
+            catch (UserPaymentLogValidationException userPaymentLogValidationException)
+            {
+                return BadRequest(userPaymentLogValidationException.InnerException);
+            }
+            catch (UserPaymentLogDependencyValidationException userPaymentLogDependencyValidationException)
+                when (userPaymentLogDependencyValidationException.InnerException is LockedUserPaymentLogException)
+            {
+                return Locked(userPaymentLogDependencyValidationException.InnerException);
+            }
+            catch (UserPaymentLogDependencyValidationException userPaymentLogDependencyValidationException)
+            {
+                return BadRequest(userPaymentLogDependencyValidationException.InnerException);
+            }
+            catch (UserPaymentLogDependencyException userPaymentLogDependencyException)
+            {
+                return InternalServerError(userPaymentLogDependencyException.InnerException);
+            }
+            catch (UserPaymentLogServiceException userPaymentLogServiceException)
+            {
+                return InternalServerError(userPaymentLogServiceException.InnerException);
+            }
+        }
     }
 }
