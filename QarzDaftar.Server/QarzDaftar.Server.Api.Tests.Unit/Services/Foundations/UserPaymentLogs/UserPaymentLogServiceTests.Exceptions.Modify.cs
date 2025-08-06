@@ -2,8 +2,6 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories;
-using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories.Exceptions;
 using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs;
 using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs.Exceptions;
 
