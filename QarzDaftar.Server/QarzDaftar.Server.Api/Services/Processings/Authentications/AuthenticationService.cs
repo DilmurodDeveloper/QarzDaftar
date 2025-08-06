@@ -35,5 +35,32 @@ namespace QarzDaftar.Server.Api.Services.Processings.Authentications
 
             return this.tokenProcessingService.CreateToken(user);
         }
+
+        public async ValueTask RegisterUserAsync(string fullName, string username, string email, string password)
+        {
+            User existingUser = await this.userService.RetrieveUserByUsernameAsync(username);
+
+            if (existingUser != null)
+                throw new InvalidOperationException("Username allaqachon mavjud.");
+
+            User newUser = new User
+            {
+                Id = Guid.NewGuid(),
+                FullName = fullName,
+                Username = username,
+                Email = email,
+                CreatedDate = DateTimeOffset.UtcNow,
+                PasswordHash = passwordHasher.HashPassword(null, password),
+                IsBlocked = false,
+                RegisteredAt = DateTimeOffset.UtcNow
+            };
+
+            await this.userService.AddUserAsync(newUser);
+        }
+
+        public async ValueTask LogoutUserAsync(Guid userId)
+        {
+            await Task.CompletedTask;
+        }
     }
 }
