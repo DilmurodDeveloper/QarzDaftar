@@ -32,7 +32,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
         public IQueryable<UserPaymentLog> RetrieveAllUserPaymentLogs() =>
             TryCatch(() => this.storageBroker.SelectAllUserPaymentLogs());
 
-        public ValueTask<UserPaymentLog> RetrieveUserPaymentLogByIdAsync(Guid userPaymentLogId) =>
-            throw new NotImplementedException();
+        public async ValueTask<UserPaymentLog> RetrieveUserPaymentLogByIdAsync(Guid userPaymentLogId) =>
+            await this.storageBroker.SelectUserPaymentLogByIdAsync(userPaymentLogId);
     }
 }
