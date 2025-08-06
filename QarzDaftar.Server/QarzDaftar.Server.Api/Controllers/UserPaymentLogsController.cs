@@ -43,5 +43,52 @@ namespace QarzDaftar.Server.Api.Controllers
                 return InternalServerError(userPaymentLogServiceException.InnerException);
             }
         }
+
+        [HttpGet("All")]
+        public ActionResult<IQueryable<UserPaymentLog>> GetAllUserPaymentLogs()
+        {
+            try
+            {
+                IQueryable<UserPaymentLog> allUserPaymentLogs =
+                    this.userPaymentLogService.RetrieveAllUserPaymentLogs();
+
+                return Ok(allUserPaymentLogs);
+            }
+            catch (UserPaymentLogDependencyException userPaymentLogDependencyException)
+            {
+                return InternalServerError(userPaymentLogDependencyException.InnerException);
+            }
+            catch (UserPaymentLogServiceException userPaymentLogServiceException)
+            {
+                return InternalServerError(userPaymentLogServiceException.InnerException);
+            }
+        }
+
+        [HttpGet("ById")]
+        public async ValueTask<ActionResult<UserPaymentLog>> GetUserPaymentLogByIdAsync(Guid userPaymentLogId)
+        {
+            try
+            {
+                return await this.userPaymentLogService.RetrieveUserPaymentLogByIdAsync(userPaymentLogId);
+            }
+            catch (UserPaymentLogDependencyException userPaymentLogDependencyException)
+            {
+                return InternalServerError(userPaymentLogDependencyException.InnerException);
+            }
+            catch (UserPaymentLogValidationException userPaymentLogValidationException)
+                when (userPaymentLogValidationException.InnerException is InvalidUserPaymentLogException)
+            {
+                return BadRequest(userPaymentLogValidationException.InnerException);
+            }
+            catch (UserPaymentLogValidationException userPaymentLogValidationException)
+                when (userPaymentLogValidationException.InnerException is NotFoundUserPaymentLogException)
+            {
+                return NotFound(userPaymentLogValidationException.InnerException);
+            }
+            catch (UserPaymentLogServiceException userPaymentLogServiceException)
+            {
+                return InternalServerError(userPaymentLogServiceException.InnerException);
+            }
+        }
     }
 }
