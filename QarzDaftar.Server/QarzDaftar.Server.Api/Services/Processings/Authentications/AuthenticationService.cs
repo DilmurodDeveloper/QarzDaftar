@@ -36,7 +36,14 @@ namespace QarzDaftar.Server.Api.Services.Processings.Authentications
             return this.tokenProcessingService.CreateToken(user);
         }
 
-        public async ValueTask RegisterUserAsync(string fullName, string username, string email, string password)
+        public async ValueTask RegisterUserAsync(
+            string fullName,
+            string username,
+            string email,
+            string password,
+            string phoneNumber,
+            string shopName,
+            string address)
         {
             User existingUser = await this.userService.RetrieveUserByUsernameAsync(username);
 
@@ -49,14 +56,20 @@ namespace QarzDaftar.Server.Api.Services.Processings.Authentications
                 FullName = fullName,
                 Username = username,
                 Email = email,
+                PhoneNumber = phoneNumber,
+                ShopName = shopName,
+                Address = address,
                 CreatedDate = DateTimeOffset.UtcNow,
                 PasswordHash = passwordHasher.HashPassword(null, password),
                 IsBlocked = false,
-                RegisteredAt = DateTimeOffset.UtcNow
+                RegisteredAt = DateTimeOffset.UtcNow,
+                UpdatedDate = DateTimeOffset.UtcNow,
+                SubscriptionExpiresAt = DateTimeOffset.MaxValue
             };
 
             await this.userService.AddUserAsync(newUser);
         }
+
 
         public async ValueTask LogoutUserAsync(Guid userId)
         {
