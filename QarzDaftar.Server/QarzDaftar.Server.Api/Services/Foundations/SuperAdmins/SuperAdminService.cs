@@ -1,8 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
-using QarzDaftar.Server.Api.Brokers.Loggings;
+﻿using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.SuperAdmins;
-using QarzDaftar.Server.Api.Models.Foundations.SuperAdmins.Exceptions;
 
 namespace QarzDaftar.Server.Api.Services.Foundations.SuperAdmins
 {
@@ -19,61 +17,17 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SuperAdmins
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<SuperAdmin> RetrieveSuperAdminByUsernameAsync(string username)
+        public ValueTask<SuperAdmin> RetrieveSuperAdminByUsernameAsync(string username) =>
+        TryCatch(async () =>
         {
-            try
-            {
-                ValidateSuperAdminUsername(username);
+            ValidateSuperAdminUsername(username);
 
-                SuperAdmin maybeSuperAdmin =
-                    await this.storageBroker.SelectSuperAdminByUsernameAsync(username);
+            SuperAdmin maybeSuperAdmin =
+                await this.storageBroker.SelectSuperAdminByUsernameAsync(username);
 
-                ValidateStorageSuperAdmin(maybeSuperAdmin, username);
+            ValidateStorageSuperAdmin(maybeSuperAdmin, username);
 
-                return maybeSuperAdmin;
-            }
-            catch (InvalidSuperAdminException invalidSuperAdminException)
-            {
-                var superAdminValidationException =
-                    new SuperAdminValidationException(invalidSuperAdminException);
-
-                this.loggingBroker.LogError(superAdminValidationException);
-
-                throw superAdminValidationException;
-            }
-            catch (NotFoundSuperAdminException notFoundSuperAdminException)
-            {
-                var superAdminValidationException =
-                    new SuperAdminValidationException(notFoundSuperAdminException);
-
-                this.loggingBroker.LogError(superAdminValidationException);
-
-                throw superAdminValidationException;
-            }
-            catch (SqlException sqlException)
-            {
-                var failedStorageException =
-                    new FailedSuperAdminStorageException(sqlException);
-
-                var superAdminDependencyException =
-                    new SuperAdminDependencyException(failedStorageException);
-
-                this.loggingBroker.LogCritical(superAdminDependencyException);
-
-                throw superAdminDependencyException;
-            }
-            catch (Exception exception)
-            {
-                var failedServiceException =
-                    new FailedSuperAdminServiceException(exception);
-
-                var superAdminServiceException =
-                    new SuperAdminServiceException(failedServiceException);
-
-                this.loggingBroker.LogError(superAdminServiceException);
-
-                throw superAdminServiceException;
-            }
-        }
+            return maybeSuperAdmin;
+        });
     }
 }
