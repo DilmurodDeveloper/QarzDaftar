@@ -1,4 +1,5 @@
-﻿using QarzDaftar.Server.Api.Models.Foundations.Users;
+﻿using System.Text.Json.Serialization;
+using QarzDaftar.Server.Api.Models.Foundations.Users;
 
 namespace QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs
 {
@@ -12,6 +13,8 @@ namespace QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs
         public DateTimeOffset PaidAt { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public Guid UserId { get; set; }
-        public User User { get; set; }
+
+        [JsonIgnore]
+        public User? User { get; set; }
     }
 }
