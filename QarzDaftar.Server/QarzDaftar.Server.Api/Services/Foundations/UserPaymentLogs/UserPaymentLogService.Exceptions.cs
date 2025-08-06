@@ -9,6 +9,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
     public partial class UserPaymentLogService
     {
         private delegate ValueTask<UserPaymentLog> ReturningUserPaymentLogFunction();
+        private delegate IQueryable<UserPaymentLog> ReturningUserPaymentLogsFunction();
 
         private async ValueTask<UserPaymentLog> TryCatch(ReturningUserPaymentLogFunction returningUserPaymentLogFunction)
         {
@@ -24,6 +25,10 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
             {
                 throw CreateAndLogValidationException(invalidUserPaymentLogException);
             }
+            catch (NotFoundUserPaymentLogException notFoundUserPaymentLogException)
+            {
+                throw CreateAndLogValidationException(notFoundUserPaymentLogException);
+            }
             catch (SqlException sqlException)
             {
                 var failedUserPaymentLogStorageException =
@@ -37,6 +42,28 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
                     new AlreadyExistsUserPaymentLogException(duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsUserPaymentLogException);
+            }
+            catch (Exception exception)
+            {
+                var failedUserPaymentLogServiceException =
+                    new FailedUserPaymentLogServiceException(exception);
+
+                throw CreateAndLogServiceException(failedUserPaymentLogServiceException);
+            }
+        }
+
+        private IQueryable<UserPaymentLog> TryCatch(ReturningUserPaymentLogsFunction returningUserPaymentLogsFunction)
+        {
+            try
+            {
+                return returningUserPaymentLogsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedUserPaymentLogStorageException =
+                    new FailedUserPaymentLogStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedUserPaymentLogStorageException);
             }
             catch (Exception exception)
             {

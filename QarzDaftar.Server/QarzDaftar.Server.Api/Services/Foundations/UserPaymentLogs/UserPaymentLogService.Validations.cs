@@ -52,6 +52,17 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
             Message = "Date is required"
         };
 
+        private static void ValidateUserPaymentLogId(Guid userPaymentLogId) =>
+            Validate((Rule: IsInvalid(userPaymentLogId), Parameter: nameof(UserPaymentLog.Id)));
+
+        private static void ValidateStorageUserPaymentLog(UserPaymentLog maybeUserPaymentLog, Guid userPaymentLogId)
+        {
+            if (maybeUserPaymentLog is null)
+            {
+                throw new NotFoundUserPaymentLogException(userPaymentLogId);
+            }
+        }
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidUserPaymentLogException = new InvalidUserPaymentLogException();
