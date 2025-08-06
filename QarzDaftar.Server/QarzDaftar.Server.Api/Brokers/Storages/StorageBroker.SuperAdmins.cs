@@ -6,5 +6,10 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
     public partial class StorageBroker
     {
         public DbSet<SuperAdmin> SuperAdmins { get; set; }
+
+        public async ValueTask<SuperAdmin> SelectSuperAdminByUsernameAsync(string username) =>
+            await this.SuperAdmins
+                .AsNoTracking()
+                .FirstOrDefaultAsync(admin => admin.Username == username);
     }
 }
