@@ -28,5 +28,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 
             return await this.storageBroker.InsertUserPaymentLogAsync(userPaymentLog);
         });
+
+        public IQueryable<UserPaymentLog> RetrieveAllUserPaymentLogs() =>
+            throw new NotImplementedException();
     }
 }
