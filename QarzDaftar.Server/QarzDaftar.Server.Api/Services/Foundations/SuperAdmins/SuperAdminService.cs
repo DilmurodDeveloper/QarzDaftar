@@ -17,7 +17,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SuperAdmins
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<SuperAdmin> RetrieveSuperAdminByUsernameAsync(string username) =>
-            throw new NotImplementedException();
+        public async ValueTask<SuperAdmin> RetrieveSuperAdminByUsernameAsync(string username) =>
+            await this.storageBroker.SelectSuperAdminByUsernameAsync(username);
     }
 }
