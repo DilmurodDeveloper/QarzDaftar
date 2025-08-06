@@ -74,6 +74,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 
                 throw userPaymentLogDependencyValidationException;
             }
+            catch (Exception exception)
+            {
+                var failedUserPaymentLogServiceException =
+                    new FailedUserPaymentLogServiceException(exception);
+
+                var userPaymentLogServiceException =
+                    new UserPaymentLogServiceException(failedUserPaymentLogServiceException);
+
+                this.loggingBroker.LogError(userPaymentLogServiceException);
+
+                throw userPaymentLogServiceException;
+            }
         }
     }
 }
