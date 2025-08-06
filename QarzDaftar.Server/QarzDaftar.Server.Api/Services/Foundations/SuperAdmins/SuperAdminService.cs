@@ -62,6 +62,18 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SuperAdmins
 
                 throw superAdminDependencyException;
             }
+            catch (Exception exception)
+            {
+                var failedServiceException =
+                    new FailedSuperAdminServiceException(exception);
+
+                var superAdminServiceException =
+                    new SuperAdminServiceException(failedServiceException);
+
+                this.loggingBroker.LogError(superAdminServiceException);
+
+                throw superAdminServiceException;
+            }
         }
     }
 }
