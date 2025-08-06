@@ -57,5 +57,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 
             return await this.storageBroker.UpdateUserPaymentLogAsync(userPaymentLog);
         });
+
+        public ValueTask<UserPaymentLog> RemoveUserPaymentLogByIdAsync(Guid userPaymentLogId) =>
+            throw new NotImplementedException();
     }
 }
