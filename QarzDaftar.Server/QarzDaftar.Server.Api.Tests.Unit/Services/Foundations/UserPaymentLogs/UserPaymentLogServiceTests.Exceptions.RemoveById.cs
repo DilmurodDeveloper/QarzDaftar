@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs;
@@ -46,6 +47,48 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserPaymentLogs
 
             this.storageBrokerMock.Verify(broker =>
                 broker.DeleteUserPaymentLogAsync(It.IsAny<UserPaymentLog>()), Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someUserPaymentLogId = Guid.NewGuid();
+            SqlException sqlException = GetSqlError();
+
+            var failedUserPaymentLogStorageException =
+                new FailedUserPaymentLogStorageException(sqlException);
+
+            var expectedUserPaymentLogDependencyException =
+                new UserPaymentLogDependencyException(failedUserPaymentLogStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectUserPaymentLogByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+            // when
+            ValueTask<UserPaymentLog> deleteUserPaymentLogTask =
+                this.userPaymentLogService.RemoveUserPaymentLogByIdAsync(someUserPaymentLogId);
+
+            UserPaymentLogDependencyException actualUserPaymentLogDependencyException =
+                await Assert.ThrowsAsync<UserPaymentLogDependencyException>(
+                    deleteUserPaymentLogTask.AsTask);
+
+            // then
+            actualUserPaymentLogDependencyException.Should()
+                .BeEquivalentTo(expectedUserPaymentLogDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectUserPaymentLogByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedUserPaymentLogDependencyException))),
+                        Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
