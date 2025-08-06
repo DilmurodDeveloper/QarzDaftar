@@ -55,6 +55,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
                 UserPaymentLog maybeUserPaymentLog =
                     await this.storageBroker.SelectUserPaymentLogByIdAsync(userPaymentLog.Id);
 
+                ValidateAgainstStorageUserPaymentLogOnModify(userPaymentLog, maybeUserPaymentLog);
+
                 return await this.storageBroker.UpdateUserPaymentLogAsync(userPaymentLog);
             }
             catch (NullUserPaymentLogException nullUserPaymentLogException)
@@ -70,6 +72,15 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
             {
                 var userPaymentLogValidationException =
                     new UserPaymentLogValidationException(invalidUserPaymentLogException);
+
+                this.loggingBroker.LogError(userPaymentLogValidationException);
+
+                throw userPaymentLogValidationException;
+            }
+            catch (NotFoundUserPaymentLogException notFoundUserPaymentLogException)
+            {
+                var userPaymentLogValidationException =
+                    new UserPaymentLogValidationException(notFoundUserPaymentLogException);
 
                 this.loggingBroker.LogError(userPaymentLogValidationException);
 
