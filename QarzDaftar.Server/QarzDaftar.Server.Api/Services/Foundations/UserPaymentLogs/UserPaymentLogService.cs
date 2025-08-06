@@ -44,5 +44,8 @@ namespace QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs
 
             return maybeUserPaymentLog;
         });
+
+        public ValueTask<UserPaymentLog> ModifyUserPaymentLogAsync(UserPaymentLog userPaymentLog) =>
+            throw new NotImplementedException();
     }
 }
