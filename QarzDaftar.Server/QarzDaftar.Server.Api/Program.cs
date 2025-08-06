@@ -6,6 +6,7 @@ using QarzDaftar.Server.Api.Services.Foundations.Debts;
 using QarzDaftar.Server.Api.Services.Foundations.Payments;
 using QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories;
 using QarzDaftar.Server.Api.Services.Foundations.UserNotes;
+using QarzDaftar.Server.Api.Services.Foundations.UserPaymentLogs;
 using QarzDaftar.Server.Api.Services.Foundations.Users;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,7 @@ builder.Services.AddTransient<IDebtService, DebtService>();
 builder.Services.AddTransient<IPaymentService, PaymentService>();
 builder.Services.AddTransient<IUserNoteService, UserNoteService>();
 builder.Services.AddTransient<ISubscriptionHistoryService, SubscriptionHistoryService>();
+builder.Services.AddTransient<IUserPaymentLogService, UserPaymentLogService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
