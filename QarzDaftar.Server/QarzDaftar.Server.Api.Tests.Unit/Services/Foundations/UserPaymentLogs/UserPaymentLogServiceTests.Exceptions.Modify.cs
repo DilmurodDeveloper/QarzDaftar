@@ -21,8 +21,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserPaymentLogs
                 new FailedUserPaymentLogStorageException(sqlException);
 
             var expectedUserPaymentLogDependencyException =
-                new UserPaymentLogDependencyException(
-                    failedUserPaymentLogStorageException);
+                new UserPaymentLogDependencyException(failedUserPaymentLogStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectUserPaymentLogByIdAsync(
@@ -30,8 +29,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.UserPaymentLogs
 
             // when
             ValueTask<UserPaymentLog> modifyUserPaymentLogTask =
-                this.userPaymentLogService.ModifyUserPaymentLogAsync(
-                    someUserPaymentLog);
+                this.userPaymentLogService.ModifyUserPaymentLogAsync(someUserPaymentLog);
 
             UserPaymentLogDependencyException actualUserPaymentLogDependencyException =
                  await Assert.ThrowsAsync<UserPaymentLogDependencyException>(
