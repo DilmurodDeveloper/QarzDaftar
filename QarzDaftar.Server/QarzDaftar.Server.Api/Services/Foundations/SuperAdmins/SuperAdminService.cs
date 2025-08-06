@@ -24,12 +24,26 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SuperAdmins
             {
                 ValidateSuperAdminUsername(username);
 
-                return await this.storageBroker.SelectSuperAdminByUsernameAsync(username);
+                SuperAdmin maybeSuperAdmin =
+                    await this.storageBroker.SelectSuperAdminByUsernameAsync(username);
+
+                ValidateStorageSuperAdmin(maybeSuperAdmin, username);
+
+                return maybeSuperAdmin;
             }
             catch (InvalidSuperAdminException invalidSuperAdminException)
             {
                 var superAdminValidationException =
                     new SuperAdminValidationException(invalidSuperAdminException);
+
+                this.loggingBroker.LogError(superAdminValidationException);
+
+                throw superAdminValidationException;
+            }
+            catch (NotFoundSuperAdminException notFoundSuperAdminException)
+            {
+                var superAdminValidationException =
+                    new SuperAdminValidationException(notFoundSuperAdminException);
 
                 this.loggingBroker.LogError(superAdminValidationException);
 

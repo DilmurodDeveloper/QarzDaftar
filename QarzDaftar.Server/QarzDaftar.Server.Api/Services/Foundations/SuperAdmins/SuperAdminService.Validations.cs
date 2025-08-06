@@ -14,6 +14,14 @@ namespace QarzDaftar.Server.Api.Services.Foundations.SuperAdmins
         private void ValidateSuperAdminUsername(string username) =>
             Validate((Rule: IsInvalid(username), Parameter: nameof(SuperAdmin.Username)));
 
+        private static void ValidateStorageSuperAdmin(SuperAdmin maybeSuperAdmin, string username)
+        {
+            if (maybeSuperAdmin is null)
+            {
+                throw new NotFoundSuperAdminException(username);
+            }
+        }
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidSuperAdminException = new InvalidSuperAdminException();
