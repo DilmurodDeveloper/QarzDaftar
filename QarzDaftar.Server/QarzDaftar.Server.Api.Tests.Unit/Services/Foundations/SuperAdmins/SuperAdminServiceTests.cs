@@ -1,9 +1,11 @@
-﻿using Moq;
+﻿using System.Linq.Expressions;
+using Moq;
 using QarzDaftar.Server.Api.Brokers.Loggings;
 using QarzDaftar.Server.Api.Brokers.Storages;
 using QarzDaftar.Server.Api.Models.Foundations.SuperAdmins;
 using QarzDaftar.Server.Api.Services.Foundations.SuperAdmins;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.SuperAdmins
 {
@@ -29,6 +31,9 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.SuperAdmins
             new DateTimeRange(earliestDate: DateTime.UnixEpoch).GetValue();
 
         private static string GetRandomUsername() => Guid.NewGuid().ToString();
+
+        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static Filler<SuperAdmin> CreateSuperAdminFiller(DateTimeOffset date)
         {
