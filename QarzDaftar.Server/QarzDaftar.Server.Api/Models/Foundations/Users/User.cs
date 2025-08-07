@@ -23,6 +23,7 @@ namespace QarzDaftar.Server.Api.Models.Foundations.Users
         public bool IsBlocked { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
+        public string Role { get; set; }
 
         [JsonIgnore]
         public ICollection<Customer>? Customers { get; set; }

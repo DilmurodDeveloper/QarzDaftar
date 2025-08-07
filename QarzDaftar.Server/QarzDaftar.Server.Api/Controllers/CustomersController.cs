@@ -1,26 +1,32 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QarzDaftar.Server.Api.Models.Foundations.Customers;
 using QarzDaftar.Server.Api.Models.Foundations.Customers.Exceptions;
-using QarzDaftar.Server.Api.Services.Foundations.Customers;
+using QarzDaftar.Server.Api.Services.Processings.Customers;
 using RESTFulSense.Controllers;
 
 namespace QarzDaftar.Server.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class CustomersController : RESTFulController
     {
-        private readonly ICustomerService customerService;
+        private readonly ICustomerProcessingService customerProcessingService;
 
-        public CustomersController(ICustomerService customerService) =>
-            this.customerService = customerService;
+        public CustomersController(ICustomerProcessingService customerProcessingService) =>
+            this.customerProcessingService = customerProcessingService;
 
         [HttpPost]
         public async ValueTask<ActionResult<Customer>> PostCustomerAsync(Customer customer)
         {
             try
             {
-                Customer addCustomer = await this.customerService.AddCustomerAsync(customer);
+                customer.UserId = GetCurrentUserId();
+
+                Customer addCustomer =
+                    await this.customerProcessingService.AddCustomerAsync(customer);
 
                 return Created(addCustomer);
             }
@@ -48,7 +54,10 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
-                IQueryable<Customer> allCustomers = this.customerService.RetrieveAllCustomers();
+                Guid userId = GetCurrentUserId();
+
+                IQueryable<Customer> allCustomers =
+                    this.customerProcessingService.RetrieveAllCustomers(userId);
 
                 return Ok(allCustomers);
             }
@@ -67,7 +76,15 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
-                return await this.customerService.RetrieveCustomerByIdAsync(customerId);
+                Guid userId = GetCurrentUserId();
+
+                Customer customer =
+                    await this.customerProcessingService.RetrieveCustomerByIdAsync(customerId);
+
+                if (customer == null || customer.UserId != userId)
+                    return NotFound();
+
+                return Ok(customer);
             }
             catch (CustomerDependencyException customerDependencyException)
             {
@@ -94,8 +111,13 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
+                Guid userId = GetCurrentUserId();
+
+                if (customer.UserId != userId)
+                    return Unauthorized("You cannot modify another user's customer.");
+
                 Customer modifyCustomer =
-                    await this.customerService.ModifyCustomerAsync(customer);
+                    await this.customerProcessingService.ModifyCustomerAsync(customer);
 
                 return Ok(modifyCustomer);
             }
@@ -127,8 +149,10 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
+                Guid userId = GetCurrentUserId();
+
                 Customer deleteCustomer =
-                    await this.customerService.RemoveCustomerByIdAsync(customerId);
+                    await this.customerProcessingService.RemoveCustomerByIdAsync(customerId, userId);
 
                 return Ok(deleteCustomer);
             }
@@ -158,6 +182,18 @@ namespace QarzDaftar.Server.Api.Controllers
             {
                 return InternalServerError(customerServiceException.InnerException);
             }
+        }
+
+        private Guid GetCurrentUserId()
+        {
+            string? userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!Guid.TryParse(userIdString, out Guid userId))
+            {
+                throw new UnauthorizedAccessException("User ID not found in token.");
+            }
+
+            return userId;
         }
     }
 }

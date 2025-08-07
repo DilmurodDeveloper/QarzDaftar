@@ -64,7 +64,8 @@ namespace QarzDaftar.Server.Api.Services.Processings.Authentications
                 IsBlocked = false,
                 RegisteredAt = DateTimeOffset.UtcNow,
                 UpdatedDate = DateTimeOffset.UtcNow,
-                SubscriptionExpiresAt = DateTimeOffset.MaxValue
+                SubscriptionExpiresAt = DateTimeOffset.MaxValue,
+                Role = "Admin"
             };
 
             await this.userService.AddUserAsync(newUser);

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QarzDaftar.Server.Api.Models.Foundations.Users;
 using QarzDaftar.Server.Api.Models.Foundations.Users.Exceptions;
 using QarzDaftar.Server.Api.Services.Foundations.Users;
@@ -16,6 +17,7 @@ namespace QarzDaftar.Server.Api.Controllers
             this.userService = userService;
 
         [HttpPost]
+        [Authorize(Roles = "SuperAdmin")]
         public async ValueTask<ActionResult<User>> PostUserAsync(User user)
         {
             try
@@ -44,6 +46,7 @@ namespace QarzDaftar.Server.Api.Controllers
         }
 
         [HttpGet("All")]
+        [Authorize(Roles = "SuperAdmin")]
         public ActionResult<IQueryable<User>> GetAllUsers()
         {
             try
@@ -62,7 +65,8 @@ namespace QarzDaftar.Server.Api.Controllers
             }
         }
 
-        [HttpGet("ById")]
+        [HttpGet("{userId}")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
         public async ValueTask<ActionResult<User>> GetUserByIdAsync(Guid userId)
         {
             try
@@ -90,6 +94,7 @@ namespace QarzDaftar.Server.Api.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin,SuperAdmin")]
         public async ValueTask<ActionResult<User>> PutUserAsync(User user)
         {
             try
@@ -123,6 +128,7 @@ namespace QarzDaftar.Server.Api.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "SuperAdmin")]
         public async ValueTask<ActionResult<User>> DeleteUserAsync(Guid userId)
         {
             try

@@ -29,8 +29,9 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
             return await this.storageBroker.InsertCustomerAsync(customer);
         });
 
-        public IQueryable<Customer> RetrieveAllCustomers() =>
-            TryCatch(() => this.storageBroker.SelectAllCustomers());
+        public IQueryable<Customer> RetrieveAllCustomers(Guid userId) =>
+            TryCatch(() => this.storageBroker.SelectAllCustomers()
+                .Where(customer => customer.UserId == userId));
 
         public ValueTask<Customer> RetrieveCustomerByIdAsync(Guid customerId) =>
         TryCatch(async () =>

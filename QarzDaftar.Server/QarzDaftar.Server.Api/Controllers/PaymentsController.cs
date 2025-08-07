@@ -1,26 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QarzDaftar.Server.Api.Models.Foundations.Payments;
 using QarzDaftar.Server.Api.Models.Foundations.Payments.Exceptions;
-using QarzDaftar.Server.Api.Services.Foundations.Payments;
+using QarzDaftar.Server.Api.Services.Processings.Payments;
 using RESTFulSense.Controllers;
 
 namespace QarzDaftar.Server.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class PaymentsController : RESTFulController
     {
-        private readonly IPaymentService paymentService;
+        private readonly IPaymentProcessingService paymentProcessingService;
 
-        public PaymentsController(IPaymentService paymentService) =>
-            this.paymentService = paymentService;
+        public PaymentsController(IPaymentProcessingService paymentProcessingService) =>
+            this.paymentProcessingService = paymentProcessingService;
 
         [HttpPost]
         public async ValueTask<ActionResult<Payment>> PostPaymentAsync(Payment payment)
         {
             try
             {
-                Payment addPayment = await this.paymentService.AddPaymentAsync(payment);
+                Guid userId = GetCurrentUserId();
+
+                Payment addPayment = await this.paymentProcessingService.AddPaymentAsync(payment, userId);
 
                 return Created(addPayment);
             }
@@ -41,6 +46,10 @@ namespace QarzDaftar.Server.Api.Controllers
             {
                 return InternalServerError(paymentServiceException.InnerException);
             }
+            catch (Exception exception)
+            {
+                return InternalServerError(exception);
+            }
         }
 
         [HttpGet("All")]
@@ -48,10 +57,12 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
-                IQueryable<Payment> allpayments =
-                    this.paymentService.RetrieveAllPayments();
+                Guid userId = GetCurrentUserId();
 
-                return Ok(allpayments);
+                IQueryable<Payment> allPayments =
+                    this.paymentProcessingService.RetrieveAllPaymentsByUserId(userId);
+
+                return Ok(allPayments);
             }
             catch (PaymentDependencyException paymentDependencyException)
             {
@@ -68,7 +79,15 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
-                return await this.paymentService.RetrievePaymentByIdAsync(paymentId);
+                Guid userId = GetCurrentUserId();
+
+                Payment maybePayment =
+                    await this.paymentProcessingService.RetrievePaymentByIdAsync(paymentId);
+
+                if (maybePayment == null || maybePayment.Customer?.UserId != userId)
+                    return NotFound();
+
+                return Ok(maybePayment);
             }
             catch (PaymentDependencyException paymentDependencyException)
             {
@@ -95,8 +114,10 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
+                Guid userId = GetCurrentUserId();
+
                 Payment modifyPayment =
-                    await this.paymentService.ModifyPaymentAsync(payment);
+                    await this.paymentProcessingService.ModifyPaymentAsync(payment, userId);
 
                 return Ok(modifyPayment);
             }
@@ -128,8 +149,10 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
+                Guid userId = GetCurrentUserId();
+
                 Payment deletePayment =
-                    await this.paymentService.RemovePaymentByIdAsync(paymentId);
+                    await this.paymentProcessingService.RemovePaymentByIdAsync(paymentId, userId);
 
                 return Ok(deletePayment);
             }
@@ -159,6 +182,46 @@ namespace QarzDaftar.Server.Api.Controllers
             {
                 return InternalServerError(paymentServiceException.InnerException);
             }
+        }
+
+        [HttpGet("customers/{customerId}/total-paid")]
+        public ActionResult<decimal> GetTotalPaidAmountForCustomer(Guid customerId)
+        {
+            decimal totalPaid = paymentProcessingService.CalculateTotalPaidAmountForCustomer(customerId);
+            return Ok(totalPaid);
+        }
+
+        [HttpGet("customers/{customerId}/remaining-debt")]
+        public ActionResult<decimal> GetRemainingDebtForCustomer(Guid customerId)
+        {
+            decimal remainingDebt = paymentProcessingService.CalculateRemainingDebtForCustomer(customerId);
+            return Ok(remainingDebt);
+        }
+
+        [HttpGet("total-paid/user/{userId}")]
+        public ActionResult<decimal> GetTotalPaidByUserId(Guid userId)
+        {
+            var totalPaid = paymentProcessingService.CalculateTotalPaidByUserId(userId);
+            return Ok(totalPaid);
+        }
+
+        [HttpGet("remaining-debt/user/{userId}")]
+        public ActionResult<decimal> GetRemainingDebtByUserId(Guid userId)
+        {
+            var remainingDebt = paymentProcessingService.CalculateRemainingDebtByUserId(userId);
+            return Ok(remainingDebt);
+        }
+
+        private Guid GetCurrentUserId()
+        {
+            string? userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out Guid userId))
+            {
+                throw new UnauthorizedAccessException("User ID not found in token.");
+            }
+
+            return userId;
         }
     }
 }

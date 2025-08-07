@@ -32,6 +32,10 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Payments
         public IQueryable<Payment> RetrieveAllPayments() =>
             TryCatch(() => this.storageBroker.SelectAllPayments());
 
+        public IQueryable<Payment> RetrieveAllPaymentsByCustomerId(Guid customerId) =>
+            this.storageBroker.SelectAllPayments()
+                .Where(payment => payment.CustomerId == customerId);
+
         public ValueTask<Payment> RetrievePaymentByIdAsync(Guid paymentId) =>
         TryCatch(async () =>
         {
