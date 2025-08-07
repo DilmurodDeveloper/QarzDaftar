@@ -65,9 +65,9 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Debt>()
-                .HasOne(d => d.User)
+                .HasOne(d => d.Customer)
                 .WithMany(u => u.Debts)
-                .HasForeignKey(d => d.UserId)
+                .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Customer>()

@@ -1,26 +1,32 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QarzDaftar.Server.Api.Models.Foundations.Debts;
 using QarzDaftar.Server.Api.Models.Foundations.Debts.Exceptions;
-using QarzDaftar.Server.Api.Services.Foundations.Debts;
+using QarzDaftar.Server.Api.Services.Processings.Debts;
 using RESTFulSense.Controllers;
 
 namespace QarzDaftar.Server.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class DebtsController : RESTFulController
     {
-        private readonly IDebtService debtService;
+        private readonly IDebtProcessingService debtProcessingService;
 
-        public DebtsController(IDebtService debtService) =>
-            this.debtService = debtService;
+        public DebtsController(IDebtProcessingService debtProcessingService) =>
+            this.debtProcessingService = debtProcessingService;
 
         [HttpPost]
         public async ValueTask<ActionResult<Debt>> PostDebtAsync(Debt debt)
         {
             try
             {
-                Debt addDebt = await this.debtService.AddDebtAsync(debt);
+                Guid userId = GetCurrentUserId();
+
+                Debt addDebt =
+                    await this.debtProcessingService.AddDebtAsync(debt, userId);
 
                 return Created(addDebt);
             }
@@ -48,7 +54,10 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
-                IQueryable<Debt> allDebts = this.debtService.RetrieveAllDebts();
+                Guid userId = GetCurrentUserId();
+
+                IQueryable<Debt> allDebts =
+                    this.debtProcessingService.RetrieveAllDebtsByUserId(userId);
 
                 return Ok(allDebts);
             }
@@ -67,7 +76,15 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
-                return await this.debtService.RetrieveDebtByIdAsync(debtId);
+                Guid userId = GetCurrentUserId();
+
+                Debt maybeDebt =
+                    await this.debtProcessingService.RetrieveDebtByIdAsync(debtId);
+
+                if (maybeDebt is null || maybeDebt.Customer?.UserId != userId)
+                    return NotFound();
+
+                return Ok(maybeDebt);
             }
             catch (DebtDependencyException debtDependencyException)
             {
@@ -94,8 +111,10 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
+                Guid userId = GetCurrentUserId();
+
                 Debt modifyDebt =
-                    await this.debtService.ModifyDebtAsync(debt);
+                    await this.debtProcessingService.ModifyDebtAsync(debt, userId);
 
                 return Ok(modifyDebt);
             }
@@ -127,8 +146,10 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
+                Guid userId = GetCurrentUserId();
+
                 Debt deleteDebt =
-                    await this.debtService.RemoveDebtByIdAsync(debtId);
+                    await this.debtProcessingService.RemoveDebtByIdAsync(debtId, userId);
 
                 return Ok(deleteDebt);
             }
@@ -158,6 +179,32 @@ namespace QarzDaftar.Server.Api.Controllers
             {
                 return InternalServerError(debtServiceException.InnerException);
             }
+        }
+
+        [HttpGet("total/{customerId}")]
+        public ActionResult<decimal> GetTotalDebtForCustomer(Guid customerId)
+        {
+            decimal totalDebt = debtProcessingService.CalculateTotalDebtForCustomer(customerId);
+            return Ok(totalDebt);
+        }
+
+        [HttpGet("total-debt/user/{userId}")]
+        public ActionResult<decimal> GetTotalDebtByUserId(Guid userId)
+        {
+            var totalDebt = debtProcessingService.CalculateTotalDebtByUserId(userId);
+            return Ok(totalDebt);
+        }
+
+        private Guid GetCurrentUserId()
+        {
+            string? userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out Guid userId))
+            {
+                throw new UnauthorizedAccessException("User ID not found in token.");
+            }
+
+            return userId;
         }
     }
 }

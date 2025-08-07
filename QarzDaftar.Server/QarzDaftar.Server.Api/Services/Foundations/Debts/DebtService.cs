@@ -44,6 +44,10 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Debts
             return maybeDebt;
         });
 
+        public IQueryable<Debt> RetrieveAllDebtsByCustomerId(Guid customerId) =>
+            this.storageBroker.SelectAllDebts()
+                .Where(debt => debt.CustomerId == customerId);
+
         public ValueTask<Debt> ModifyDebtAsync(Debt debt) =>
         TryCatch(async () =>
         {

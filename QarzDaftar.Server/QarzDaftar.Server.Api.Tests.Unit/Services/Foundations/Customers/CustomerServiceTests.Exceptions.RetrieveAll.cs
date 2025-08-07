@@ -11,6 +11,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
         public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
         {
             // given 
+            Guid someUserId = Guid.NewGuid();
             SqlException sqlException = GetSqlError();
 
             var failedCustomerStorageException =
@@ -24,7 +25,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
 
             // when
             Action retrieveAllCustomersAction = () =>
-                this.customerService.RetrieveAllCustomers();
+                this.customerService.RetrieveAllCustomers(someUserId);
 
             CustomerDependencyException actualCustomerDependencyException =
                 Assert.Throws<CustomerDependencyException>(retrieveAllCustomersAction);
@@ -50,6 +51,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
         public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
+            Guid someUserId = Guid.NewGuid();
             string exceptionMessage = GetRandomString();
             var serverException = new Exception(exceptionMessage);
 
@@ -64,7 +66,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
 
             // when 
             Action retrieveAllCustomerActions = () =>
-                this.customerService.RetrieveAllCustomers();
+                this.customerService.RetrieveAllCustomers(someUserId);
 
             CustomerServiceException actualCustomerServiceException =
                 Assert.Throws<CustomerServiceException>(retrieveAllCustomerActions);

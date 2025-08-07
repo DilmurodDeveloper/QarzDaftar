@@ -1,28 +1,34 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes.Exceptions;
-using QarzDaftar.Server.Api.Services.Foundations.UserNotes;
+using QarzDaftar.Server.Api.Services.Processings.UserNotes;
 using RESTFulSense.Controllers;
 
 namespace QarzDaftar.Server.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class UserNotesController : RESTFulController
     {
-        private readonly IUserNoteService userNoteService;
+        private readonly IUserNoteProcessingService userNoteProcessingService;
 
-        public UserNotesController(IUserNoteService userNoteService) =>
-            this.userNoteService = userNoteService;
+        public UserNotesController(IUserNoteProcessingService userNoteProcessingService) =>
+            this.userNoteProcessingService = userNoteProcessingService;
 
         [HttpPost]
         public async ValueTask<ActionResult<UserNote>> PostUserNoteAsync(UserNote userNote)
         {
             try
             {
-                UserNote addUserNote = await this.userNoteService.AddUserNoteAsync(userNote);
+                Guid userId = GetCurrentUserId();
 
-                return Created(addUserNote);
+                UserNote addedUserNote =
+                    await this.userNoteProcessingService.AddUserNoteAsync(userNote, userId);
+
+                return Created(addedUserNote);
             }
             catch (UserNoteValidationException userNoteValidationException)
             {
@@ -48,10 +54,12 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
-                IQueryable<UserNote> alluserNotes =
-                    this.userNoteService.RetrieveAllUserNotes();
+                Guid userId = GetCurrentUserId();
 
-                return Ok(alluserNotes);
+                IQueryable<UserNote> allUserNotes =
+                    this.userNoteProcessingService.RetrieveAllUserNotesByUserId(userId);
+
+                return Ok(allUserNotes);
             }
             catch (UserNoteDependencyException userNoteDependencyException)
             {
@@ -68,7 +76,15 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
-                return await this.userNoteService.RetrieveUserNoteByIdAsync(userNoteId);
+                Guid userId = GetCurrentUserId();
+
+                UserNote maybeUserNote =
+                    await this.userNoteProcessingService.RetrieveUserNoteByIdAsync(userNoteId);
+
+                if (maybeUserNote == null || maybeUserNote.UserId != userId)
+                    return NotFound();
+
+                return Ok(maybeUserNote);
             }
             catch (UserNoteDependencyException userNoteDependencyException)
             {
@@ -95,10 +111,12 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
-                UserNote modifyUserNote =
-                    await this.userNoteService.ModifyUserNoteAsync(userNote);
+                Guid userId = GetCurrentUserId();
 
-                return Ok(modifyUserNote);
+                UserNote modifiedUserNote =
+                    await this.userNoteProcessingService.ModifyUserNoteAsync(userNote, userId);
+
+                return Ok(modifiedUserNote);
             }
             catch (UserNoteValidationException userNoteValidationException)
                 when (userNoteValidationException.InnerException is NotFoundUserNoteException)
@@ -128,10 +146,12 @@ namespace QarzDaftar.Server.Api.Controllers
         {
             try
             {
-                UserNote deleteUserNote =
-                    await this.userNoteService.RemoveUserNoteByIdAsync(userNoteId);
+                Guid userId = GetCurrentUserId();
 
-                return Ok(deleteUserNote);
+                UserNote deletedUserNote =
+                    await this.userNoteProcessingService.RemoveUserNoteByIdAsync(userNoteId, userId);
+
+                return Ok(deletedUserNote);
             }
             catch (UserNoteValidationException userNoteValidationException)
                 when (userNoteValidationException.InnerException is NotFoundUserNoteException)
@@ -159,6 +179,18 @@ namespace QarzDaftar.Server.Api.Controllers
             {
                 return InternalServerError(userNoteServiceException.InnerException);
             }
+        }
+
+        private Guid GetCurrentUserId()
+        {
+            string? userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userIdString) || !Guid.TryParse(userIdString, out Guid userId))
+            {
+                throw new UnauthorizedAccessException("User ID not found in token.");
+            }
+
+            return userId;
         }
     }
 }

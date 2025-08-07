@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QarzDaftar.Server.Api.Brokers.Storages;
 
@@ -11,9 +12,11 @@ using QarzDaftar.Server.Api.Brokers.Storages;
 namespace QarzDaftar.Server.Api.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    partial class StorageBrokerModelSnapshot : ModelSnapshot
+    [Migration("20250807074052_AddRoleToUserAndSuperAdmin")]
+    partial class AddRoleToUserAndSuperAdmin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,16 +84,13 @@ namespace QarzDaftar.Server.Api.Migrations
                     b.Property<DateTimeOffset>("DueDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<decimal>("RemainingAmount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -339,14 +339,18 @@ namespace QarzDaftar.Server.Api.Migrations
                     b.HasOne("QarzDaftar.Server.Api.Models.Foundations.Customers.Customer", "Customer")
                         .WithMany("Debts")
                         .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("QarzDaftar.Server.Api.Models.Foundations.Users.User", "User")
+                        .WithMany("Debts")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("QarzDaftar.Server.Api.Models.Foundations.Users.User", null)
-                        .WithMany("Debts")
-                        .HasForeignKey("UserId");
-
                     b.Navigation("Customer");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("QarzDaftar.Server.Api.Models.Foundations.Payments.Payment", b =>

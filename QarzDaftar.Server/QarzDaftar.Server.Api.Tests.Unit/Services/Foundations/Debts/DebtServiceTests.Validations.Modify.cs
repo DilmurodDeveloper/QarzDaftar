@@ -67,6 +67,10 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Debts
                 values: "Amount is required");
 
             invalidDebtException.AddData(
+                key: nameof(Debt.RemainingAmount),
+                values: "Amount is required");
+
+            invalidDebtException.AddData(
                 key: nameof(Debt.Description),
                 values: "Text is required");
 
@@ -84,10 +88,6 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Debts
 
             invalidDebtException.AddData(
                 key: nameof(Debt.CustomerId),
-                values: "Id is required");
-
-            invalidDebtException.AddData(
-                key: nameof(Debt.UserId),
                 values: "Id is required");
 
             var expectedDebtValidationException =
