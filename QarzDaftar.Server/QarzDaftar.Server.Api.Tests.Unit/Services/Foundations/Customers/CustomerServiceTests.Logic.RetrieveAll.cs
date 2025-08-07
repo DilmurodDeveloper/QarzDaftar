@@ -11,7 +11,6 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
         public void ShouldRetrieveAllCustomers()
         {
             // given
-            Guid someUserId = Guid.NewGuid();
             IQueryable<Customer> randomCustomers = CreateRandomCustomers();
             IQueryable<Customer> persistedCustomers = randomCustomers;
             IQueryable<Customer> expectedCustomers = persistedCustomers.DeepClone();
@@ -21,7 +20,7 @@ namespace QarzDaftar.Server.Api.Tests.Unit.Services.Foundations.Customers
 
             // when
             IQueryable<Customer> actualCustomers =
-                this.customerService.RetrieveAllCustomers(someUserId);
+                this.customerService.RetrieveAllCustomers();
 
             // then
             actualCustomers.Should().BeEquivalentTo(expectedCustomers);
