@@ -11,25 +11,24 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QarzDaftar.Server.Api.Infra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QarzDaftar.Server.Api.Tests.Unit", "QarzDaftar.Server\QarzDaftar.Server.Api.Tests.Unit\QarzDaftar.Server.Api.Tests.Unit.csproj", "{3711A460-3E02-4ABA-B7F5-BC9835902AA2}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "QarzDaftar.Client", "QarzDaftar.Client\", "{5E35D1FA-E0F6-8AE9-713A-69AEB159B12D}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "QarzDaftar.Frontend", "QarzDaftar.Frontend\", "{1303C245-3813-CE06-0B33-3ACADF6086B2}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8.1"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_61801"
-		Debug.AspNetCompiler.PhysicalPath = "QarzDaftar.Client\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_61801\"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_62305"
+		Debug.AspNetCompiler.PhysicalPath = "QarzDaftar.Frontend\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_62305\"
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_61801"
-		Release.AspNetCompiler.PhysicalPath = "QarzDaftar.Client\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_61801\"
+		Release.AspNetCompiler.VirtualPath = "/localhost_62305"
+		Release.AspNetCompiler.PhysicalPath = "QarzDaftar.Frontend\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_62305\"
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "61801"
-		SlnRelativePath = "QarzDaftar.Client\"
+		VWDPort = "62305"
 	EndProjectSection
 EndProject
 Global
@@ -78,18 +77,18 @@ Global
 		{3711A460-3E02-4ABA-B7F5-BC9835902AA2}.Release|x64.Build.0 = Release|Any CPU
 		{3711A460-3E02-4ABA-B7F5-BC9835902AA2}.Release|x86.ActiveCfg = Release|Any CPU
 		{3711A460-3E02-4ABA-B7F5-BC9835902AA2}.Release|x86.Build.0 = Release|Any CPU
-		{5E35D1FA-E0F6-8AE9-713A-69AEB159B12D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5E35D1FA-E0F6-8AE9-713A-69AEB159B12D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5E35D1FA-E0F6-8AE9-713A-69AEB159B12D}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{5E35D1FA-E0F6-8AE9-713A-69AEB159B12D}.Debug|x64.Build.0 = Debug|Any CPU
-		{5E35D1FA-E0F6-8AE9-713A-69AEB159B12D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{5E35D1FA-E0F6-8AE9-713A-69AEB159B12D}.Debug|x86.Build.0 = Debug|Any CPU
-		{5E35D1FA-E0F6-8AE9-713A-69AEB159B12D}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{5E35D1FA-E0F6-8AE9-713A-69AEB159B12D}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{5E35D1FA-E0F6-8AE9-713A-69AEB159B12D}.Release|x64.ActiveCfg = Debug|Any CPU
-		{5E35D1FA-E0F6-8AE9-713A-69AEB159B12D}.Release|x64.Build.0 = Debug|Any CPU
-		{5E35D1FA-E0F6-8AE9-713A-69AEB159B12D}.Release|x86.ActiveCfg = Debug|Any CPU
-		{5E35D1FA-E0F6-8AE9-713A-69AEB159B12D}.Release|x86.Build.0 = Debug|Any CPU
+		{1303C245-3813-CE06-0B33-3ACADF6086B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1303C245-3813-CE06-0B33-3ACADF6086B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1303C245-3813-CE06-0B33-3ACADF6086B2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1303C245-3813-CE06-0B33-3ACADF6086B2}.Debug|x64.Build.0 = Debug|Any CPU
+		{1303C245-3813-CE06-0B33-3ACADF6086B2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1303C245-3813-CE06-0B33-3ACADF6086B2}.Debug|x86.Build.0 = Debug|Any CPU
+		{1303C245-3813-CE06-0B33-3ACADF6086B2}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{1303C245-3813-CE06-0B33-3ACADF6086B2}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{1303C245-3813-CE06-0B33-3ACADF6086B2}.Release|x64.ActiveCfg = Debug|Any CPU
+		{1303C245-3813-CE06-0B33-3ACADF6086B2}.Release|x64.Build.0 = Debug|Any CPU
+		{1303C245-3813-CE06-0B33-3ACADF6086B2}.Release|x86.ActiveCfg = Debug|Any CPU
+		{1303C245-3813-CE06-0B33-3ACADF6086B2}.Release|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
