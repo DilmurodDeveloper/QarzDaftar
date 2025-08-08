@@ -1,0 +1,114 @@
+.navbar {
+    background: linear-gradient(to right, #2196f3, #00bcd4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 0.1rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.navbar-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.navbar-logo {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.navbar-logo-link {
+    color: white;
+    text-decoration: none;
+}
+
+.menu-toggle {
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: none;
+}
+
+.navbar-ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+    .navbar-ul li {
+        color: #fff;
+        font-weight: 500;
+    }
+
+.navbar-button {
+    background-color: #ffffff;
+    color: #0077ff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .navbar-button:hover {
+        background-color: #0077ff;
+        color: #fff;
+        box-shadow: 0 0 10px rgba(0, 119, 255, 0.3);
+    }
+
+.navbar-greeting {
+    color: #fff;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .navbar-header {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .navbar-ul {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: 0.5rem;
+        display: none;
+        width: 100%;
+    }
+
+        .navbar-ul.open {
+            display: flex;
+        }
+
+    .navbar-button {
+        width: 100%;
+        text-align: left;
+    }
+
+    .navbar-greeting {
+        margin-bottom: 0.5rem;
+    }
+}

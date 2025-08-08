@@ -1,0 +1,106 @@
+.auth-container {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+    .auth-container h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+        color: #333;
+    }
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+    .auth-form input {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        transition: border-color 0.3s ease;
+    }
+
+        .auth-form input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+        }
+
+.password-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+    .password-field input {
+        flex: 1;
+        padding-right: 2.5rem;
+    }
+
+.toggle-password {
+    position: absolute;
+    right: 0.75rem;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #666;
+    transition: color 0.2s ease;
+}
+
+    .toggle-password:hover {
+        color: #007bff;
+    }
+
+.auth-form button {
+    padding: 0.75rem;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .auth-form button:hover {
+        background-color: #0056b3;
+    }
+
+.auth-footer {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+    .auth-footer a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+.input-row {
+    display: flex;
+    gap: 1rem;
+}
+
+    .input-row input {
+        flex: 1 1 45%;
+        min-width: 140px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+    }
