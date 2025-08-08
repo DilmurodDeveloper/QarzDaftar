@@ -1,0 +1,200 @@
+﻿.welcome-section {
+    padding: 4rem;
+    background-color: whitesmoke;
+    min-height: 100vh;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow-y: hidden;
+}
+
+.welcome-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.text-column {
+    flex: 0 0 50%;
+    max-width: 50%;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.welcome-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.welcome-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.features {
+    display: flex;
+    gap: 1rem;
+}
+
+.feature-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background-color: wheat;
+    padding: 0.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+}
+
+    .feature-item:hover {
+        transform: translateY(-4px);
+    }
+
+.feature-icon {
+    font-size: 1.5rem;
+    color: #004d40;
+}
+
+.contact-info {
+    margin-top: 2rem;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.01rem 1rem;
+    border-radius: 18px;
+}
+
+.contact-icon {
+    font-size: 1rem;
+    color: #00796b;
+}
+
+.contact-link {
+    text-decoration: none;
+    color: #004d40;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+    .contact-link:hover {
+        color: #00796b;
+        text-decoration: underline;
+    }
+
+.icon-column {
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    padding: 1rem;
+}
+
+.finance-image {
+    max-width: 350px;
+    height: auto;
+    object-fit: contain;
+    animation: floatIcon 2s infinite ease-in-out;
+}
+
+.footer {
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+    padding: 1rem 0;
+    font-size: 0.95rem;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2);
+    margin-top: auto;
+}
+
+.footer-link {
+    color: #00bcd4;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+    .footer-link:hover {
+        color: #4dd0e1;
+        text-decoration: underline;
+    }
+
+@keyframes floatIcon {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .welcome-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .welcome-header {
+        justify-content: center;
+        text-align: center;
+    }
+
+        .welcome-header h2 {
+            margin: 0 auto;
+        }
+
+    .text-column {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding: 0 1rem;
+    }
+
+    .features {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .feature-item {
+        width: 90%;
+        justify-content: center;
+    }
+
+    .contact-info {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .contact-item {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .icon-column {
+        display: none;
+    }
+
+    .footer {
+        font-size: 0.85rem;
+        padding: 0.75rem 0;
+    }
+}
