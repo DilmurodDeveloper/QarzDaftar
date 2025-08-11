@@ -1,17 +1,19 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY QarzDaftar.sln .
 COPY QarzDaftar.Server/QarzDaftar.Server.Api/QarzDaftar.Server.Api.csproj QarzDaftar.Server/QarzDaftar.Server.Api/
+COPY QarzDaftar.Server/QarzDaftar.Server.Api.Infrastructure.Build/QarzDaftar.Server.Api.Infrastructure.Build.csproj QarzDaftar.Server/QarzDaftar.Server.Api.Infrastructure.Build/
+COPY QarzDaftar.Server/QarzDaftar.Server.Api.Tests.Unit/QarzDaftar.Server.Api.Tests.Unit.csproj QarzDaftar.Server/QarzDaftar.Server.Api.Tests.Unit/
 
-RUN dotnet restore QarzDaftar.sln
+RUN dotnet restore QarzDaftar.Server/QarzDaftar.Server.Api/QarzDaftar.Server.Api.csproj
 
-COPY . .
+COPY QarzDaftar.Server ./QarzDaftar.Server
 
 RUN dotnet publish QarzDaftar.Server/QarzDaftar.Server.Api/QarzDaftar.Server.Api.csproj -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
+
 COPY --from=build /app/publish .
 
 EXPOSE 8080
