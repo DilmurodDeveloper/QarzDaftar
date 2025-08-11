@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY QarzDaftar.Server/QarzDaftar.Server.Api/QarzDaftar.Server.Api.csproj QarzDaftar.Server/QarzDaftar.Server.Api/
-COPY QarzDaftar.sln .
+RUN dotnet restore QarzDaftar.Server/QarzDaftar.Server.Api/QarzDaftar.Server.Api.csproj
 
 RUN dotnet restore QarzDaftar.sln
 
