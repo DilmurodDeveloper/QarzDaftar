@@ -55,10 +55,11 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string connectionString =
-                this.configuration.GetConnectionString(name: "DefaultConnection");
+                this.configuration.GetConnectionString("DefaultConnection");
 
-            optionsBuilder.UseSqlServer(connectionString);
+            optionsBuilder.UseNpgsql(connectionString);
         }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
