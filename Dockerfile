@@ -1,8 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
+COPY QarzDaftar.sln .
 COPY QarzDaftar.Server/QarzDaftar.Server.Api/QarzDaftar.Server.Api.csproj QarzDaftar.Server/QarzDaftar.Server.Api/
-RUN dotnet restore QarzDaftar.Server/QarzDaftar.Server.Api/QarzDaftar.Server.Api.csproj
 
 RUN dotnet restore QarzDaftar.sln
 
@@ -12,9 +12,7 @@ RUN dotnet publish QarzDaftar.Server/QarzDaftar.Server.Api/QarzDaftar.Server.Api
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-
 COPY --from=build /app/publish .
 
 EXPOSE 8080
-
 ENTRYPOINT ["dotnet", "QarzDaftar.Server.Api.dll"]
