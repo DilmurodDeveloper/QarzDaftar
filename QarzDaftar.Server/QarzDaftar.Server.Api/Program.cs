@@ -126,11 +126,9 @@ using (var scope = app.Services.CreateScope())
     await SuperAdminSeeder.SeedAsync(storageBroker, configuration, passwordHasher);
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+app.MapGet("/", () => "QarzDaftar API is running.");
 app.UseHttpsRedirection();
 app.UseCors("AllowClient");
 app.UseAuthentication();
