@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using QarzDaftar.Server.Api.Models.Foundations.SuperAdmins;
 using QarzDaftar.Server.Api.Models.Foundations.Users;
+using QarzDaftar.Server.Api.Services.Foundations.SuperAdmins;
 using QarzDaftar.Server.Api.Services.Foundations.Users;
 using QarzDaftar.Server.Api.Services.Processings.Tokens;
 
@@ -8,28 +10,47 @@ namespace QarzDaftar.Server.Api.Services.Processings.Authentications
     public class AuthenticationService : IAuthenticationService
     {
         private readonly IUserService userService;
+        private readonly ISuperAdminService superAdminService;
         private readonly ITokenProcessingService tokenProcessingService;
         private readonly IPasswordHasher<User> passwordHasher;
+        private readonly IPasswordHasher<SuperAdmin> superAdminPasswordHasher;
 
         public AuthenticationService(
             IUserService userService,
+            ISuperAdminService superAdminService,
             ITokenProcessingService tokenProcessingService,
-            IPasswordHasher<User> passwordHasher)
+            IPasswordHasher<User> passwordHasher,
+            IPasswordHasher<SuperAdmin> superAdminPasswordHasher)
         {
             this.userService = userService;
+            this.superAdminService = superAdminService;
             this.tokenProcessingService = tokenProcessingService;
             this.passwordHasher = passwordHasher;
+            this.superAdminPasswordHasher = superAdminPasswordHasher;
+        }
+
+        public async ValueTask<string> AuthenticateSuperAdminAsync(string username, string password)
+        {
+            var superadmin = await this.superAdminService.RetrieveSuperAdminByUsernameAsync(username);
+
+            if (superadmin == null)
+                throw new UnauthorizedAccessException("Username yoki parol noto‘g‘ri.");
+
+            var result = this.superAdminPasswordHasher.VerifyHashedPassword(superadmin, superadmin.PasswordHash, password);
+            if (result == PasswordVerificationResult.Failed)
+                throw new UnauthorizedAccessException("Username yoki parol noto‘g‘ri.");
+
+            return this.tokenProcessingService.CreateTokenForSuperAdmin(superadmin);
         }
 
         public async ValueTask<string> AuthenticateUserAsync(string username, string password)
         {
-            User user = await this.userService.RetrieveUserByUsernameAsync(username);
+            var user = await this.userService.RetrieveUserByUsernameAsync(username);
 
-            if (user is null || user.IsBlocked)
+            if (user == null || user.IsBlocked)
                 throw new UnauthorizedAccessException("Username yoki parol noto‘g‘ri.");
 
             var result = this.passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
-
             if (result == PasswordVerificationResult.Failed)
                 throw new UnauthorizedAccessException("Username yoki parol noto‘g‘ri.");
 

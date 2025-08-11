@@ -1,0 +1,68 @@
+.support-container {
+    padding: 20px;
+}
+
+.support-header {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.support-text {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.support-links {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.support-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 18px;
+    width: fit-content;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+    .support-link .icon {
+        margin-right: 10px;
+        font-size: 22px;
+    }
+
+.telegram {
+    background-color: #0088cc;
+}
+
+    .telegram:hover {
+        background-color: #0077b6;
+    }
+
+.phone {
+    background-color: #25d366;
+}
+
+    .phone:hover {
+        background-color: #1ebe5b;
+    }
+
+.whatsapp {
+    background-color: #25d366;
+}
+
+    .whatsapp:hover {
+        background-color: #1ebe5b;
+    }
+
+.support-footer {
+    color: #555;
+    font-size: 1rem;
+}

@@ -1,0 +1,135 @@
+﻿.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.modal-content {
+    background-color: #f9fafb;
+    border-radius: 10px;
+    padding: 24px 32px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.3s ease forwards;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-sizing: border-box;
+}
+
+    .modal-content h3 {
+        margin-top: 0;
+        color: #334155;
+        font-size: 1.5rem;
+        font-weight: 600;
+        user-select: none;
+    }
+
+    .modal-content label {
+        display: block;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 6px;
+        margin-top: 14px;
+        user-select: none;
+    }
+
+    .modal-content input[type="text"],
+    .modal-content input[type="number"],
+    .modal-content input[type="date"],
+    .modal-content select {
+        width: 100%;
+        padding: 10px 14px;
+        font-size: 1rem;
+        border: 1.8px solid #cbd5e1;
+        border-radius: 8px;
+        outline: none;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        color: #1e293b;
+        background-color: #fff;
+        box-sizing: border-box;
+        margin-bottom: 8px;
+    }
+
+        .modal-content input[type="text"]:focus,
+        .modal-content input[type="number"]:focus,
+        .modal-content input[type="date"]:focus,
+        .modal-content select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 6px #3b82f6;
+        }
+
+.modal-actions {
+    margin-top: 28px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.save-btn {
+    background-color: #2563eb;
+    color: white;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 7px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    user-select: none;
+}
+
+    .save-btn:hover {
+        background-color: #1e40af;
+    }
+
+.cancel-btn {
+    background-color: #e2e8f0;
+    color: #334155;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 7px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    user-select: none;
+}
+
+    .cancel-btn:hover {
+        background-color: #cbd5e1;
+    }
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        padding: 20px 20px;
+        max-width: 90%;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+        .modal-actions button {
+            width: 100%;
+            padding: 12px 0;
+        }
+}

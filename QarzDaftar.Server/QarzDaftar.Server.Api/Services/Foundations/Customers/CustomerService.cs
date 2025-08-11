@@ -67,7 +67,7 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
             ValidateCustomerId(customerId);
 
             Customer maybeCustomer =
-            await this.storageBroker.SelectCustomerByIdAsync(customerId);
+                await this.storageBroker.SelectCustomerByIdAsync(customerId);
 
             ValidateStorageCustomer(maybeCustomer, customerId);
 

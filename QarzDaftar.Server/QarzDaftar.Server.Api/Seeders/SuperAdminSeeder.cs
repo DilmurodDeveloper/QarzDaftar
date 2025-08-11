@@ -8,21 +8,22 @@ namespace QarzDaftar.Server.Api.Seeders
     public static class SuperAdminSeeder
     {
         public static async Task SeedAsync(
-        StorageBroker storageBroker,
-        IConfiguration configuration,
-        IPasswordHasher<SuperAdmin> passwordHasher)
+            StorageBroker storageBroker,
+            IConfiguration configuration,
+            IPasswordHasher<SuperAdmin> passwordHasher)
         {
-            var superAdmin = configuration.GetSection("SuperAdmin").Get<SuperAdmin>();
+            var superAdminSection = configuration.GetSection("SuperAdmin");
+            var superAdmin = superAdminSection.Get<SuperAdmin>();
+            var plainPassword = superAdminSection.GetValue<string>("Password");
 
             bool exists = await storageBroker.SuperAdmins.AnyAsync();
 
             if (!exists)
             {
-                superAdmin.PasswordHash = passwordHasher.HashPassword(superAdmin, superAdmin.PasswordHash);
+                superAdmin!.PasswordHash = passwordHasher.HashPassword(superAdmin, plainPassword!);
 
                 await storageBroker.InsertSuperAdminAsync(superAdmin);
             }
         }
     }
-
 }

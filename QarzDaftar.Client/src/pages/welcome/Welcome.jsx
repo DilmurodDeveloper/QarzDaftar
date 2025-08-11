@@ -19,11 +19,11 @@ function Welcome() {
                         <div className="features">
                             <div className="feature-item">
                                 <FaUsers className="feature-icon" />
-                                <span>Mijozlarni boshqarish</span>
+                                <span>Mijozlarni boshqaruvi</span>
                             </div>
                             <div className="feature-item">
                                 <FaMoneyBillWave className="feature-icon" />
-                                <span>Qarz va to‘lovlarni yozish</span>
+                                <span>Qarz va to‘lovlar boshqaruvi</span>
                             </div>
                             <div className="feature-item">
                                 <FaHandshake className="feature-icon" />

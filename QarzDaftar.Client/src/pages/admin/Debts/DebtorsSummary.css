@@ -1,0 +1,105 @@
+﻿.search-input-debtors-summary {
+    flex-grow: 1;
+    min-width: 150px;
+    max-width: 400px;
+    padding: 0.5rem 1em;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    background-color: white;
+    border-radius: 8px;
+    outline-offset: 2px;
+    transition: border-color 0.3s ease;
+}
+
+    .search-input-debtors-summary:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+    }
+
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+    .summary-table thead {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+        .summary-table thead th {
+            text-align: left;
+            padding: 14px 18px;
+            font-weight: 600;
+            font-size: 1rem;
+            user-select: none;
+        }
+
+    .summary-table tbody tr {
+        border-bottom: 1px solid #e2e8f0;
+        transition: background-color 0.2s ease;
+    }
+
+        .summary-table tbody tr:hover {
+            background-color: #f1f5f9;
+        }
+
+    .summary-table tbody td {
+        padding: 14px 18px;
+        font-size: 0.95rem;
+        color: #334155;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+        .summary-table tbody td:last-child {
+            font-weight: 600;
+        }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .debtors-summary-container {
+        padding: 0 10px;
+    }
+
+    .summary-table thead {
+        display: none;
+    }
+
+    .summary-table,
+    .summary-table tbody,
+    .summary-table tr,
+    .summary-table td {
+        display: block;
+        width: 100%;
+    }
+
+        .summary-table tr {
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px 10px;
+        }
+
+        .summary-table td {
+            text-align: right;
+            padding-left: 50%;
+            position: relative;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+
+            .summary-table td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 14px;
+                top: 14px;
+                font-weight: 700;
+                color: #64748b;
+                white-space: nowrap;
+                text-align: left;
+            }
+}

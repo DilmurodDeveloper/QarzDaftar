@@ -10,12 +10,9 @@ namespace QarzDaftar.Server.Api.Services.Foundations.Customers
             ValidateCustomerNotNull(customer);
 
             Validate(
-                (Rule: IsInvalid(customer.Id), Parameter: nameof(Customer.Id)),
                 (Rule: IsInvalid(customer.FullName), Parameter: nameof(Customer.FullName)),
                 (Rule: IsInvalid(customer.PhoneNumber), Parameter: nameof(Customer.PhoneNumber)),
                 (Rule: IsInvalid(customer.Address), Parameter: nameof(Customer.Address)),
-                (Rule: IsInvalid(customer.CreatedDate), Parameter: nameof(Customer.CreatedDate)),
-                (Rule: IsInvalid(customer.UpdatedDate), Parameter: nameof(Customer.UpdatedDate)),
                 (Rule: IsInvalid(customer.UserId), Parameter: nameof(Customer.UserId)));
         }
 

@@ -30,12 +30,27 @@ function Login({ setUser }) {
             localStorage.setItem("accessToken", token);
 
             const decoded = jwtDecode(token);
-            const role = decoded.role || decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+            const role =
+                decoded.role ||
+                decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
-            setUser({
-                username: decoded.username || username,
-                role
-            });
+            const userId =
+                decoded.userId ||
+                decoded.sub ||
+                decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] ||
+                null;
+
+            const fullName =
+                decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]?.trim() ||
+                decoded.name?.trim() ||
+                decoded.fullName?.trim() ||
+                decoded.username?.trim() ||
+                username;
+
+            const userData = { userId, fullName, role };
+            localStorage.setItem("user", JSON.stringify(userData));
+
+            setUser(userData);
 
             if (role === "SuperAdmin") {
                 navigate("/ceo/dashboard");
@@ -44,7 +59,6 @@ function Login({ setUser }) {
             } else {
                 navigate("/");
             }
-
         } catch (error) {
             alert("Login xatoligi: " + error.message);
         }
@@ -82,7 +96,7 @@ function Login({ setUser }) {
             </form>
 
             <p className="auth-footer">
-                Hisobingiz yo'qmi? <Link to="/register">Ro'yhatdan o'tish</Link>
+                Hisobingiz yo'qmi? <Link to="/register">Ro'yxatdan o'tish</Link>
             </p>
         </div>
     );
