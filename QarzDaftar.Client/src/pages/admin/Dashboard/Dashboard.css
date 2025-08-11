@@ -1,0 +1,146 @@
+.breadcrumb {
+    display: flex;
+    align-items: start;
+    flex-direction: row;
+    margin-bottom: 15px;
+    line-height: 1.5;
+    gap: 8px;
+}
+
+.breadcrumb-icon {
+    vertical-align: middle;
+    font-size: 1rem;
+    position: relative;
+    top: 2px;
+    line-height: 1.5;
+}
+
+.breadcrumb-separator {
+    vertical-align: middle;
+    font-size: 1rem;
+    position: relative;
+    top: 2.5px;
+    line-height: 1.5;
+}
+
+.welcome-card {
+    background: linear-gradient(135deg, #4f46e5, #3b82f6);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.2);
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    justify-content: space-between;
+    transition: transform 0.3s ease;
+}
+
+    .welcome-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .welcome-card h2 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.8rem;
+    }
+
+    .welcome-card p {
+        margin: 5px 0 0 0;
+        opacity: 0.9;
+    }
+
+    .welcome-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 1075px;
+        height: 100%;
+        background-image: url('../../../assets/pattern.png');
+        background-position: right center;
+        background-size: contain;
+        opacity: 0.15;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .welcome-card .icon-title {
+        position: relative;
+        z-index: 1;
+    }
+
+    .welcome-card .icon-title,
+    .welcome-card h2,
+    .welcome-card p {
+        position: relative;
+        z-index: 1;
+    }
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, auto);
+    gap: 20px 30px;
+}
+
+.stat-card {
+    background-color: white;
+    border-radius: 22px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    padding: 12px 18px;
+}
+
+    .stat-card:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        transform: translateY(-4px);
+    }
+
+.stat-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-icon {
+    font-size: 2.2rem;
+    flex-shrink: 0;
+}
+
+.stat-info h4 {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin: 0 1rem;
+    color: #374151;
+}
+
+.stat-info p {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1f2937;
+    margin: 0.5rem 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(6, auto);
+        gap: 15px 0;
+    }
+
+    .welcome-card {
+        padding: 15px 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .welcome-icon {
+        font-size: 40px;
+    }
+}

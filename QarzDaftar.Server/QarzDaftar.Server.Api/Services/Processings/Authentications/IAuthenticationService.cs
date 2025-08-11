@@ -2,6 +2,7 @@
 {
     public interface IAuthenticationService
     {
+        ValueTask<string> AuthenticateSuperAdminAsync(string username, string password);
         ValueTask<string> AuthenticateUserAsync(string username, string password);
         ValueTask RegisterUserAsync(
             string fullName,

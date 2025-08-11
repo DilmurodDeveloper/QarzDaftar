@@ -1,0 +1,220 @@
+﻿.debts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+    .debts-header h2 {
+        font-size: 1.8rem;
+        color: #334155;
+        margin: 0;
+        flex-grow: 1;
+        min-width: 200px;
+    }
+
+.debts-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: nowrap;
+    min-width: auto;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.search-input {
+    flex-grow: 1;
+    min-width: 150px;
+    max-width: 400px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: white;
+    border-radius: 8px;
+    outline-offset: 2px;
+    transition: border-color 0.3s ease;
+}
+
+    .search-input:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+    }
+
+.add-btn {
+    background-color: #3b82f6;
+    color: white;
+    padding: 0.5rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+}
+
+    .add-btn:hover {
+        background-color: #2563eb;
+    }
+
+    .add-btn svg {
+        font-size: 1.1rem;
+    }
+
+.debts-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 2px 8px rgb(0,0,0,0.1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+    .debts-table thead {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+        .debts-table thead th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1rem;
+            user-select: none;
+        }
+
+    .debts-table tbody tr {
+        border-bottom: 1px solid #e2e8f0;
+        transition: background-color 0.2s ease;
+    }
+
+        .debts-table tbody tr:hover {
+            background-color: #f1f5f9;
+        }
+
+    .debts-table tbody td {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        color: #334155;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+        .debts-table tbody td button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 6px;
+            color: #64748b;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 4px;
+        }
+
+            .debts-table tbody td button:hover {
+                background-color: #e0e7ff;
+                color: #3b82f6;
+            }
+
+            .debts-table tbody td button:last-child {
+                margin-right: 0;
+            }
+
+        .debts-table tbody td svg {
+            font-size: 1.1rem;
+        }
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+    .action-buttons button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px 8px;
+        border-radius: 6px;
+        transition: background-color 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+    }
+
+        .action-buttons button:hover {
+            background-color: #e0e7ff;
+            color: #3b82f6;
+        }
+
+    .action-buttons svg {
+        font-size: 1.1rem;
+    }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .debts-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .debts-actions {
+        justify-content: space-between;
+    }
+
+    .search-box {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .debts-table thead {
+        display: none;
+    }
+
+    .debts-table,
+    .debts-table tbody,
+    .debts-table tr,
+    .debts-table td {
+        display: block;
+        width: 100%;
+    }
+
+        .debts-table tr {
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .debts-table td {
+            text-align: right;
+            padding-left: 50%;
+            position: relative;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+
+            .debts-table td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 16px;
+                top: 12px;
+                font-weight: 700;
+                color: #64748b;
+                white-space: nowrap;
+                text-align: left;
+            }
+
+        .debts-table tbody td button {
+            margin-right: 10px;
+        }
+}

@@ -10,12 +10,18 @@ namespace QarzDaftar.Server.Api.Services.Processings.Customers
         public CustomerProcessingService(ICustomerService customerService) =>
             this.customerService = customerService;
 
-        public async ValueTask<Customer> AddCustomerAsync(Customer customer) =>
-            await this.customerService.AddCustomerAsync(customer);
+        public async ValueTask<Customer> AddCustomerAsync(Customer customer)
+        {
+            customer.Id = Guid.NewGuid();
+            customer.CreatedDate = DateTimeOffset.UtcNow;
+            customer.UpdatedDate = customer.CreatedDate;
+
+            return await this.customerService.AddCustomerAsync(customer);
+        }
+
 
         public IQueryable<Customer> RetrieveAllCustomers(Guid userId) =>
-            this.customerService.RetrieveAllCustomers(userId)
-                .Where(customer => customer.IsActive);
+            this.customerService.RetrieveAllCustomers(userId);
 
         public async ValueTask<Customer> RetrieveCustomerByIdAsync(Guid customerId) =>
             await this.customerService.RetrieveCustomerByIdAsync(customerId);

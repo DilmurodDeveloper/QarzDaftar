@@ -13,7 +13,7 @@ function Register({ setUser }) {
         password: "",
         phoneNumber: "",
         shopname: "",
-        address: ""
+        address: "",
     });
 
     const [showPassword, setShowPassword] = useState(false);
@@ -26,12 +26,13 @@ function Register({ setUser }) {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+        console.log("Form submit qilindi");
 
         try {
             const response = await fetch(`${API_BASE_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form)
+                body: JSON.stringify(form),
             });
 
             if (!response.ok) throw new Error("Ro'yxatdan o'tish xatoligi");
@@ -86,6 +87,7 @@ function Register({ setUser }) {
                     <span
                         className="toggle-password"
                         onClick={() => setShowPassword(!showPassword)}
+                        style={{ cursor: "pointer" }}
                     >
                         {showPassword ? <FaEye /> : <FaEyeSlash />}
                     </span>
@@ -113,6 +115,16 @@ function Register({ setUser }) {
                         onChange={handleChange}
                         required
                     />
+                </div>
+
+                <div className="terms-checkbox">
+                    <input
+                        type="checkbox"
+                        id="agreeTerms"
+                        checked={agreeTerms}
+                        onChange={(e) => setAgreeTerms(e.target.checked)}
+                    />
+                    <label htmlFor="agreeTerms">Foydalanuvchi shartlariga roziman</label>
                 </div>
 
                 <button type="submit" disabled={!agreeTerms}>

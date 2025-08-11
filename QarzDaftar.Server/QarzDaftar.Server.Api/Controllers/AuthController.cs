@@ -33,9 +33,16 @@ namespace QarzDaftar.Server.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            string token = await authenticationService.AuthenticateUserAsync(
-                request.Username,
-                request.Password);
+            string token;
+
+            if (request.Role == "SuperAdmin")
+            {
+                token = await authenticationService.AuthenticateSuperAdminAsync(request.Username, request.Password);
+            }
+            else
+            {
+                token = await authenticationService.AuthenticateUserAsync(request.Username, request.Password);
+            }
 
             return Ok(new { AccessToken = token });
         }
@@ -62,6 +69,7 @@ namespace QarzDaftar.Server.Api.Controllers
     {
         public string Username { get; set; } = default!;
         public string Password { get; set; } = default!;
+        public string Role { get; set; } = "User";
     }
 
     public class LogoutRequest

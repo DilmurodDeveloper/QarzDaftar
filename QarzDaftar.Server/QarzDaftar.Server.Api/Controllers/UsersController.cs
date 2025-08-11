@@ -46,7 +46,7 @@ namespace QarzDaftar.Server.Api.Controllers
         }
 
         [HttpGet("All")]
-        [Authorize(Roles = "SuperAdmin")]
+        //[Authorize(Roles = "SuperAdmin")]
         public ActionResult<IQueryable<User>> GetAllUsers()
         {
             try
