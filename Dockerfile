@@ -2,8 +2,6 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY QarzDaftar.Server/QarzDaftar.Server.Api/QarzDaftar.Server.Api.csproj QarzDaftar.Server/QarzDaftar.Server.Api/
-COPY QarzDaftar.Server/QarzDaftar.Server.Api.Infrastructure.Build/QarzDaftar.Server.Api.Infrastructure.Build.csproj QarzDaftar.Server/QarzDaftar.Server.Api.Infrastructure.Build/
-COPY QarzDaftar.Server/QarzDaftar.Server.Api.Tests.Unit/QarzDaftar.Server.Api.Tests.Unit.csproj QarzDaftar.Server/QarzDaftar.Server.Api.Tests.Unit/
 
 RUN dotnet restore QarzDaftar.Server/QarzDaftar.Server.Api/QarzDaftar.Server.Api.csproj
 
