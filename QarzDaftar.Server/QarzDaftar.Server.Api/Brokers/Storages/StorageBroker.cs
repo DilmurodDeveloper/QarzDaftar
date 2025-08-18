@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using QarzDaftar.Server.Api.Models.Foundations.Customers;
 using QarzDaftar.Server.Api.Models.Foundations.Debts;
+using QarzDaftar.Server.Api.Models.Foundations.Payments;
 using QarzDaftar.Server.Api.Models.Foundations.SubscriptionHistories;
 using QarzDaftar.Server.Api.Models.Foundations.UserNotes;
 using QarzDaftar.Server.Api.Models.Foundations.UserPaymentLogs;
@@ -15,7 +16,7 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
         public StorageBroker(IConfiguration configuration)
         {
             this.configuration = configuration;
-            this.Database.Migrate();
+            //this.Database.Migrate();
         }
 
         public async ValueTask<T> InsertAsync<T>(T @object)
@@ -66,14 +67,38 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
 
             modelBuilder.Entity<Debt>()
                 .HasOne(d => d.Customer)
-                .WithMany(u => u.Debts)
+                .WithMany(c => c.Debts)
                 .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Debt>()
+                .Property(d => d.Amount)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Debt>()
+                .Property(d => d.RemainingAmount)
+                .HasColumnType("decimal(18,2)");
 
             modelBuilder.Entity<Customer>()
                 .HasOne(c => c.User)
                 .WithMany(u => u.Customers)
                 .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Customer>()
+                .HasMany(c => c.Payments)
+                .WithOne(p => p.Customer)
+                .HasForeignKey(p => p.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Payment>()
+                .Property(p => p.Amount)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Customer)
+                .WithMany(c => c.Payments)
+                .HasForeignKey(p => p.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserNote>()
@@ -83,16 +108,24 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserPaymentLog>()
-                .HasOne(p => p.User)
+                .HasOne(l => l.User)
                 .WithMany(u => u.PaymentLogs)
-                .HasForeignKey(p => p.UserId)
+                .HasForeignKey(l => l.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserPaymentLog>()
+                .Property(l => l.Amount)
+                .HasColumnType("decimal(18,2)");
 
             modelBuilder.Entity<SubscriptionHistory>()
                 .HasOne(s => s.User)
                 .WithMany(u => u.SubscriptionHistories)
                 .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SubscriptionHistory>()
+                .Property(s => s.Amount)
+                .HasColumnType("decimal(18,2)");
         }
 
         public override void Dispose() { }

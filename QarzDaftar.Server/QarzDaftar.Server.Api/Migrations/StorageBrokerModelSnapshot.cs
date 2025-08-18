@@ -354,7 +354,7 @@ namespace QarzDaftar.Server.Api.Migrations
                     b.HasOne("QarzDaftar.Server.Api.Models.Foundations.Customers.Customer", "Customer")
                         .WithMany("Payments")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");
