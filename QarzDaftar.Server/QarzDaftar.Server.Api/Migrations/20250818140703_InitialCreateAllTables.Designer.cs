@@ -12,7 +12,7 @@ using QarzDaftar.Server.Api.Brokers.Storages;
 namespace QarzDaftar.Server.Api.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    [Migration("20250815080404_InitialCreateAllTables")]
+    [Migration("20250818140703_InitialCreateAllTables")]
     partial class InitialCreateAllTables
     {
         /// <inheritdoc />
@@ -357,7 +357,7 @@ namespace QarzDaftar.Server.Api.Migrations
                     b.HasOne("QarzDaftar.Server.Api.Models.Foundations.Customers.Customer", "Customer")
                         .WithMany("Payments")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");
