@@ -47,6 +47,23 @@ namespace QarzDaftar.Server.Api.Controllers
             return Ok(new { AccessToken = token });
         }
 
+        [HttpPut("update")]
+        public async Task<IActionResult> Update([FromBody] UpdateUserRequest request)
+        {
+            await this.authenticationService.UpdateUserAsync(
+                request.Id,
+                request.FullName,
+                request.Username,
+                request.Email,
+                request.Password,
+                request.PhoneNumber,
+                request.ShopName,
+                request.Address);
+
+            return Ok(new { Message = "Foydalanuvchi muvaffaqiyatli yangilandi." });
+        }
+
+
         [HttpPost("logout")]
         public async Task<IActionResult> Logout([FromBody] LogoutRequest request)
         {
@@ -69,7 +86,19 @@ namespace QarzDaftar.Server.Api.Controllers
     {
         public string Username { get; set; } = default!;
         public string Password { get; set; } = default!;
-        public string Role { get; set; } = "User";
+        public string Role { get; set; } = "Admin";
+    }
+
+    public class UpdateUserRequest
+    {
+        public Guid Id { get; set; }
+        public string FullName { get; set; }
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string? Password { get; set; }
+        public string PhoneNumber { get; set; }
+        public string ShopName { get; set; }
+        public string Address { get; set; }
     }
 
     public class LogoutRequest

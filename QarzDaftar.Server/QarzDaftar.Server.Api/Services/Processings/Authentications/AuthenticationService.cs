@@ -92,6 +92,33 @@ namespace QarzDaftar.Server.Api.Services.Processings.Authentications
             await this.userService.AddUserAsync(newUser);
         }
 
+        public async ValueTask UpdateUserAsync(
+            Guid userId,
+            string fullName,
+            string username,
+            string email,
+            string password,
+            string phoneNumber,
+            string shopName,
+            string address)
+        {
+            User existingUser = await this.userService.RetrieveUserByIdAsync(userId);
+
+            existingUser.FullName = fullName;
+            existingUser.Username = username;
+            existingUser.Email = email;
+            existingUser.PhoneNumber = phoneNumber;
+            existingUser.ShopName = shopName;
+            existingUser.Address = address;
+            existingUser.UpdatedDate = DateTimeOffset.UtcNow;
+
+            if (!string.IsNullOrWhiteSpace(password))
+            {
+                existingUser.PasswordHash = passwordHasher.HashPassword(null, password);
+            }
+
+            await this.userService.ModifyUserAsync(existingUser);
+        }
 
         public async ValueTask LogoutUserAsync(Guid userId)
         {

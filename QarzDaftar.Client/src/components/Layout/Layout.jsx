@@ -3,7 +3,7 @@ import Header from "../Header/Header";
 import Sidebar from "../Sidebar/Sidebar";
 import "./Layout.css";
 
-function Layout({ children }) {
+function Layout({ children, hideSidebar }) {
     const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const toggleSidebar = () => setSidebarOpen((prev) => !prev);
@@ -47,9 +47,11 @@ function Layout({ children }) {
             <Header userName={userName} onLogout={handleLogout} toggleSidebar={toggleSidebar} />
 
             <div className="main-content">
-                <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
-                    <Sidebar />
-                </aside>
+                {!hideSidebar && (
+                    <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+                        <Sidebar />
+                    </aside>
+                )}
 
                 {isMobile && sidebarOpen && <div className="overlay-layout" onClick={toggleSidebar}></div>}
 

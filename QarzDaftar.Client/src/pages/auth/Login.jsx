@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./Auth.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const SUPERADMIN_USERNAME = import.meta.env.VITE_SUPERADMIN_USERNAME;
 
 function Login({ setUser }) {
     const [username, setUsername] = useState("");
@@ -16,21 +19,24 @@ function Login({ setUser }) {
         e.preventDefault();
 
         try {
+            const roleToSend = username === SUPERADMIN_USERNAME ? "SuperAdmin" : "Admin";
+
             const response = await fetch(`${API_BASE_URL}/Auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ username, password, role: roleToSend })
             });
 
-            if (!response.ok) throw new Error("Login failed");
+            if (!response.ok) {
+                throw new Error("Username yoki Parol xato");
+            }
 
             const data = await response.json();
             const token = data.accessToken;
-
             localStorage.setItem("accessToken", token);
 
             const decoded = jwtDecode(token);
-            const role =
+            const userRole =
                 decoded.role ||
                 decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
@@ -47,20 +53,37 @@ function Login({ setUser }) {
                 decoded.username?.trim() ||
                 username;
 
-            const userData = { userId, fullName, role };
+            const userData = { userId, fullName, role: userRole };
             localStorage.setItem("user", JSON.stringify(userData));
-
             setUser(userData);
 
-            if (role === "SuperAdmin") {
-                navigate("/ceo/dashboard");
-            } else if (role === "Admin") {
-                navigate("/user/dashboard");
-            } else {
-                navigate("/");
-            }
+            toast.success("Muvaffaqiyatli hisobga kirildi", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+            });
+
+            setTimeout(() => {
+                if (userRole === "SuperAdmin") navigate("/ceo/dashboard");
+                else if (userRole === "Admin") navigate("/user/dashboard");
+                else navigate("/");
+            }, 2000);
+
         } catch (error) {
-            alert("Login xatoligi: " + error.message);
+            console.error("Login error:", error);
+            toast.error(error.message, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+            });
         }
     };
 
@@ -98,6 +121,8 @@ function Login({ setUser }) {
             <p className="auth-footer">
                 Hisobingiz yo'qmi? <a href="tel:+998991437101">Biz bilan bog'lanish</a>
             </p>
+
+            <ToastContainer />
         </div>
     );
 }
