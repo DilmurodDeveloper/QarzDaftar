@@ -2,7 +2,7 @@
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import "./Navbar.css";
 
-function Navbar({ user, setUser }) {
+function Navbar({ onScrollToSection }) {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -37,13 +37,21 @@ function Navbar({ user, setUser }) {
             </div>
 
             <ul className={`navbar-ul ${menuOpen || !isMobile ? "open" : ""}`}>
-                {!isLoginPage && (
+                <div className="navbar-center-links">
+                    <li><button onClick={() => onScrollToSection("offer")}>Loyiha haqida</button></li>
+                    <li><button onClick={() => onScrollToSection("video")}>Demo</button></li>
+                    <li><button onClick={() => onScrollToSection("pricing")}>Ta'riflar</button></li>
+                    <li><button onClick={() => onScrollToSection("faq")}>FAQ</button></li>
+                    <li><button onClick={() => onScrollToSection("registration")}>Aloqa</button></li>
+                </div>
+
+                <div className="navbar-right-button">
                     <li>
-                        <button onClick={() => navigate("/login")} className="navbar-button">
+                        <button onClick={() => navigate("/login")} className="navbar-button-login">
                             Kirish
                         </button>
                     </li>
-                )}
+                </div>
             </ul>
         </nav>
     );

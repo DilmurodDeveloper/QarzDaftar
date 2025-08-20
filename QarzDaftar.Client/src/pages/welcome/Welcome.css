@@ -506,7 +506,7 @@
 
     .howitworks-btn {
         padding: 0.6rem 1rem;
-        font-size: 0.9rem;
+        font-size: 0.6rem;
         gap: 0.4rem;
     }
 
@@ -520,16 +520,16 @@
     }
 
     .phone-icon {
-        font-size: 24px;
+        font-size: 20px;
         padding: 0.3rem;
     }
 
     .phone-title {
-        font-size: 10px;
+        font-size: 0.5rem;
     }
 
     .phone-number {
-        font-size: 12px;
+        font-size: 0.5rem;
     }
 
     .icon-column, .images-stack, .framed-image {

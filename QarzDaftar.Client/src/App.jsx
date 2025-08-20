@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Welcome from "./pages/welcome/Welcome";
@@ -38,12 +38,37 @@ function App() {
     ];
     const shouldHideNavbar = hideNavbarOnPaths.includes(location.pathname);
 
+    const videoRef = useRef(null);
+    const registrationRef = useRef(null);
+
+    const handleScrollToSection = (section) => {
+        switch (section) {
+            case "offer":
+                document.querySelector(".offer-section")?.scrollIntoView({ behavior: "smooth" });
+                break;
+            case "video":
+                document.querySelector(".video-section")?.scrollIntoView({ behavior: "smooth" });
+                break;
+            case "pricing":
+                document.querySelector(".pricing-section")?.scrollIntoView({ behavior: "smooth" });
+                break;
+            case "faq":
+                document.querySelector(".faq-section")?.scrollIntoView({ behavior: "smooth" });
+                break;
+            case "registration":
+                document.querySelector(".registration-section")?.scrollIntoView({ behavior: "smooth" });
+                break;
+            default:
+                break;
+        }
+    };
+
     return (
         <>
-            {!shouldHideNavbar && <Navbar user={user} setUser={setUser} />}
+            {!shouldHideNavbar && <Navbar user={user} setUser={setUser} onScrollToSection={handleScrollToSection} />}
             <main>
                 <Routes>
-                    <Route path="/" element={<Welcome />} />
+                    <Route path="/" element={<Welcome videoRef={videoRef} registrationRef={registrationRef} />} />
                     <Route path="/login" element={<Login setUser={setUser} />} />
                     {/*<Route path="/register" element={<Register setUser={setUser} />} />*/}
                     <Route path="/user/dashboard" element={<Dashboard />} />
