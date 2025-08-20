@@ -12,6 +12,15 @@
             string phoneNumber,
             string shopName,
             string address);
+        ValueTask UpdateUserAsync(
+            Guid id,
+            string fullName,
+            string username,
+            string email,
+            string password,
+            string phoneNumber,
+            string shopName,
+            string address);
         ValueTask LogoutUserAsync(Guid userId);
     }
 }
