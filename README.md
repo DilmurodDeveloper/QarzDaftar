@@ -14,7 +14,7 @@ Do‘kon egalari uchun qarzdorlarni, to‘lovlarni va eslatmalarni boshqarish ti
 ## 📷 Demo Screenshots
 <table>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/d2edb183-1dab-4b8f-b825-641effb62dc0" width="250"/></td>
+    <td><img src="https://github.com/user-attachments/assets/ec2d4953-f8f7-4936-a174-b93084d54aee" width="250"/></td>
     <td><img src="https://github.com/user-attachments/assets/d0aa0744-45f8-4238-8ec3-ecd717fa25f0" width="250"/></td>
     <td><img src="https://github.com/user-attachments/assets/7b5e8a75-7126-400e-a494-aaacf253916e" width="250"/></td>
   </tr>
