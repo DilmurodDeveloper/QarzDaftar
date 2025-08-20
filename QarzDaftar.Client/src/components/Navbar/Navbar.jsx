@@ -19,7 +19,6 @@ function Navbar({ user, setUser }) {
     }, []);
 
     const isLoginPage = location.pathname === "/login";
-    const isRegisterPage = location.pathname === "/register";
 
     return (
         <nav className="navbar">
@@ -42,14 +41,6 @@ function Navbar({ user, setUser }) {
                     <li>
                         <button onClick={() => navigate("/login")} className="navbar-button">
                             Kirish
-                        </button>
-                    </li>
-                )}
-
-                {!isRegisterPage && (
-                    <li>
-                        <button onClick={() => navigate("/register")} className="navbar-button">
-                            Ro'yxatdan o'tish
                         </button>
                     </li>
                 )}
