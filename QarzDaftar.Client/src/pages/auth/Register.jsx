@@ -26,7 +26,6 @@ function Register({ setUser }) {
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        console.log("Form submit qilindi");
 
         try {
             const response = await fetch(`${API_BASE_URL}/auth/register`, {

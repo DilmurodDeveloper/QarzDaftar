@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Welcome from "./pages/welcome/Welcome";
 import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
+//import Register from "./pages/auth/Register";
 import Dashboard from "./pages/admin/Dashboard/Dashboard";
 import AllCustomers from "./pages/admin/Customers/AllCustomers";
 import ActiveCustomers from "./pages/admin/Customers/ActiveCustomers";
@@ -45,7 +45,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Welcome />} />
                     <Route path="/login" element={<Login setUser={setUser} />} />
-                    <Route path="/register" element={<Register setUser={setUser} />} />
+                    {/*<Route path="/register" element={<Register setUser={setUser} />} />*/}
                     <Route path="/user/dashboard" element={<Dashboard />} />
                     <Route path="/user/customers/all" element={<AllCustomers />} />
                     <Route path="/user/customers/active" element={<ActiveCustomers />} />

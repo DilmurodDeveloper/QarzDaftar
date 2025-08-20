@@ -96,7 +96,7 @@ function Login({ setUser }) {
             </form>
 
             <p className="auth-footer">
-                Hisobingiz yo'qmi? <Link to="/register">Ro'yxatdan o'tish</Link>
+                Hisobingiz yo'qmi? <a href="tel:+998991437101">Biz bilan bog'lanish</a>
             </p>
         </div>
     );
