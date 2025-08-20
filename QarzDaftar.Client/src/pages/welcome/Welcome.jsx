@@ -1,14 +1,13 @@
-﻿import React, { useState, useRef } from "react";
-import "./Welcome.css";
+﻿import React, { useState } from "react";
 import { FaPlayCircle, FaPhoneAlt } from "react-icons/fa";
 import welcomeImage from "../../assets/welcome.jpg";
+import ScrollToTop from "../../components/ScrollToTop/ScrollToTop";
+import "./Welcome.css";
 
-function Welcome() {
+function Welcome({ videoRef, registrationRef }) {
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
     const [submitted, setSubmitted] = useState(false);
-    const videoRef = useRef(null);
-    const registrationRef = useRef(null);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -206,6 +205,8 @@ function Welcome() {
                 {submitted && <p className="form-success">Ma’lumot yuborildi, tez orada siz bilan bog‘lanamiz!</p>}
             </section>
 
+            <ScrollToTop />
+            
             <footer className="footer">
                 <p>
                     © 2025 Barcha huquqlar{" "}
