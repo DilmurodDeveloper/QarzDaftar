@@ -381,9 +381,9 @@
     }
 
 .registration-section {
-    padding: 4rem 2rem;
     background-color: #f9f9f9;
     text-align: center;
+    margin-bottom: 4rem;
 }
 
     .registration-section h2 {
@@ -446,10 +446,10 @@
 }
 
 .footer {
-    background-color: #000;
+    background-color: #333;
     color: #fff;
     text-align: center;
-    padding: 1rem 0;
+    padding: 1.5rem;
     font-size: 0.95rem;
     font-weight: 400;
     letter-spacing: 0.5px;
@@ -468,8 +468,6 @@
         color: #4dd0e1;
         text-decoration: underline;
     }
-
-/* --- Mobile & Tablet Responsive CSS --- */
 
 /* Phones: max-width 599px */
 @media (max-width: 768px) {

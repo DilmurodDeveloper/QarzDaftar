@@ -59,7 +59,7 @@ function Login({ setUser }) {
 
             toast.success("Muvaffaqiyatli hisobga kirildi", {
                 position: "top-right",
-                autoClose: 3000,
+                autoClose: 1500,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
@@ -71,7 +71,7 @@ function Login({ setUser }) {
                 if (userRole === "SuperAdmin") navigate("/ceo/dashboard");
                 else if (userRole === "Admin") navigate("/user/dashboard");
                 else navigate("/");
-            }, 2000);
+            }, 1500);
 
         } catch (error) {
             console.error("Login error:", error);
