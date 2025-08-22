@@ -13,21 +13,19 @@
     --radius-md: 8px;
     --gap: 12px;
     --transition: 200ms cubic-bezier(.22,.95,.36,1);
+    --header-height: 64px;
+    --sidebar-width: 260px;
 }
 
 * {
     box-sizing: border-box;
-}
-
-html.layout-scroll-lock,
-body.layout-scroll-lock,
-#root.layout-scroll-lock {
-    height: 100%;
-    overflow: hidden !important;
-}
-
-body {
     margin: 0;
+    padding: 0;
+}
+
+body, html, #root {
+    height: 100%;
+    width: 100%;
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     background: var(--bg);
     color: #0f172a;
@@ -46,13 +44,13 @@ button {
 }
 
 .layout-container {
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden !important;
+    height: 100%;
 }
 
 .header {
+    height: var(--header-height);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -73,10 +71,8 @@ button {
 }
 
 .logo {
-    margin: 0;
     font-size: 18px;
     font-weight: 700;
-    letter-spacing: -0.2px;
     color: var(--primary-600);
 }
 
@@ -86,16 +82,9 @@ button {
     border: none;
     background: transparent;
     padding: 8px;
-    margin: 0;
     border-radius: 8px;
-    cursor: pointer;
     transition: background var(--transition), transform var(--transition);
 }
-
-    .hamburger-btn:focus {
-        outline: 2px solid rgba(37,99,235,0.18);
-    }
-
     .hamburger-btn:hover {
         background: rgba(15,23,42,0.03);
         transform: translateY(-1px);
@@ -114,17 +103,7 @@ button {
     gap: 8px;
     padding: 6px 8px;
     border-radius: 10px;
-    cursor: pointer;
-    user-select: none;
 }
-
-    .profile-menu:focus {
-        outline: none;
-    }
-
-    .profile-menu:focus-visible {
-        box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
-    }
 
 .profile-icon {
     display: inline-block;
@@ -183,18 +162,16 @@ button {
 }
 
 .sidebar {
-    width: 260px;
-    min-width: 72px;
-    max-width: 320px;
+    width: var(--sidebar-width);
     background: linear-gradient(180deg, #ffffff, #fbfdff);
     border-right: 1px solid rgba(15,23,42,0.04);
     padding: 18px 12px;
+    position: sticky;
+    top: var(--header-height);
+    height: calc(100vh - var(--header-height));
+    overflow-y: auto;
     transition: transform var(--transition), opacity var(--transition);
     transform: translateX(0);
-    overflow: hidden !important;
-    height: 100vh;
-    position: sticky;
-    top: 0;
     z-index: 200;
 }
 
@@ -280,7 +257,7 @@ button {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    margin-left: 6px;
+    margin-left: 26px;
     padding-left: 6px;
     border-left: 1px dashed rgba(15,23,42,0.04);
 }
@@ -323,9 +300,18 @@ button {
     flex: 1;
     padding: 20px;
     width: 100%;
-    overflow: auto;
-    height: 100vh;
+    overflow-y: auto;
+    height: calc(100vh - var(--header-height));
 }
+
+    .content-area::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .content-area::-webkit-scrollbar-thumb {
+        background: rgba(2,6,23,0.06);
+        border-radius: 8px;
+    }
 
 .overlay-layout {
     position: fixed;

@@ -19,7 +19,7 @@ function Welcome({ videoRef, registrationRef }) {
         setLoading(true);
 
         try {
-            const response = await fetch(`${API_BASE_URL}/api/Registrations`, {
+            const response = await fetch(`${API_BASE_URL}/Registrations`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, phone }),
