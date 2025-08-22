@@ -15,6 +15,8 @@ function SuperAdminDashboard() {
     const [showModal, setShowModal] = useState(false);
     const [showColumnMenu, setShowColumnMenu] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
+    const [registrations, setRegistrations] = useState([]);
+    const [loadingRegistrations, setLoadingRegistrations] = useState(true);
 
     const [visibleColumns, setVisibleColumns] = useState({
         fullName: true,
@@ -28,7 +30,7 @@ function SuperAdminDashboard() {
         isActivatedByAdmin: false,
         isBlocked: false,
         createdDate: true,
-        updatedDate: true,
+        updatedDate: false,
         role: true,
     });
 
@@ -51,6 +53,7 @@ function SuperAdminDashboard() {
 
     useEffect(() => {
         fetchUsers();
+        fetchRegistrations();
     }, []);
 
     const handleDelete = async (userId) => {
@@ -75,11 +78,58 @@ function SuperAdminDashboard() {
             user.email.toLowerCase().includes(search.toLowerCase())
     );
 
+    const fetchRegistrations = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/Registrations`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!res.ok) throw new Error("Registratsiyalarni olishda xatolik");
+            const data = await res.json();
+            setRegistrations(data);
+        } catch (err) {
+            toast.error(err.message);
+        } finally {
+            setLoadingRegistrations(false);
+        }
+    };
+
     return (
         <Layout hideSidebar={true}>
             <div className="superadmin-dashboard-container">
                 <h2>SuperAdmin Dashboard</h2>
                 <ToastContainer />
+
+                <div className="registrations-section">
+                    <h3>Form orqali yuborilgan arizalar</h3>
+                    {loadingRegistrations ? (
+                        <p>Yuklanmoqda...</p>
+                    ) : (
+                        <table className="registrations-table">
+                            <thead>
+                                <tr>
+                                    <th>№</th>
+                                    <th>Ism</th>
+                                    <th>Email</th>
+                                    <th>Telefon</th>
+                                    <th>Message</th>
+                                    <th>Yuborilgan sana</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {registrations.map((reg, index) => (
+                                    <tr key={reg.id || index}>
+                                        <td>{index + 1}</td>
+                                        <td>{reg.fullName}</td>
+                                        <td>{reg.email}</td>
+                                        <td>{reg.phoneNumber}</td>
+                                        <td>{reg.message}</td>
+                                        <td>{new Date(reg.createdAt).toLocaleString()}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
 
                 <div className="superadmin-dashboard-controls">
                     <div className="superadmin-search-wrapper">

@@ -16,7 +16,7 @@ namespace QarzDaftar.Server.Api.Brokers.Storages
         public StorageBroker(IConfiguration configuration)
         {
             this.configuration = configuration;
-            //this.Database.Migrate();
+            this.Database.Migrate();
         }
 
         public async ValueTask<T> InsertAsync<T>(T @object)

@@ -2,34 +2,52 @@
 import { FaPlayCircle, FaPhoneAlt } from "react-icons/fa";
 import welcomeImage from "../../assets/welcome.jpg";
 import ScrollToTop from "../../components/ScrollToTop/ScrollToTop";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./Welcome.css";
 
 function Welcome({ videoRef, registrationRef }) {
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
-    const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(null);
 
-    const handleSubmit = (e) => {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setSubmitted(true);
-        setName("");
-        setPhone("");
+        setLoading(true);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/Registrations`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, phone }),
+            });
+
+            if (response.ok) {
+                toast.success("Ma’lumot yuborildi, tez orada siz bilan bog‘lanamiz!", { autoClose: 3000 });
+                setName("");
+                setPhone("");
+            } else {
+                const errorData = await response.json();
+                console.error("Server error:", errorData);
+                toast.error("Xatolik yuz berdi, qayta urinib ko‘ring!", { autoClose: 3000 });
+            }
+        } catch (error) {
+            console.error("Network error:", error);
+            toast.error("Tarmoq bilan bog‘liq muammo yuz berdi!", { autoClose: 3000 });
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleScrollToVideo = () => {
-        videoRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-
+    const handleScrollToVideo = () => videoRef.current?.scrollIntoView({ behavior: "smooth" });
     const handleScrollToRegistration = (e) => {
         e.preventDefault();
         registrationRef.current?.scrollIntoView({ behavior: "smooth" });
     };
-
-    const [activeIndex, setActiveIndex] = useState(null);
-
-    const toggleFAQ = (index) => {
-        setActiveIndex(activeIndex === index ? null : index);
-    };
+    const toggleFAQ = (index) => setActiveIndex(activeIndex === index ? null : index);
 
     const faqData = [
         { q: "QarzDaftar nima?", a: "QarzDaftarCRM - do‘kon egalari va mijozlar o‘rtasidagi qarz va to‘lovlarni samarali boshqarish uchun mo‘ljallangan tizim." },
@@ -52,8 +70,7 @@ function Welcome({ videoRef, registrationRef }) {
                         </p>
                         <div className="howitworks-wrap">
                             <button className="howitworks-btn" onClick={handleScrollToVideo}>
-                                <FaPlayCircle className="howitworks-icon" />
-                                Bu qanday ishlaydi?
+                                <FaPlayCircle className="howitworks-icon" /> Bu qanday ishlaydi?
                             </button>
                             <a href="tel:+998991437101" className="phone-support">
                                 <FaPhoneAlt className="phone-icon" />
@@ -64,7 +81,6 @@ function Welcome({ videoRef, registrationRef }) {
                             </a>
                         </div>
                     </div>
-
                     <div className="icon-column">
                         <div className="images-stack framed-image">
                             <img src={welcomeImage} alt="Desktop rasm" className="image-desktop" />
@@ -79,38 +95,22 @@ function Welcome({ videoRef, registrationRef }) {
                     Biz do‘kon egalari va mijozlar o‘rtasidagi qarz va to‘lovlarni boshqarishni
                     raqamlashtirish orqali qulay va samarali tizim yaratmoqdamiz.
                 </p>
-
                 <div className="offer-grid">
                     <div className="offer-card">
                         <h3>Qarz va To‘lovlarni Boshqarish</h3>
-                        <p>
-                            Har bir mijoz uchun qarz yozish, to‘lovlarni qayd etish va qarzdorlikni
-                            kuzatib borish imkoniyati.
-                        </p>
+                        <p>Har bir mijoz uchun qarz yozish, to‘lovlarni qayd etish va qarzdorlikni kuzatib borish imkoniyati.</p>
                     </div>
-
                     <div className="offer-card">
                         <h3>Mijozlar Ro‘yxati</h3>
-                        <p>
-                            Mijozlaringizni yagona platformada saqlang, ularning qarz tarixi va
-                            to‘lov ma’lumotlarini oson kuzating.
-                        </p>
+                        <p>Mijozlaringizni yagona platformada saqlang, ularning qarz tarixi va to‘lov ma’lumotlarini oson kuzating.</p>
                     </div>
-
                     <div className="offer-card">
                         <h3>Hisobot va Tahlil</h3>
-                        <p>
-                            Daromad, qarzdorlik va to‘lovlar bo‘yicha avtomatik hisobotlar hamda
-                            vizual grafikalar.
-                        </p>
+                        <p>Daromad, qarzdorlik va to‘lovlar bo‘yicha avtomatik hisobotlar hamda vizual grafikalar.</p>
                     </div>
-
                     <div className="offer-card">
                         <h3>Eslatmalar va Bildirishnomalar</h3>
-                        <p>
-                            Mijozlarga qarz haqida eslatma yuborish va o‘z vaqtida ogohlantirish
-                            orqali samaradorlikni oshiring.
-                        </p>
+                        <p>Mijozlarga qarz haqida eslatma yuborish va o‘z vaqtida ogohlantirish orqali samaradorlikni oshiring.</p>
                     </div>
                 </div>
             </section>
@@ -126,7 +126,7 @@ function Welcome({ videoRef, registrationRef }) {
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
-                    ></iframe>
+                    />
                 </div>
             </section>
 
@@ -137,45 +137,27 @@ function Welcome({ videoRef, registrationRef }) {
                     Bizning tariflarimiz sizning biznesingiz uchun qulay va samarali yechimlarni taklif etadi.
                 </p>
                 <div className="pricing-cards">
-                    <div className="pricing-card">
-                        <h3>7 kunlik sinov</h3>
-                        <p className="price">Bepul</p>
-                        <a href="#registration" className="activate-btn" onClick={handleScrollToRegistration}>
-                            Faollashtirish
-                        </a>
-                    </div>
-                    <div className="pricing-card">
-                        <h3>1 oylik obuna</h3>
-                        <p className="price">50,000 UZS</p>
-                        <a href="#registration" className="activate-btn" onClick={handleScrollToRegistration}>
-                            Faollashtirish
-                        </a>
-                    </div>
-                    <div className="pricing-card">
-                        <h3>3 oylik obuna</h3>
-                        <p className="price">140,000 UZS</p>
-                        <a href="#registration" className="activate-btn" onClick={handleScrollToRegistration}>
-                            Faollashtirish
-                        </a>
-                    </div>
-                    <div className="pricing-card">
-                        <h3>1 yillik obuna</h3>
-                        <p className="price">500,000 UZS</p>
-                        <a href="#registration" className="activate-btn" onClick={handleScrollToRegistration}>
-                            Faollashtirish
-                        </a>
-                    </div>
+                    {[
+                        { title: "7 kunlik sinov", price: "Bepul" },
+                        { title: "1 oylik obuna", price: "50,000 UZS" },
+                        { title: "3 oylik obuna", price: "140,000 UZS" },
+                        { title: "1 yillik obuna", price: "500,000 UZS" },
+                    ].map((plan, i) => (
+                        <div className="pricing-card" key={i}>
+                            <h3>{plan.title}</h3>
+                            <p className="price">{plan.price}</p>
+                            <a href="#registration" className="activate-btn" onClick={handleScrollToRegistration}>
+                                Faollashtirish
+                            </a>
+                        </div>
+                    ))}
                 </div>
             </section>
 
             <section className="faq-section">
                 <h2>Ko'p so‘raladigan savollar(FAQ)</h2>
                 {faqData.map((item, index) => (
-                    <div
-                        key={index}
-                        className={`faq-item ${activeIndex === index ? "active" : ""}`}
-                        onClick={() => toggleFAQ(index)}
-                    >
+                    <div key={index} className={`faq-item ${activeIndex === index ? "active" : ""}`} onClick={() => toggleFAQ(index)}>
                         <h4>{item.q}</h4>
                         <p>{item.a}</p>
                     </div>
@@ -186,39 +168,20 @@ function Welcome({ videoRef, registrationRef }) {
                 <h2>Ilovani sinab ko'rish</h2>
                 <p>Ismingiz va telefon raqamingizni qoldiring, biz siz bilan bog‘lanamiz:</p>
                 <form className="registration-form" onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        placeholder="Ismingiz"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                    />
-                    <input
-                        type="tel"
-                        placeholder="Telefon raqamingiz"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        required
-                    />
-                    <button type="submit">Yuborish</button>
+                    <input type="text" placeholder="Ismingiz" value={name} onChange={(e) => setName(e.target.value)} required />
+                    <input type="tel" placeholder="Telefon raqamingiz" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                    <button type="submit" disabled={loading}>{loading ? "Yuborilmoqda..." : "Yuborish"}</button>
                 </form>
-                {submitted && <p className="form-success">Ma’lumot yuborildi, tez orada siz bilan bog‘lanamiz!</p>}
             </section>
 
+            <ToastContainer position="top-right" newestOnTop autoClose={3000} hideProgressBar closeOnClick pauseOnHover />
+
             <ScrollToTop />
-            
+
             <footer className="footer">
                 <p>
                     © 2025 Barcha huquqlar{" "}
-                    <a
-                        href="https://dilmuroddev.uz"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="footer-link"
-                    >
-                        Dilmurod
-                    </a>{" "}
-                    tomonidan himoyalangan
+                    <a href="https://dilmuroddev.uz" target="_blank" rel="noopener noreferrer" className="footer-link">Dilmurod</a> tomonidan himoyalangan
                 </p>
             </footer>
         </>
