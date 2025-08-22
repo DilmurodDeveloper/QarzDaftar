@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QarzDaftar.Server.Api.Models.Foundations.Registrations;
 using QarzDaftar.Server.Api.Services.Foundations.Registrations;
 using RESTFulSense.Controllers;
@@ -24,6 +25,7 @@ namespace QarzDaftar.Server.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "SuperAdmin")]
         public ActionResult<IEnumerable<Registration>> GetAllRegistrations()
         {
             IEnumerable<Registration> registrations =

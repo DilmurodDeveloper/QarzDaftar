@@ -110,7 +110,6 @@ builder.Services.AddCors(options =>
         policy => policy
             .WithOrigins(
                 "http://localhost:5173",
-                "https://qarz-daftar-898gh0gtn-dilmurodmadirimovs-projects.vercel.app",
                 "https://qarz-daftar.vercel.app"
             )
             .AllowAnyMethod()
