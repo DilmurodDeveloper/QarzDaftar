@@ -153,18 +153,23 @@
     .stats-grid {
         grid-template-columns: 1fr;
         grid-template-rows: repeat(6, auto);
-        gap: 15px 0;
-        padding-bottom: 60px;
+        gap: 10px;
+        padding-bottom: 100px;
     }
 
     .welcome-card {
         padding: 15px 20px;
+        font-size: 0.9rem;
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
     }
 
+        .welcome-card h2 {
+            font-size: 1.5rem;
+        }
+
     .welcome-icon {
-        font-size: 40px;
+        font-size: 20px;
     }
 }
