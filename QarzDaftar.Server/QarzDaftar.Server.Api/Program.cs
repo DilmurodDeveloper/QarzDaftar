@@ -12,6 +12,7 @@ using QarzDaftar.Server.Api.Seeders;
 using QarzDaftar.Server.Api.Services.Foundations.Customers;
 using QarzDaftar.Server.Api.Services.Foundations.Debts;
 using QarzDaftar.Server.Api.Services.Foundations.Payments;
+using QarzDaftar.Server.Api.Services.Foundations.Registrations;
 using QarzDaftar.Server.Api.Services.Foundations.SubscriptionHistories;
 using QarzDaftar.Server.Api.Services.Foundations.SuperAdmins;
 using QarzDaftar.Server.Api.Services.Foundations.UserNotes;
@@ -39,6 +40,7 @@ builder.Services.AddTransient<IUserNoteService, UserNoteService>();
 builder.Services.AddTransient<ISubscriptionHistoryService, SubscriptionHistoryService>();
 builder.Services.AddTransient<IUserPaymentLogService, UserPaymentLogService>();
 builder.Services.AddTransient<ISuperAdminService, SuperAdminService>();
+builder.Services.AddTransient<IRegistrationService, RegistrationService>();
 
 builder.Services.AddScoped<IPasswordHasher<SuperAdmin>, PasswordHasher<SuperAdmin>>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();

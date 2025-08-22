@@ -29,7 +29,7 @@ function Navbar({ onScrollToSection }) {
                     </Link>
                 </h1>
 
-                {isMobile && (
+                {isMobile && !isLoginPage && (
                     <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
                         ☰
                     </button>
@@ -37,21 +37,25 @@ function Navbar({ onScrollToSection }) {
             </div>
 
             <ul className={`navbar-ul ${menuOpen || !isMobile ? "open" : ""}`}>
-                <div className="navbar-center-links">
-                    <li><button onClick={() => onScrollToSection("offer")}>Loyiha haqida</button></li>
-                    <li><button onClick={() => onScrollToSection("video")}>Demo</button></li>
-                    <li><button onClick={() => onScrollToSection("pricing")}>Ta'riflar</button></li>
-                    <li><button onClick={() => onScrollToSection("faq")}>FAQ</button></li>
-                    <li><button onClick={() => onScrollToSection("registration")}>Aloqa</button></li>
-                </div>
+                {!isLoginPage && (
+                    <>
+                        <div className="navbar-center-links">
+                            <li><button onClick={() => onScrollToSection("offer")}>Loyiha haqida</button></li>
+                            <li><button onClick={() => onScrollToSection("video")}>Demo</button></li>
+                            <li><button onClick={() => onScrollToSection("pricing")}>Ta'riflar</button></li>
+                            <li><button onClick={() => onScrollToSection("faq")}>FAQ</button></li>
+                            <li><button onClick={() => onScrollToSection("registration")}>Aloqa</button></li>
+                        </div>
 
-                <div className="navbar-right-button">
-                    <li>
-                        <button onClick={() => navigate("/login")} className="navbar-button-login">
-                            Kirish
-                        </button>
-                    </li>
-                </div>
+                        <div className="navbar-right-button">
+                            <li>
+                                <button onClick={() => navigate("/login")} className="navbar-button-login">
+                                    Kirish
+                                </button>
+                            </li>
+                        </div>
+                    </>
+                )}
             </ul>
         </nav>
     );

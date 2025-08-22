@@ -111,7 +111,7 @@ function Login({ setUser }) {
                         className="toggle-password"
                         onClick={() => setShowPassword(!showPassword)}
                     >
-                        {showPassword ? <FaEye /> : <FaEyeSlash />}
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
                     </span>
                 </div>
 
