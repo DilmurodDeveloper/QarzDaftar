@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using QarzDaftar.Server.Api.Services.Processings.Authentications;
 using RESTFulSense.Controllers;
 
@@ -6,6 +7,7 @@ namespace QarzDaftar.Server.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableCors("AllowClient")]
     public class AuthController : RESTFulController
     {
         private readonly IAuthenticationService authenticationService;
