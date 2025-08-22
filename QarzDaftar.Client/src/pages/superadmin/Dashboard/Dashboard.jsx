@@ -108,10 +108,8 @@ function SuperAdminDashboard() {
                             <thead>
                                 <tr>
                                     <th>№</th>
-                                    <th>Ism</th>
-                                    <th>Email</th>
-                                    <th>Telefon</th>
-                                    <th>Message</th>
+                                    <th>Ismi</th>
+                                    <th>Telefon raqami</th>
                                     <th>Yuborilgan sana</th>
                                 </tr>
                             </thead>
@@ -119,11 +117,9 @@ function SuperAdminDashboard() {
                                 {registrations.map((reg, index) => (
                                     <tr key={reg.id || index}>
                                         <td>{index + 1}</td>
-                                        <td>{reg.fullName}</td>
-                                        <td>{reg.email}</td>
-                                        <td>{reg.phoneNumber}</td>
-                                        <td>{reg.message}</td>
-                                        <td>{new Date(reg.createdAt).toLocaleString()}</td>
+                                        <td>{reg.name}</td>
+                                        <td>{reg.phone}</td>
+                                        <td>{new Date(reg.createdDate).toLocaleString()}</td>
                                     </tr>
                                 ))}
                             </tbody>

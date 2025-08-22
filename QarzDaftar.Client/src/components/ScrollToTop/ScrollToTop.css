@@ -21,3 +21,9 @@
         transform: scale(1.1);
         opacity: 1;
     }
+
+@media (max-width: 768px) {
+    .scroll-to-top {
+        display: none;
+    }
+}
