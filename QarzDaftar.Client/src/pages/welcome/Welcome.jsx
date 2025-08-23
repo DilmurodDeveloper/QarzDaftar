@@ -116,13 +116,16 @@ function Welcome({ videoRef, registrationRef }) {
             </section>
 
             <section className="video-section" ref={videoRef}>
-                <h2>QarzDaftar ilovasining demo ko‘rinishi</h2>
+                <h2>QarzDaftar CRM qanday ishlaydi?</h2>
+                <p className="offer-subtitle">
+                    Mijozlariz qarzlarini boshqarishning eng samarali usuli bilan tanishing
+                </p>
                 <div className="video-container">
                     <iframe
                         width="100%"
                         height="500"
-                        src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
-                        title="Loyihani ishlatish video"
+                        src="https://www.youtube.com/embed/GLL6KJw1jFw?si=Muah4rAUzFcAU08F"
+                        title="QarzDaftar CRM dasturida mijozlar qo‘shish va qarz/to‘lov yozish"
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
